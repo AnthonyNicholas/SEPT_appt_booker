@@ -9,9 +9,15 @@
 class Customer
 {
 
-    public var $id;
+    public var $custNo;
+    public var $fName;
+    public var $lName;
+    public var $address;
+    public var $phoneNo;
+    public var $email;
+    public var $password;
 
-    public function __construct( $id )
+    public function __construct(  )
     {
         $this->id = $id;
     }
