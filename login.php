@@ -16,4 +16,13 @@ require_once('Controller.class.php');
 
 $ctrl = new Controller();
 
-$ctrl->loginForm();
+// I think I'm breaking the logic rule here...
+if ( empty($_POST['email']) )
+{
+    // Call the login form controller method
+    $ctrl->loginForm();
+} else
+{
+    // call the login controller method and prevent SQL injection
+    $ctrl->login(mysqli_real_escape_string($_POST['email']), mysqli_real_escape_string($_POST['password']));
+}

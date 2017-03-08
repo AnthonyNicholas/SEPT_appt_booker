@@ -11,16 +11,43 @@ class Controller
 {
 
     public $debug = true;
+    private $db;
+
+    public function __construct()
+    {
+        // Set up our database object for use within the controller
+        $this->db = new mysqli("localhost", "antfellow", "", "database??");
+
+        if ($this->db->connect_errno)
+        {
+            $errmsg = $this->debug ? ": " . $this->db->connect_error : ", errors may follow.";
+            echo "Failed to connect to MySQL" . $errmsg . "<br/>\n";
+        }
+        
+    }
 
     public function loginForm()
     {
         // here the login form view class is loaded and method printHtml() is called    
+        require_once('views/SiteContainer.class.php');
+        require_once('views/LoginForm.class.php');
+        $site = new SiteContainer();
+        $form = new LoginForm();
+
+        $site->printHeader();
+        $form->printHtml();
+        $site->printFooter();
+        
 
     }
 
     public function login($email, $password)
     {
-        // here login data will be validated and processed, and user data saved into the PHP session
+        // here login data will be validated and processed, and user data
+        // saved into the PHP session
+        // This is very succeptible to SQL injection - ENSURE DATA IS CLEAN
+        $res = $this->db->query("SELECT email, fName, lName FROM Customers WHERE email = '$email' AND password = '$password';");
+        $user = $res->fetch_assoc();
 
 
         // maybe a header redirect here to the main page?
