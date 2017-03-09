@@ -10,20 +10,29 @@
 class Controller
 {
 
-    public $debug = true;
+    public $config;
     private $db;
 
     public function __construct()
     {
+        // fetch our configuration
+        require_once('config.php');
+        $this->config = $config;
+
         // Set up our database object for use within the controller
-        $this->db = new mysqli("localhost", "antfellow", "", "database??");
+        $this->db = new mysqli(
+            $config['db_addr'],
+            $config['db_user'],
+            $config['db_pass'],
+            $config['db_name']
+        );
 
         if ($this->db->connect_errno)
         {
-            $errmsg = $this->debug ? ": " . $this->db->connect_error : ", errors may follow.";
+            $errmsg = $config['debug'] ? ": " . $this->db->connect_error : ", errors may follow.";
             echo "Failed to connect to MySQL" . $errmsg . "<br/>\n";
         }
-        
+
     }
 
     public function loginForm()
