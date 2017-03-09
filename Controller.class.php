@@ -54,10 +54,15 @@ class Controller
     {
         // here login data will be validated and processed, and user data
         // saved into the PHP session
-        // This is very succeptible to SQL injection - ENSURE DATA IS CLEAN
-        $res = $this->db->query("SELECT email, fName, lName FROM Customers WHERE email = '$email' AND password = '$password';");
+        $stmt = $this->db->prepare("SELECT email, fName, lName FROM Customers WHERE email = ? AND password = ?;");
+        // Insert our given username and password into the statement safely
+        $stmt->bind_param('ss', $email, $password);
+        // Execute the query
+        $stmt->execute();
+        // Fetch the result
+        $res = $stmt->get_result();
         $user = $res->fetch_assoc();
-
+        var_dump($user);
 
         // maybe a header redirect here to the main page?
 
