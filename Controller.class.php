@@ -61,10 +61,18 @@ class Controller
         $stmt->execute();
         // Fetch the result
         $res = $stmt->get_result();
-        $user = $res->fetch_assoc();
-        var_dump($user);
 
-        // maybe a header redirect here to the main page?
+        if ($user = $res->fetch_assoc())
+        {
+            // Login successful
+            session_start();
+            $_SESSION['email'] = $user['email'];
+            $this->redirect("/");
+        } else
+        {
+            $this->redirect("/login.php");
+            echo "err_login_failed";
+        }
 
     }
 
@@ -133,6 +141,17 @@ class Controller
     {
 
 
+    }
+
+    // Handles PHP redirects
+    public function redirect($page = '')
+    {
+        // If not running under apache (ie test case), dont attempt to redirect
+        if ( isset($_SERVER['HTTP_HOST']) )
+        {
+            $site_url = empty($this->config['url']) ? $_SERVER['HTTP_HOST'] : $this->config['url'];
+            header('Location: ' . $site_url . $page);
+        }
     }
 
 }
