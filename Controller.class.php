@@ -105,7 +105,7 @@ class Controller
 
     // validate and enter the register information into the database
     // will need to check for duplicate users/email already in use
-    public function registerCust()
+    public function registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2)
     {
         $errors = array(); // list of errors
      
