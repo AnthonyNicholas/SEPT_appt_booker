@@ -94,16 +94,55 @@ class Controller
     // displays the register form for customers
     public function registerFormCust()
     {
-
-
+        require_once('views/SiteContainer.class.php');
+        require_once('views/RegistrationForm.class.php');
+        $site = new SiteContainer();
+        $form = new RegistrationForm();
+        $site->printHeader();
+        $form->printHtml();
+        $site->printFooter();
     }
 
     // validate and enter the register information into the database
     // will need to check for duplicate users/email already in use
     public function registerCust()
     {
+        $errors = array(); // list of errors
+     
+        if (strcmp($pword, $pword2)) // check passwords match
+            $errors[] = 'password';
+  
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) // validate email
+            $errors[] = 'email';
+    
+        if (!preg_match("/^[a-zA-Z'-]+$/",$fname)) // match first name to sensible regex
+            $errors[] = 'fname';
+    
+        if (!preg_match("/^[a-zA-Z'-]+$/",$lname)) // match last name
+            $errors[] = 'lname';
+  
+        // prepare statement for checking email
+        $q = $this->db->prepare("SELECT * FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $email);
+        $q->execute();
+        $result = $q->get_result();
 
-
+        if (mysqli_num_rows($result) > 0) // check email doesn't already exist
+            $errors[] = 'duplicate';
+  
+        if (!empty($errors)) // if registration fails, back to form with errors
+        {       
+            $errors = implode(',', $errors);
+            header("Location: register.php?error=".htmlspecialchars(urlencode($errors))); 
+        }
+        else  // if registration succeeds, log in
+        { 
+        // prepare statement for insert
+        $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
+        $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
+        $q->execute();
+        // $controller->login($email, $pword); // login after account is created, commented until login is fully implemented   
+        } 
     }
 
     // displays the register form for owners
