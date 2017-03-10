@@ -137,11 +137,11 @@ class Controller
         }
         else  // if registration succeeds, log in
         { 
-        // prepare statement for insert
-        $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
-        $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
-        $q->execute();
-        // $controller->login($email, $pword); // login after account is created, commented until login is fully implemented   
+            // prepare statement for insert
+            $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
+            $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
+            $q->execute();
+            // $controller->login($email, $pword); // login after account is created, commented until login is fully implemented   
         } 
     }
 
