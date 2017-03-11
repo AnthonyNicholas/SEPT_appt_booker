@@ -35,6 +35,7 @@ class Controller
         $form = new LoginForm();
 
         $site->printHeader();
+        $site->printNav();
         $form->printHtml();
         $site->printFooter();
         
@@ -60,11 +61,13 @@ class Controller
 
         // here the login form view class is loaded and method printHtml() is called    
         require_once('views/SiteContainer.class.php');
+        require_once('views/CustMainPageView.class.php');
         $site = new SiteContainer();
+        $page = new CustMainPageView();
 
         $site->printHeader();
-        $site->printNavCust();
-        echo "<p>THIS IS THE CUSTOMER MAINPAGE</p>";
+        $site->printNav("customer");
+        $page->printHtml();        
         $site->printFooter();
 
     }
@@ -72,7 +75,15 @@ class Controller
     // Handles the display of the main page for owners
     public function mainPageOwner()
     {
+        require_once('views/SiteContainer.class.php');
+        require_once('views/OwnerMainPageView.class.php');
+        $site = new SiteContainer();
+        $page = new OwnerMainPageView();
 
+        $site->printHeader();
+        $site->printNav("owner");
+        $page->printHtml();        
+        $site->printFooter();
 
     }
 
