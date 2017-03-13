@@ -176,7 +176,8 @@ class Controller
         if (!empty($errors)) // if registration fails, back to form with errors
         {       
             $errors = implode(',', $errors);
-            header("Location: register.php?error=".htmlspecialchars(urlencode($errors))); 
+            //$this->redirect("/register.php?error=".htmlspecialchars(urlencode($errors))"")
+            header("Location: /register.php?error=".htmlspecialchars(urlencode($errors))); 
         }
         else  // if registration succeeds, log in
         { 
