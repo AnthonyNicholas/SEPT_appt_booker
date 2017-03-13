@@ -10,45 +10,59 @@ class RegistrationForm
     public function printHtml()
     {
     ?>
-    <div class="reg-form cust">
-         <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
-           <table id="form_table"> 
-                <tr>
-                <td><label class="label"> Email <span class="star"> * </span> </label></td> 
-                <td><input name="email" type="email" class="text_input" placeholder="Email" required> <br></td>
-                </tr>                
-                <tr>
-                <td><label class="label"> First name <span class="star"> * </span> </label></td> 
-                <td><input name="fname" type="text" class="text_input" placeholder="First Name" required> <br></td>
-                </tr>    
-                <tr>
-                <td><label class="label"> Last name <span class="star"> * </span> </label></td> 
-                <td><input name="lname" type="text" class="text_input" placeholder="Last Name" required> <br></td>
-                </tr>    
-                <tr>
-                <td><label class="label"> Address <span class="star"> * </span> </label></td> 
-                <td><input name="address" type="text" class="text_input" placeholder="Address" required> <br></td>
-                </tr>
-                <tr>
-                <td><label class="label"> Phone <span class="star"> * </span> </label></td> 
-                <td><input name="phone" type="text" class="text_input" placeholder="12345678" required> <br></td>
-                </tr>
-                <tr>
-                <td><label class="label"> Password <span class="star"> * </span> </label></td> 
-                <td><input name="pword" type="text" class="text_input" placeholder="Password" required> <br></td>
-                </tr>
-                <tr>
-                <td><label class="label"> Retype Password <span class="star"> * </span> </label></td> 
-                <td><input name="pword2" type="text" class="text_input" placeholder="Retype Password" required> <br></td>
-                </tr>
-                <tr>
-                <td id="submit_row" colspan="2">
-                <input type="submit" class="submit" value="SUBMIT">
-                </td>
-                </tr>
-                </table>
+    
+    <div class = "jumbotron jumbotron-fluid">
+         <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
+           <div class="form-group">
+               <label class="control-label col-sm-3" for="email">Email *</label>
+               <div class="col-sm-9">
+                   <input name="email" type="email" class="form-control" id="email" placeholder="Email" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="fname">First name *</label>
+               <div class="col-sm-9">
+                   <input name="fname" type="text" class="form-control" id="fname" placeholder="First Name" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="lname">Last name *</label>
+               <div class="col-sm-9">
+                   <input name="lname" type="text" class="form-control" id="lname" placeholder="Last Name" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="address">Address *</label>
+               <div class="col-sm-9">
+                   <input name="address" type="text" class="form-control" id="address" placeholder="Address" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="phone">Phone *</label>
+               <div class="col-sm-9">
+                   <input name="phone" type="text" class="form-control" id="phone" placeholder="12345678" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="password">Password *</label>
+               <div class="col-sm-9">
+                   <input name="pword" type="text_input" class="form-control" id="password" placeholder="Paswword" required>
+              </div>
+            </div>
+            <div class="form-group">
+               <label class="control-label col-sm-3" for="pword2">Retype password *</label>
+               <div class="col-sm-9">
+                   <input name="pword2" type="text" class="form-control" id="pword2" placeholder="Retype Password" required>
+              </div>
+            </div>
+            <div class="form-group"> 
+                <div class="col-sm-offset-3 col-sm-9">
+                    <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+            </div>
         </form>
     </div>
+
     <?php
     }
 
