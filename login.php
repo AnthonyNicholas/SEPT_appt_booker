@@ -24,5 +24,5 @@ if ( empty($_POST['email']) )
 } else
 {
     // call the login controller method and prevent SQL injection
-    $ctrl->login($_POST['email'], $_POST['password']);
+    $ctrl->login($_POST['email'], $_POST['pword']);
 }

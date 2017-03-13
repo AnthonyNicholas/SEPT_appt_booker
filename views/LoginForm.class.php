@@ -12,11 +12,11 @@ class LoginForm
     ?>
 
         <div class = "jumbotron jumbotron-fluid">
-            <form class="form-horizontal" action="" method="post">
+            <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
                 <div class="form-group">
                     <label class="control-label col-sm-3" for="email">Email address:</label>
                     <div class="col-sm-9">
-                        <input type="email" class="form-control" id="email" placeholder="Enter email">
+                        <input name="email" type="email" class="form-control" id="email" placeholder="Enter email">
                     </div>
                 </div>
                 <div class="form-group">
@@ -35,6 +35,7 @@ class LoginForm
         
         <table class = "table-striped table-bordered">
             <tr><th>!! Links for Testing Site !!</th></tr>
+            <tr><td><a href="register.php">Register</a></td></tr>
             <tr><td><a href="mainPageCust.php">Customer Mainpage</a></td></tr>
             <tr><td><a href="mainPageOwner.php">Owner Mainpage</a></td></tr>
             <tr><td><a href="logout.php">Logout</a></td></tr>

@@ -35,6 +35,21 @@ class Controller
 
     }
 
+    /**
+     * handles requests for index.php
+     */
+    public function index()
+    {
+        if ($this->userLoggedIn())
+        {
+            $this->redirect("/mainPageCust.php");
+        } else
+        {
+            $this->redirect("/login.php");
+        }
+
+    }
+
     public function loginForm()
     {
         // here the login form view class is loaded and method printHtml() is called    
@@ -71,8 +86,9 @@ class Controller
             $this->redirect("/");
         } else
         {
-            $this->redirect("/login.php");
-            echo "err_login_failed";
+            $error = "err_login_failed";
+            $this->redirect("/login.php?error=$error");
+            echo $error;
         }
 
     }
@@ -80,6 +96,10 @@ class Controller
     // Handles the display of the main page for customers
     public function mainPageCust()
     {
+        // Restricted access
+        if ( ! $this->userLoggedIn() )
+            $this->redirect("/login.php?error=login_required");
+
         // here the login form view class is loaded and method printHtml() is called    
         require_once('views/SiteContainer.class.php');
         require_once('views/CustMainPageView.class.php');
@@ -96,6 +116,10 @@ class Controller
     // Handles the display of the main page for owners
     public function mainPageOwner()
     {
+        // Restricted access
+        if ( ! $this->userLoggedIn() )
+            $this->redirect("/login.php?error=login_required");
+
         require_once('views/SiteContainer.class.php');
         require_once('views/OwnerMainPageView.class.php');
         $site = new SiteContainer();
@@ -160,7 +184,7 @@ class Controller
             $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
             $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
             $q->execute();
-            // $controller->login($email, $pword); // login after account is created, commented until login is fully implemented   
+            $this->login($email, $pword); // login after account is created, commented until login is fully implemented   
         } 
     }
 
@@ -201,13 +225,41 @@ class Controller
 
     }
 
+    // Very basic if logged in function
+    // Should be expanded to respond differently for different levels of user
+    // Maybe should either take a user model as an input or return one?
+    public function userLoggedIn()
+    {
+        // For now just check session for an email
+        session_start();
+        if ( empty($_SESSION['email']))
+            return false;
+        else
+            return true;
+
+    }
+
+    public function logout()
+    {
+        session_start();
+        session_unset();
+
+        require_once('views/SiteContainer.class.php');
+        $site = new SiteContainer();
+
+        $site->printHeader();
+        $site->printNav();
+        echo "Successfully logged out. Return to <a href=\"login.php\">login</a>";
+        $site->printFooter();
+
+    }
     // Handles PHP redirects
     public function redirect($page = '')
     {
         // If not running under apache (ie test case), dont attempt to redirect
         if ( isset($_SERVER['HTTP_HOST']) )
         {
-            $site_url = empty($this->config['url']) ? $_SERVER['HTTP_HOST'] : $this->config['url'];
+            $site_url = empty($this->config['site_url']) ? '//'.$_SERVER['HTTP_HOST'] : $this->config['site_url'];
             header('Location: ' . $site_url . $page);
         }
     }
