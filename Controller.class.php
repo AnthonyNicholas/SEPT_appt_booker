@@ -134,14 +134,25 @@ class Controller
 
 
     // displays the register form for customers
-    public function registerFormCust()
+    public function registerFormCust($error_string)
     {
+        $error_string= urldecode($error_string);
+        if (!empty($error_string))
+        {
+            $error = array();
+            $error = explode(',', $error_string);
+        }
+
+        require_once('views/FormError.class.php');
         require_once('views/SiteContainer.class.php');
         require_once('views/RegistrationForm.class.php');
         $site = new SiteContainer();
+        $error_page = new FormError();
         $form = new RegistrationForm();
         $site->printHeader();
         $site->printNav("customer");
+
+        $error_page->printHtml($error);
         $form->printHtml();
         $site->printFooter();
     }

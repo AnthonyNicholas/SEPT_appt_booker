@@ -9,7 +9,7 @@ require_once('Controller.class.php');
 $controller = new Controller();
 
 if (empty($_POST))
-    $controller->registerFormCust(); 
+    $controller->registerFormCust($_GET['error']); 
 else
     $controller->registerCust($_POST['email'], $_POST['fname'], $_POST['lname'], $_POST['address'], $_POST['phone'], $_POST['pword'], $_POST['pword2']);
 ?>
