@@ -50,20 +50,30 @@ class Controller
 
     }
 
-    public function loginForm()
+    public function loginForm($error_string)
     {
-        // here the login form view class is loaded and method printHtml() is called    
+        
+        $error_string = urldecode($_GET['error']);
+        
+        if (!empty($error_string))
+        {
+            $error = array();
+            $error = explode(',', $error_string);
+        }
+        
+        // here the login form view class is loaded and method printHtml() is called  
+        require_once('views/FormError.class.php');
         require_once('views/SiteContainer.class.php');
         require_once('views/LoginForm.class.php');
         $site = new SiteContainer();
         $form = new LoginForm();
-
+        $error_page = new FormError();
         $site->printHeader();
         $site->printNav();
+        $error_page->printHtml($error);
         $form->printHtml();
         $site->printFooter();
         
-
     }
 
     public function login($email, $password)
