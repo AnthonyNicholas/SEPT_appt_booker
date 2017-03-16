@@ -17,8 +17,9 @@ class SiteContainer
             <head>
                 <title><?php echo $this->title; ?></title>
                 <meta content="initial-scale=1, width=device-width" name="viewport"/>
-                <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet"/>
-                <link href="bootstrap-3.3.7-dist/css/custom.css" rel="stylesheet"/>
+                <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+                <link href="/css/custom.css" rel="stylesheet"/>
+                <link href="<?php echo CSS; ?>calendar.css" rel="stylesheet">
             </head>
             
             <body>
@@ -38,9 +39,17 @@ class SiteContainer
                     <p class="text-muted text-center">Contact information: <a href="mailto:ourTeam@student.rmit.edu.au"> ourTeam@student.rmit.edu.au</a>.</p>
             </footer>
 
+            <!-- Bootstrap & calendar core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
             <!--Bootstrap javascript-->
             <script src="/jquery/jquery-3.1.1.js"></script>
-            <script src="/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+            <script src="/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src='<?php echo JS; ?>cors.js'></script>
+            <script type="text/javascript" src='<?php echo JS; ?>calendar.js'></script>
+            <script type="text/javascript" src='<?php echo JS; ?>bootstrap-calendar.js'></script>
+
 
         </body>
 

@@ -15,10 +15,10 @@
   $.fn.bootstrapBigCalendar = function(options) {
     //default settings
     var settings = {
-      "ajax_url"       : "process.php", //url for retrieving the data
+      "ajax_url"       : "calendar/process.php", //url for retrieving the data
       "calendar_type"  : "big", //calendar type
       "number_of_weeks": 4, //how many weeks to display
-      "first_day"      : "monday", //or sunday
+      "first_day"      : "sunday", //or sunday
       "booking_url"    : "make_an_appointment.php", //booking url 
       "max_display"    : 7 //how many visits display in a day calendar column - default is 7
     }; 
@@ -31,7 +31,9 @@
       //get calendar_id
       var calendar_id = $(this).attr("id");
       //get id
+      // console.log(settings['ajax_url']);
       var id = $(this).attr("data-calendar-id");
+      // console.log(id);
         $.ajax({
           type: "POST",
           dataType: "json",
@@ -48,49 +50,7 @@
             }
           },
           error: function(json){
-            console.log(json);
-          }
-        });
-    });
-  };
-  
-  //small calendar  
-  $.fn.bootstrapSmallCalendar = function(options) {
-    //default settings
-    var settings = {
-      "ajax_url"         : "process.php",
-      "calendar_type"    : "small",
-      "number_of_weeks"  : 4,
-      "booking_url"      : "make_an_appointment.php",
-      "max_in_row"       : 4,
-      "show"             : "current",
-      "in_advance"       : 86400 //show only visits with at least 24h (= 86400 seconds) ahead of current time 
-    };
-    //extending the settings by passed options
-    if(options){
-      $.extend(settings, options);
-    }
-    //affect each calendar from certain class
-    return this.each(function() {
-      // Do something to each element here.
-      var calendar_id = $(this).attr("id");
-      var id = $(this).attr("data-calendar-id");
-        $.ajax({
-          type: "POST",
-          dataType: "json",
-          url: settings['ajax_url'],
-          data: "id="+id+"&calendar_type="+settings['calendar_type']+"&number_of_weeks="+settings['number_of_weeks']+"&booking_url="+settings['booking_url']+"&max_in_row="+settings['max_in_row']+"&show="+settings['show']+"&in_advance="+settings['in_advance'],
-          success: function(json){
-            if(json.success === true){
-              //for debugging: console.log(json.content);
-              $("#"+calendar_id).html(json.content); 
-            }else if(json.success ===false){
-              console.log("Error");
-            }else{
-              console.log("Error 2");
-            }
-          },
-          error: function(json){
+            console.log("failure");
             console.log(json);
           }
         });
