@@ -2,6 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
+// These tests assume there is a user 'test@example.com' in the database and the
+// pass is testPwor
 class LoginTest extends TestCase
 {
     /**
@@ -9,11 +11,9 @@ class LoginTest extends TestCase
      */
     public function testLoginSuccessfulFunctionality()
     {
-        // This test assumes there is a user 'adam' in the database and the
-        // pass is adam also
-        $email = 'adam';
+        $email = 'test@example.com';
         $ctrl = new Controller();
-        $ctrl->login($email,'adam');
+        $ctrl->login($email,'testPwor');
 
         $this->assertEquals($_SESSION['email'], $email);
 
@@ -23,13 +23,24 @@ class LoginTest extends TestCase
      */
     public function testLoginFailedFunctionality()
     {
-        // This test assumes there is a user 'adam' in the database and the
-        // pass is adam also
         $this->expectOutputString("err_login_failed");
-        $email = 'adam';
+        $email = 'test@example.com';
         $ctrl = new Controller();
         // Give it the wrong password
         $ctrl->login($email,'wrong password');
+
+    }
+    /**
+     * @runInSeparateProcess
+     */
+    public function testLoginPasswordCaseSensitivity()
+    {
+
+        $this->expectOutputString("err_login_failed");
+        $email = 'test@example.com';
+        $ctrl = new Controller();
+        // Give it the wrong case password
+        $ctrl->login($email,'testpwor');
 
     }
 
