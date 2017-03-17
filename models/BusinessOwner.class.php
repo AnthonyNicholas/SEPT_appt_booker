@@ -2,23 +2,35 @@
 /**
  * Business Owner Class
  *
- * Shell for the Busiess Owner class. Should, given an id, pull the requested
+ * Shell for the Busiess Owner class. Should, given an email, then pull the requested
  * data into class variables
  * 
  */
 class BusinessOwner
 {
 
-    public var $id;
+    public var $data; // associative array of userdata
+    public var $type = "owner";
 
-    public function __construct( $id )
+    public function __construct( $email, $db )
     {
-        $this->id = $id;
+        if ($this->data = $this->readFromDb($email, $db))
+            return;
+        else
+            throw new Exception('Unable to find user, do they still exist?');
     }
 
-    public function readFromDb()
+    private function readFromDb($email, $db)
     {
+        $stmt = $db->prepare("SELECT * FROM BusinessOwner WHERE email = ?;");
+        // Insert our given username into the statement safely
+        $stmt->bind_param('s', $email);
+        // Execute the query
+        $stmt->execute();
+        // Fetch the result
+        $res = $stmt->get_result();
 
+        return $res->fetch_object();
 
     }
 

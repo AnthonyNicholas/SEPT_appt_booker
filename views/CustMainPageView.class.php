@@ -2,11 +2,11 @@
 
 class CustMainPageView    {
     
-    public function printHtml($fName = "Sample", $lName = "Customer")    {
+    public function printHtml($u)    {
     ?>
     <div class="container">
     <div class = "jumbotron jumbotron-fluid">
-        <?php echo "Welcome, ".$fName." ".$lName; ?>
+        <?php echo "Welcome, $u->fName $u->lName"; ?>
     </div>
     <!--<div class="menu">-->
         <table>

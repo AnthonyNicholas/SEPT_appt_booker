@@ -7,17 +7,31 @@
  * used as an object for keeping information about the current session
  * 
  */
+
+require_once('views/SiteContainer.class.php');
+
 class Controller
 {
 
     public $config;
     private $db;
+    public $user;
 
     public function __construct()
     {
         // fetch our configuration
         require_once('config.php');
         $this->config = $config;
+
+        if ($config['debug'])
+        {
+            ini_set('display_startup_errors', 1);
+            ini_set('display_errors', 1);
+            error_reporting(-1);
+        }
+
+        // Start the session
+        session_start();
 
         // Set up our database object for use within the controller
         $this->db = new mysqli(
@@ -40,9 +54,12 @@ class Controller
      */
     public function index()
     {
-        if ($this->userLoggedIn())
+        if ($this->custLoggedIn())
         {
             $this->redirect("/mainPageCust.php");
+        } elseif ($this->ownerLoggedIn())
+        {
+            $this->redirect("/mainPageOwner.php");
         } else
         {
             $this->redirect("/login.php");
@@ -50,20 +67,27 @@ class Controller
 
     }
 
-    public function loginForm($error_string)
+    public function loginForm()
     {
-        
-        $error_string = urldecode($_GET['error']);
-        
-        if (!empty($error_string))
+        // If already logged in, redirect appropriately
+        if ($this->custLoggedIn())
         {
-            $error = array();
+            $this->redirect("/mainPageCust.php");
+        } elseif ($this->ownerLoggedIn())
+        {
+            $this->redirect("/mainPageOwner.php");
+        }
+        
+        // prepare errors to display if there are any
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
             $error = explode(',', $error_string);
         }
         
         // here the login form view class is loaded and method printHtml() is called  
         require_once('views/FormError.class.php');
-        require_once('views/SiteContainer.class.php');
         require_once('views/LoginForm.class.php');
         $site = new SiteContainer();
         $form = new LoginForm();
@@ -80,20 +104,38 @@ class Controller
     {
         // here login data will be validated and processed, and user data
         // saved into the PHP session
-        $stmt = $this->db->prepare("SELECT email, fName, lName FROM Customers WHERE email = ? AND password = ?;");
+        // grab results from customer database
+        $stmt_cust = $this->db->prepare("SELECT email FROM Customers WHERE email = ? AND password = ?;");
         // Insert our given username and password into the statement safely
-        $stmt->bind_param('ss', $email, $password);
+        $stmt_cust->bind_param('ss', $email, $password);
         // Execute the query
-        $stmt->execute();
+        $stmt_cust->execute();
         // Fetch the result
-        $res = $stmt->get_result();
+        $res_cust = $stmt_cust->get_result();
 
-        if ($user = $res->fetch_assoc())
+        // Grab results from BusinessOwner
+        $stmt_own = $this->db->prepare("SELECT email FROM BusinessOwner WHERE email = ? AND password = ?;");
+        // Insert our given username and password into the statement safely
+        $stmt_own->bind_param('ss', $email, $password);
+        // Execute the query
+        $stmt_own->execute();
+        // Fetch the result
+        $res_own = $stmt_own->get_result();
+
+        if ($user = $res_cust->fetch_assoc())
         {
             // Login successful
-            session_start();
             $_SESSION['email'] = $user['email'];
+            $_SESSION['type'] = 'customer';
             $this->redirect("/");
+
+        } elseif ($user = $res_own->fetch_assoc())
+        {
+            // Login of owner successful
+            $_SESSION['email'] = $user['email'];
+            $_SESSION['type'] = 'owner';
+            $this->redirect("/");
+
         } else
         {
             $error = "err_login_failed";
@@ -107,19 +149,30 @@ class Controller
     public function mainPageCust()
     {
         // Restricted access
-        if ( ! $this->userLoggedIn() )
+        if ( ! $this->custLoggedIn() )
             $this->redirect("/login.php?error=login_required");
 
         // here the login form view class is loaded and method printHtml() is called    
-        require_once('views/SiteContainer.class.php');
         require_once('views/CustMainPageView.class.php');
         $site = new SiteContainer();
         $page = new CustMainPageView();
 
+        // Load the Customer model, because this is a customer page
+        require_once('models/Customer.class.php');
+        // Give the model the email address in the session and the database object
+        try{
+            $this->user = new Customer($_SESSION['email'], $this->db);
+        } catch (Exception $e)
+        {
+            $this->redirect("/login.php?error=login_required");
+            echo "err_user_not_found";
+        }
+
         $site->printHeader();
-        $site->printNav("customer");
+        $site->printNav($this->user->type);
         $site->printFooter();
-        $page->printHtml();
+        // data is an object containing userdata exactly how it appears in the db
+        $page->printHtml($this->user->data);
         $page->printCalendar();
 
     }
@@ -128,11 +181,12 @@ class Controller
     public function mainPageOwner()
     {
         // Restricted access
-        
-        if ( ! $this->userLoggedIn() )
-            $this->redirect("/login.php?error=login_required");
+        if ( ! $this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
 
-        require_once('views/SiteContainer.class.php');
         require_once('views/OwnerMainPageView.class.php');
         $site = new SiteContainer();
         $page = new OwnerMainPageView();
@@ -146,17 +200,16 @@ class Controller
 
 
     // displays the register form for customers
-    public function registerFormCust($error_string)
+    public function registerFormCust()
     {
-        $error_string= urldecode($error_string);
-        if (!empty($error_string))
+        $error = array();
+        if (!empty($_GET['error']))
         {
-            $error = array();
+            $error_string = urldecode($_GET['error']);
             $error = explode(',', $error_string);
         }
 
         require_once('views/FormError.class.php');
-        require_once('views/SiteContainer.class.php');
         require_once('views/RegistrationForm.class.php');
         $site = new SiteContainer();
         $error_page = new FormError();
@@ -186,7 +239,7 @@ class Controller
     
         if (!preg_match("/^[a-zA-Z'-]+$/",$lname)) // match last name
             $errors[] = 'lname';
-  
+ 
         // prepare statement for checking email
         $q = $this->db->prepare("SELECT * FROM Customers WHERE email = ?;");
         $q->bind_param('s', $email);
@@ -252,25 +305,40 @@ class Controller
     }
 
     // Very basic if logged in function
-    // Should be expanded to respond differently for different levels of user
-    // Maybe should either take a user model as an input or return one?
-    public function userLoggedIn()
+    public function custLoggedIn()
     {
-        // For now just check session for an email
-        session_start();
-        if ( empty($_SESSION['email']))
+        // For now just check session for an email and customer type
+        if ( empty($_SESSION['email']) || $_SESSION['type'] != 'customer')
+            return false;
+        else
+            return true;
+
+    }
+    // Owner logged in function
+    public function ownerLoggedIn()
+    {
+        // For now just check session for an email and owner type
+        if ( empty($_SESSION['email']) || $_SESSION['type'] != 'owner')
             return false;
         else
             return true;
 
     }
 
+    public function restricted()
+    {
+        $site = new SiteContainer();
+
+        $site->printHeader();
+        $site->printNav($_SESSION);
+        echo "You are not allowed to access this resource. Return <a href=\"/\">Home</a>";
+        $site->printFooter();
+
+    }
     public function logout()
     {
-        session_start();
         session_unset();
 
-        require_once('views/SiteContainer.class.php');
         $site = new SiteContainer();
 
         $site->printHeader();
@@ -290,14 +358,4 @@ class Controller
         }
     }
 
-
-
-
-
-
-
-
-    
-    
-    
 }
