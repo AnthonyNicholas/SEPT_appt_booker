@@ -297,14 +297,6 @@ class Controller
 
 
 
-    public function getCustCal($empNo)
-    {
-        require_once('models/Calendar.class.php');
-        
-        $Cal = new Calendar($this->db);
-        $Cal->ajaxGetCustCal($empNo);
-        
-    }
     
     
     
