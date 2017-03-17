@@ -149,7 +149,7 @@ class Controller
     public function mainPageCust()
     {
         // Restricted access
-        if ( ! $this->custLoggedIn() && ! $this->ownerLoggedIn() )
+        if ( ! $this->custLoggedIn() )
             $this->redirect("/login.php?error=login_required");
 
         // here the login form view class is loaded and method printHtml() is called    
@@ -157,10 +157,22 @@ class Controller
         $site = new SiteContainer();
         $page = new CustMainPageView();
 
+        // Load the Customer model, because this is a customer page
+        require_once('models/Customer.class.php');
+        // Give the model the email address in the session and the database object
+        try{
+            $this->user = new Customer($_SESSION['email'], $this->db);
+        } catch (Exception $e)
+        {
+            $this->redirect("/login.php?error=login_required");
+            echo "err_user_not_found";
+        }
+
         $site->printHeader();
-        $site->printNav("customer");
+        $site->printNav($this->user->type);
         $site->printFooter();
-        $page->printHtml();
+        // data is an object containing userdata exactly how it appears in the db
+        $page->printHtml($this->user->data);
         $page->printCalendar();
 
     }
