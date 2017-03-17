@@ -13,7 +13,8 @@ $(document).ready(function(){
   
   /* run all big calendars */  
   var bigCalendarOptions = {
-      "ajax_url"       : "calendar/process.php", //url for retrieving the data
+      "ajax_url"       : "cal-ajax.php", //url for retrieving the data
+      // "ajax_url"       : "calendar/processTest.php", //url for retrieving the data
       "calendar_type"  : "big", //calendar type
       "number_of_weeks": 5, //how many weeks to display
       "first_day"      : "monday", //or sunday

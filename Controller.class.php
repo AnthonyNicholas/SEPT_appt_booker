@@ -243,10 +243,12 @@ class Controller
     }
 
     // processes and adds entered employee into the database
-    public function addEmpOwner()
+    public function addEmpOwner($fname,$lname)
     {
-
-
+        mysql_query("INSERT INTO Employees (empID, fName, lName) 
+        VALUES ('NULL', '$fname','$lname')");
+        
+        
     }
 
     // Very basic if logged in function
@@ -288,34 +290,22 @@ class Controller
         }
     }
 
-    public function workerAvailability() // parameter for how far to look ahead?
+
+
+
+
+
+
+
+    public function getCustCal($empNo)
     {
-        $employees = array();
+        require_once('models/Calendar.class.php');
         
+        $Cal = new Calendar($this->db);
+        $Cal->ajaxGetCustCal($empNo);
         
-        // load employees from database
-        
-        $q = $this->db->prepare("SELECT * FROM Employees E, CanWork C, Appointments A WHERE E.empID = C.empID AND C.appID = A.appID");
-        $q->execute();
-        $result = $q->get_result();
-        
-        while ($row = mysqli_fetch_array($result))
-        {
-            echo '<pre>'; print_r($row); echo '</pre>';
-            
-            // some epic processing here
-        }
-        
-        
-        
-        require_once('views/SiteContainer.class.php');
-        require_once('views/WorkerAvailability.class.php');
-        $site = new SiteContainer();
-        $page = new WorkerAvailability();
-        $site->printHeader();
-        $site->printNav("owner");
-        $page->printHtml($employees);
-        $form->printHtml();
-        $site->printFooter();
     }
+    
+    
+    
 }

@@ -41,7 +41,7 @@ class CustMainPageView    {
           
           <!-- right column with big calendar 1 -->
             <div class='col-sm-8 hidden-xs'>
-              <div id="horizontal-calendar-big-wrapper-334455" data-calendar-id="334455" class="horizontal-calendar-big-wrapper carousel slide" data-wrap="false" data-ride="carousel" data-interval="false">
+              <div id="horizontal-calendar-big-wrapper-334455" data-calendar-id="2" class="horizontal-calendar-big-wrapper carousel slide" data-wrap="false" data-ride="carousel" data-interval="false">
                 <div class='preloader'>
                 </div>
               </div><!--end of horizontal-calendar-big-->
@@ -63,7 +63,7 @@ class CustMainPageView    {
           
           <!-- right column with big calendar 1 -->
             <div class='col-sm-8 hidden-xs'>
-              <div id="horizontal-calendar-big-wrapper-667788" data-calendar-id="667788" class="horizontal-calendar-big-wrapper carousel slide" data-wrap="false" data-ride="carousel" data-interval="false">
+              <div id="horizontal-calendar-big-wrapper-667788" data-calendar-id="3" class="horizontal-calendar-big-wrapper carousel slide" data-wrap="false" data-ride="carousel" data-interval="false">
                 <div class='preloader'>
                 </div>
               </div><!--end of horizontal-calendar-big-->
