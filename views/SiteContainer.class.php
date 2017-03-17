@@ -86,7 +86,7 @@ public function printNav($type = "none")
                     <li><a href="...">View Calander</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="login.php">Log Out</a></li>
+                    <li><a href="logout.php">Log Out</a></li>
                 </ul>
             <?php }
             
