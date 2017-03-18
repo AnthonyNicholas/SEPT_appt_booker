@@ -8,6 +8,8 @@
  * 
  */
 
+define('MINIMUM_INTERVAL', 30);
+
 require_once('views/SiteContainer.class.php');
 
 class Controller
@@ -16,6 +18,7 @@ class Controller
     public $config;
     private $db;
     public $user;
+    
 
     public function __construct()
     {
@@ -290,17 +293,35 @@ class Controller
     // possibly lists all current employees too?
     public function addEmpFormOwner()
     {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
 
+        require_once('views/AddEmpOwner.class.php');
+        $site = new SiteContainer();
+        $page = new AddEmpOwner();
 
+        $site->printHeader();
+        $site->printNav("owner");
+        $page->printHtml();
+        $site->printFooter();   
 
     }
 
     // processes and adds entered employee into the database
     public function addEmpOwner($fname,$lname)
     {
-        mysql_query("INSERT INTO Employees (empID, fName, lName) 
-        VALUES ('NULL', '$fname','$lname')");
+        if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
+            header("Location: empOwnerAdd.php");
+        } 
+        else    {
+            $this->db->query("INSERT INTO Employees (empID, fName, lName)
+            VALUES ('NULL', '$fname','$lname')"); //Insert new employee
         
+            //$id = $this->db->insert_id; //Get employee ID from DB
+        }
         
     }
 
@@ -356,6 +377,156 @@ class Controller
             $site_url = empty($this->config['site_url']) ? '//'.$_SERVER['HTTP_HOST'] : $this->config['site_url'];
             header('Location: ' . $site_url . $page);
         }
+    }
+    
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////// ALL FUNCTIONS BELOW SHOULD BE CONSIDERED IN TESTING PHASE /////////////////
+    
+    public function workers_availability() // essentially load employees from database, return associative array including shifts
+    {                                      // ready for use in html document
+        $q = $this->db->prepare("SELECT empID, fName, lName FROM Employees;");
+        $q->execute();
+        $result = $q->get_result();
+        
+        $employees = array();
+        
+        $i = 0;
+        
+        while ($row = mysqli_fetch_assoc($result)) // set up associative array with relevant information for each employee
+        {
+            $employees[$i]['empID'] = $row['empID']; 
+            $employees[$i]['fName'] = $row['fName']; 
+            $employees[$i]['lName'] = $row['lName']; 
+            $employees[$i]['shifts'] = $this->get_worker_hours($employees[$i]['empID']);
+            
+            $i++;
+        }
+        
+        echo '<pre>'; print_r($employees); echo '</pre>';
+        
+        return $employees;
+    }
+    
+    public function get_worker_hours($empID) // return array of all stored shifts for given employee
+    {
+        require_once('models/Timeslot.class.php');
+        
+        $q = $this->db->prepare("SELECT dateTime FROM Appointments A, CanWork C WHERE A.appID = C.appID AND C.empID = '$empID'"); // grab all timeslots
+        $q->execute();
+        $result = $q->get_result();
+        $timeslots = array();
+        
+        while ($row = mysqli_fetch_array($result)) // set up timeslots
+        {
+            $start = new DateTime($row['dateTime']);
+            $end = new DateTime($row['dateTime']);
+            $end->modify('+'.MINIMUM_INTERVAL.' minutes');
+            
+            $timeslots[] = new Timeslot($start, $end); 
+        }
+        
+        $timeslots = $this->concatenate($timeslots); // convert into shifts
+        
+      //  echo '<pre>'; print_r($timeslots); echo '</pre>';
+        
+        return $timeslots;
+    }
+    
+    public function add_appointments($interval, $start, $end) // add all appointments within given start and end time
+    {
+        while ($start <= $end)
+        {
+            $sd = $start->format("Y-m-d H:i:s");
+            $q = $this->db->prepare("SELECT * FROM Appointments WHERE dateTime = ?;");
+            $q->bind_param('s', $sd);
+            $q->execute();
+            $result = $q->get_result();
+
+            if (mysqli_num_rows($result) == 0) // check appointment doesn't already exist
+            {
+                $q = $this->db->prepare("INSERT INTO Appointments (dateTime) VALUES ('$sd')");
+                $q->execute();
+            }
+            
+            $start->modify('+'.$this->interval.' minutes');
+        }
+    }
+    
+    public function add_working_time($empID, $start, $end) // associate employee to all appointments between $start and $end
+    {
+        while ($start < $end)
+        {
+            $sd = $start->format("Y-m-d H:i:s");
+            $q = $this->db->prepare("SELECT appID FROM Appointments WHERE dateTime = ?;"); // check appointment exists
+            $q->bind_param('s', $sd);
+            $q->execute();
+            $result = $q->get_result();
+
+            if (mysqli_num_rows($result) > 0) 
+            {
+                $cw = 1;
+                $row = mysqli_fetch_array($result); 
+                
+                $q = $this->db->prepare("SELECT appID, empID FROM CanWork WHERE empID = ? AND appID = ?;"); // check CanWork not already updated
+                $q->bind_param('ss', $empID, $row['appID']);
+                $q->execute();
+                $result = $q->get_result();
+                
+                if (mysqli_num_rows($result) == 0) 
+                {
+                    $q = $this->db->prepare("INSERT INTO CanWork (empID, appID, canWork) VALUES (?, ?, ?)");
+                    $q->bind_param('sss', $empID, $row['appID'], $cw);
+                    $q->execute();
+                }
+            }
+            else 
+            {
+                echo "failed <br>";
+                // exception
+                return false;
+            }
+            
+            $start->modify('+'.MINIMUM_INTERVAL.' minutes');
+        }
+    }
+                                            
+    public function concatenate($ts) // takes a list of timeslots,
+    {                                // convert them into the minimum
+        $n = count($ts);             // number of timeslots which capture
+                                     // the same periods. 
+        for ($k = 0; $k < $n; $k++)  // aka appointments -> shifts
+        {     
+            for ($i = 0; $i < count($ts) - 1; $i++)
+            {
+                for ($j = $i+1; $j < count($ts); $j++)
+                {
+                    if ($ts[$i]->get_end() >= $ts[$j]->get_start() && $ts[$i]->get_start() <= $ts[$j]->get_end())
+                    {
+                        $ts[$i] = new Timeslot(min($ts[$i]->get_start(), $ts[$j]->get_start()), max($ts[$j]->get_end(), $ts[$i]->get_end()));
+                        unset($ts[$j]);
+                        $ts = array_values($ts); 
+                    }
+                }
+            }
+        }     
+        
+        return $ts;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public function getCustCal($empNo)
+    {
+        require_once('models/Calendar.class.php');
+
+        $Cal = new Calendar($this->db);
+        $Cal->ajaxGetCustCal($empNo);
+
     }
 
 }
