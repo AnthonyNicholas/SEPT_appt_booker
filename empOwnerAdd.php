@@ -7,20 +7,16 @@ require_once('Controller.class.php');
 
 $ctrl = new Controller();
 
-if ($ctrl->ownerLoggedIn()) {
+if ($ctrl->ownerLoggedIn())    {
     
-    $ctrl->addEmpOwner($_POST['lname'], $_POST['fname']);
+    $ctrl->addEmpFormOwner();
+    
+    if (isset($_POST['fname']))    {
+        $ctrl->addEmpOwner($_POST['fname'], $_POST['lname']);
+    }
+    
 }
-
-
-// Check to make sure user is logged in:
-// if ( empty($_POST['email']) )
-// {
-//     // Call the login form controller method
-//     $ctrl->loginForm();
-// } else
-// {
-    // call the mainPageCust method
-   
-// }
+else    {
+    $ctrl->restricted();
+}
 
