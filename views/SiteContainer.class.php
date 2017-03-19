@@ -84,6 +84,7 @@ public function printNav($type = "none")
                     <li><a href="...">Add Employee</a></li>
                     <li><a href="...">Set Employee Times</a></li>
                     <li><a href="...">View Calander</a></li>
+                    <li><a href="../WorkerAvailability.php">Employee Times</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="logout.php">Log Out</a></li>

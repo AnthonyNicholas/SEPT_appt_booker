@@ -319,7 +319,6 @@ class Controller
         else    {
             $this->db->query("INSERT INTO Employees (empID, fName, lName)
             VALUES ('NULL', '$fname','$lname')"); //Insert new employee
-        
             //$id = $this->db->insert_id; //Get employee ID from DB
         }
         
@@ -404,7 +403,7 @@ class Controller
             $i++;
         }
         
-        echo '<pre>'; print_r($employees); echo '</pre>';
+      //  echo '<pre>'; print_r($employees); echo '</pre>';
         
         return $employees;
     }
@@ -424,6 +423,11 @@ class Controller
             $end = new DateTime($row['dateTime']);
             $end->modify('+'.MINIMUM_INTERVAL.' minutes');
             
+            $now = new DateTime();
+            
+            if ($now > $start) // check timeslot isn't in the past
+                continue;
+
             $timeslots[] = new Timeslot($start, $end); 
         }
         
@@ -527,6 +531,25 @@ class Controller
         $Cal = new Calendar($this->db);
         $Cal->ajaxGetCustCal($empNo);
 
+    }
+    
+    public function show_worker_availability()
+    {
+        $employees = $this->workers_availability();
+        
+        require_once('views/WorkerAvailability.class.php');
+        $site = new SiteContainer();
+        $page = new WorkerAvailability();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        $page->printHtml($employees);
+        $site->printFooter();   
+        
+        
+        
+        
+        
     }
 
 }
