@@ -298,13 +298,23 @@ class Controller
             $this->restricted();
             return;
         }
+        
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
+            $error = explode(',', $error_string);
+        }
 
         require_once('views/AddEmpOwner.class.php');
+        require_once('views/FormError.class.php');
         $site = new SiteContainer();
         $page = new AddEmpOwner();
+        $error_page = new FormError();
 
         $site->printHeader();
         $site->printNav("owner");
+        $error_page->printHtml($error);
         $page->printHtml();
         $site->printFooter();   
 
@@ -314,7 +324,8 @@ class Controller
     public function addEmpOwner($fname,$lname)
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
-            header("Location: empOwnerAdd.php");
+            $error = 'fname';
+            header("Location: /empOwnerAdd.php?error=$error"); //Check first name
         } 
         else    {
             $this->db->query("INSERT INTO Employees (empID, fName, lName)
@@ -434,6 +445,7 @@ class Controller
         $timeslots = $this->concatenate($timeslots); // convert into shifts
         
       //  echo '<pre>'; print_r($timeslots); echo '</pre>';
+          $this->time_sort($timeslots);
         
         return $timeslots;
     }
@@ -517,6 +529,17 @@ class Controller
         }     
         
         return $ts;
+    }
+    
+    public function time_sort($timeslots) // sort timeslots into acending order
+    {
+        usort($timeslots, function ($t1,$t2) 
+        {
+           if ($t1->get_start()==$t2->get_start()) 
+                return 0;
+            
+            return ($t1->get_start()<$t1->get_start())?-1:1;
+        });
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////////
