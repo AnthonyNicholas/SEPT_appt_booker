@@ -6,6 +6,8 @@
  * data into class variables
  * 
  */
+require_once('Booking.class.php');
+
 class Customer
 {
 
@@ -34,9 +36,14 @@ class Customer
 
     }
 
-    public function printHtml()
-    {
-
+    public function makeBooking($empID, $timestamp){ 
+    return booking;
     }
+    
+    public function getBookings(){
+    $booking = [];
+    return $booking;
+    }
+    
 
 }

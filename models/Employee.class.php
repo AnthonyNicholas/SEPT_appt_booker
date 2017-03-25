@@ -3,13 +3,21 @@
 // Employee class
     // Dan, as you need to use this class as well, feel free to add to it or talk to me about it
     // Since your task is for adding new employees, you probably only need to call the constructor
+    
+    
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
+    // FILE IS ESSENTIALLY REDUNDANT NOW AS I DIDN'T BOTHER USING IT AND IT REALLY ISN'T NEEDED
 
 class Employee
 {
     private $id;
     private $fname;
     private $lname;
-    private $shifts; // array containing all future shifts in the db
+    private $shifts; // array of timeslots containing all future shifts in the db
                      // converted from appointments
     
     public function __construct($id, $fname, $lname, $shifts)
@@ -35,7 +43,7 @@ class Employee
     {
         // for owner add working hours
     }
-    
+
     public function remove_shifts($shifts)
     {
         // ????

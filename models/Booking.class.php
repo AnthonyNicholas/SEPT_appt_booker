@@ -9,7 +9,7 @@
 class Booking
 {
 
-    public var $id;
+    public $id;
 
     public function __construct( $id )
     {

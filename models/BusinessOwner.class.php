@@ -34,9 +34,5 @@ class BusinessOwner
 
     }
 
-    public function printHtml()
-    {
-
-    }
 
 }
