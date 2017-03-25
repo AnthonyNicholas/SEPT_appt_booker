@@ -331,7 +331,7 @@ class Controller
         
         if (!preg_match("/^[a-zA-Z'-]+$/", $lname))    {
             $error = 'lname';
-            header("Location: /empOwnerAdd.php?error=$error"); //Check first name
+            header("Location: /empOwnerAdd.php?error=$error"); //Check last name
             return false;
         } 
         else    {
@@ -393,7 +393,7 @@ class Controller
         if ( isset($_SERVER['HTTP_HOST']) )
         {
             $site_url = empty($this->config['site_url']) ? '//'.$_SERVER['HTTP_HOST'] : $this->config['site_url'];
-            //header('Location: ' . $site_url . $page);
+            header('Location: ' . $site_url . $page);
         }
     }
     
