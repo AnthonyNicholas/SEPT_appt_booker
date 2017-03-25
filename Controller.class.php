@@ -326,11 +326,19 @@ class Controller
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
             $error = 'fname';
             header("Location: /empOwnerAdd.php?error=$error"); //Check first name
+            return false;
+        } 
+        
+        if (!preg_match("/^[a-zA-Z'-]+$/", $lname))    {
+            $error = 'lname';
+            header("Location: /empOwnerAdd.php?error=$error"); //Check first name
+            return false;
         } 
         else    {
             $this->db->query("INSERT INTO Employees (empID, fName, lName)
             VALUES ('NULL', '$fname','$lname')"); //Insert new employee
-            //$id = $this->db->insert_id; //Get employee ID from DB
+             //$id = $this->db->insert_id; //Get employee ID from DB
+             return true;
         }
         
     }
@@ -385,7 +393,7 @@ class Controller
         if ( isset($_SERVER['HTTP_HOST']) )
         {
             $site_url = empty($this->config['site_url']) ? '//'.$_SERVER['HTTP_HOST'] : $this->config['site_url'];
-            header('Location: ' . $site_url . $page);
+            //header('Location: ' . $site_url . $page);
         }
     }
     
@@ -393,6 +401,22 @@ class Controller
     /////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////// ALL FUNCTIONS BELOW SHOULD BE CONSIDERED IN TESTING PHASE /////////////////
+    
+    public function add_working_times($times)
+    {
+        for ($i = 0; $i < count($times['date']); $i++)
+        {   
+            try {
+                $start = new DateTime($times['date'][$i]." ".$times['start'][$i].":00");
+                $end = new DateTime($times['date'][$i]." ".$times['end'][$i].":00");
+                $this->add_working_time($times['empID'], $start, $end);
+            } catch (Exception $e) {
+                // invalid date
+            }
+        }
+
+        header('Location: WorkerAvailability.php');
+    }
     
     public function workers_availability() // essentially load employees from database, return associative array including shifts
     {                                      // ready for use in html document
@@ -414,7 +438,7 @@ class Controller
             $i++;
         }
         
-      //  echo '<pre>'; print_r($employees); echo '</pre>';
+       // echo '<pre>'; print_r($employees); echo '</pre>';
         
         return $employees;
     }
@@ -423,7 +447,7 @@ class Controller
     {
         require_once('models/Timeslot.class.php');
         
-        $q = $this->db->prepare("SELECT dateTime FROM Appointments A, CanWork C WHERE A.appID = C.appID AND C.empID = '$empID'"); // grab all timeslots
+        $q = $this->db->prepare("SELECT A.dateTime FROM TimeSlot A, CanWork C WHERE A.dateTime = C.dateTime AND C.empID = '$empID'"); // grab all timeslots
         $q->execute();
         $result = $q->get_result();
         $timeslots = array();
@@ -455,18 +479,20 @@ class Controller
         while ($start <= $end)
         {
             $sd = $start->format("Y-m-d H:i:s");
-            $q = $this->db->prepare("SELECT * FROM Appointments WHERE dateTime = ?;");
+            $q = $this->db->prepare("SELECT * FROM TimeSlot WHERE dateTime = ?;");
             $q->bind_param('s', $sd);
             $q->execute();
             $result = $q->get_result();
+            
+          //  echo $sd;
 
             if (mysqli_num_rows($result) == 0) // check appointment doesn't already exist
             {
-                $q = $this->db->prepare("INSERT INTO Appointments (dateTime) VALUES ('$sd')");
+                $q = $this->db->prepare("INSERT INTO TimeSlot (dateTime) VALUES ('$sd')");
                 $q->execute();
             }
             
-            $start->modify('+'.$this->interval.' minutes');
+            $start->modify('+'.$interval.' minutes');
         }
     }
     
@@ -475,7 +501,7 @@ class Controller
         while ($start < $end)
         {
             $sd = $start->format("Y-m-d H:i:s");
-            $q = $this->db->prepare("SELECT appID FROM Appointments WHERE dateTime = ?;"); // check appointment exists
+            $q = $this->db->prepare("SELECT dateTime FROM TimeSlot WHERE dateTime = ?;"); // check appointment exists
             $q->bind_param('s', $sd);
             $q->execute();
             $result = $q->get_result();
@@ -485,15 +511,15 @@ class Controller
                 $cw = 1;
                 $row = mysqli_fetch_array($result); 
                 
-                $q = $this->db->prepare("SELECT appID, empID FROM CanWork WHERE empID = ? AND appID = ?;"); // check CanWork not already updated
-                $q->bind_param('ss', $empID, $row['appID']);
+                $q = $this->db->prepare("SELECT dateTime, empID FROM CanWork WHERE empID = ? AND dateTime = ?;"); // check CanWork not already updated
+                $q->bind_param('ss', $empID, $row['dateTime']);
                 $q->execute();
                 $result = $q->get_result();
                 
                 if (mysqli_num_rows($result) == 0) 
                 {
-                    $q = $this->db->prepare("INSERT INTO CanWork (empID, appID, canWork) VALUES (?, ?, ?)");
-                    $q->bind_param('sss', $empID, $row['appID'], $cw);
+                    $q = $this->db->prepare("INSERT INTO CanWork (empID, dateTime) VALUES (?, ?)");
+                    $q->bind_param('ss', $empID, $row['dateTime']);
                     $q->execute();
                 }
             }
