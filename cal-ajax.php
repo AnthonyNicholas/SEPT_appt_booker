@@ -8,8 +8,18 @@
 
     $ctrl = new Controller();
 
-    $empNo = $_POST['id'];
-
-// call the method in Controller class to retrieve appointment details from DB.
-    $ctrl->getCustCal($empNo);
+    // call the method in Controller class to retrieve appointment details from DB.
+    if(isset($_POST['calendar_type'])
+    && !empty($_POST['calendar_type'])
+    && isset($_POST['id'])
+    && is_numeric($_POST['id'])
+    && isset($_POST['number_of_weeks'])
+    && is_numeric($_POST['number_of_weeks']))
+    {
     
+        $empno = $_POST['id'];
+        $caltype = $_POST['calendar_type'];
+        $weeks = $_POST['number_of_weeks'];
+        
+        $ctrl->getCustCal($empno, $weeks, $caltype);
+    }
