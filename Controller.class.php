@@ -19,6 +19,10 @@ class Controller
     private $db;
     public $user;
     
+    public function get_db()
+    {
+        return $this->db;
+    }
 
     public function __construct()
     {
@@ -573,12 +577,26 @@ class Controller
     /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    public function getCustCal($empNo)
+    /**
+     * Should be called by an ajax request for employee calendar HTML, not fully implemented
+     * still needs to deal with booking links etc
+     */
+    public function getCustCal($empNo, $weeks, $caltype = '')
     {
         require_once('models/Calendar.class.php');
 
-        $Cal = new Calendar($this->db);
-        $Cal->ajaxGetCustCal($empNo);
+        $cal = new Calendar($this->db);
+        try{
+            // Attempt to generate the calendar
+            if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
+                echo json_encode(array("success"=>true,"content"=>$json_cal));
+            else
+                throw new Exception("Failed to render Calendar");
+                
+        }catch(Exception $e){
+          echo json_encode(array("success"=>false,"content"=>array(), "error"=>$e->getMessage()));
+          return false;
+        }
 
     }
     
