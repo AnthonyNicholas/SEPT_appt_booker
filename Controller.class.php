@@ -599,6 +599,25 @@ class Controller
         }
 
     }
+    public function makeBooking()
+    {
+        require_once('models/Calendar.class.php');
+
+        $site = new SiteContainer();
+        $cal = new Calendar($this->db);
+        try{
+            // Attempt to generate the calendar
+            $site->printHeader();
+            $site->printNav("cust");
+            $cal->makeBooking();
+            $site->printFooter();   
+                
+        }catch(Exception $e){
+            echo $e->getMessage();
+            return false;
+        }
+    }
+        
     
     public function show_worker_availability()
     {
