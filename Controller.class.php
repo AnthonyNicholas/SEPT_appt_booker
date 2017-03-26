@@ -246,7 +246,7 @@ class Controller
     
         if (!preg_match("/^[a-zA-Z'-]+$/",$lname)) // match last name
             $errors[] = 'lname';
- 
+        
         // prepare statement for checking email
         $q = $this->db->prepare("SELECT * FROM Customers WHERE email = ?;");
         $q->bind_param('s', $email);
@@ -255,6 +255,9 @@ class Controller
 
         if (mysqli_num_rows($result) > 0) // check email doesn't already exist
             $errors[] = 'duplicate';
+
+        $testOutput = implode(" ", $errors);
+        echo $testOutput; // have inserted for unit testing purposes
   
         if (!empty($errors)) // if registration fails, back to form with errors
         {       
@@ -599,17 +602,27 @@ class Controller
         }
 
     }
-    public function makeBooking()
+    
+    /**
+     * Confirms that a user would like to book an appointment with employee and time
+     */
+    public function bookingConfirm($empId, $timestamp)
     {
         require_once('models/Calendar.class.php');
+        require_once('models/Booking.class.php');
+        require_once('views/BookingView.class.php');
+        
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
+        $bk = new Booking($empId, $timestamp, $this->db);
+        $bkv = new BookingView();
+        
         try{
             // Attempt to generate the calendar
             $site->printHeader();
             $site->printNav("cust");
-            $cal->makeBooking();
+            $bkv->printConfirm($bk->d);
             $site->printFooter();   
                 
         }catch(Exception $e){
@@ -617,7 +630,45 @@ class Controller
             return false;
         }
     }
+    
+    /**
+     * books an appointment with employee and time, needs lots of error checking and fallbacks implemented
+     * TODO
+     */
+    public function bookingCreate($empID, $timestamp)
+    {
+        require_once('models/Calendar.class.php');
+        require_once('models/Booking.class.php');
+        require_once('views/BookingView.class.php');
         
+
+        $site = new SiteContainer();
+        $cal = new Calendar($this->db);
+        $bk = new Booking($empID, $timestamp, $this->db);
+        $bkv = new BookingView();
+        
+        // Here we want to insert the booking, possibly check that it hasnt already been
+        // taken, but not doing now TODO
+        $sql = "INSERT INTO Bookings (empNo, email, datetime) VALUES (?,?,FROM_UNIXTIME(?+3600));";
+        // BAD PLEASE FIX TODO
+        $stmt = $this->db->prepare($sql);
+        // Insert our given username into the statement safely
+        $stmt->bind_param('sss', $empID, $_SESSION['email'], $timestamp);
+        
+        
+        $site->printHeader();
+        $site->printNav("cust");
+        
+        if( $stmt->execute() ) // Our appointment was successfully booked
+            $bkv->printSuccess($bk->d);
+        else
+            $bkv->printError();
+
+        $site->printFooter();   
+
+        //return $res->fetch_object();
+        
+    }
     
     public function show_worker_availability()
     {
