@@ -1,37 +1,69 @@
 <?php
 
+//  Tests of register customer functionality.  
+
+
 use PHPUnit\Framework\TestCase;
 
-class RegisterCustTest extends TestCase
+class registerCustTest extends TestCase
 {
+
+    //  Test that when the customer registers with valid details, the customer is logged in. 
     /**
      * @runInSeparateProcess
      */
-    public function testRegisterCustSuccessfulFunctionality()
+    public function testRegisterSuccessGoToLoginFunctionality()
     {
-        // This test checks whether user 'test person' is added to the database
         
-        $email = 'test@example.com';
-        $fname = 'test';
-        $lname =  'person';
-        $address = 'test address';
-        $phone = '12345678';
-        $pword = 'testPword';
-        $pword2 = 'testPword';
-
+        $email = 'amy@aardvark.com';
+        $fname = 'Amy';
+        $lname = 'Aardvark';
+        $address = '21 Aardvark Court, Melbourne, Vic 3000';
+        $phone = '99999999';
+        $pword = 'aardvark';
+        $pword2 = 'aardvark';
+        
         $ctrl = new Controller();
         $ctrl->registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2);
 
-        // TODO - need to check of database to see if person has been added
-        // $this->assertEquals( .......  );
-
+        $this->assertEquals($_SESSION['email'], $email); // Is failing - don't know why.
+    
     }
-    /**
+    
+    //  Test that when the customer registers with valid details, details are correctly 
+    // inserted into database. 
+    
+     /**
      * @runInSeparateProcess
      */
-    public function testRegisterCustFailedFunctionality()
+    public function testRegisterSuccessRecordedByDBFunctionality()
     {
-        //TODO
+        
+        $email = 'amy@aardvark.com';
+        $fname = 'Amy';
+        $lname = 'Aardvark';
+        $address = '21 Aardvark Court, Melbourne, Vic 3000';
+        $phone = '99999999';
+        $pword = 'aardvark';
+        $pword2 = 'aardvark';
+        
+        $ctrl = new Controller();
+        $ctrl->registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2);
+
+        $q = $ctrl->get_db()->prepare("SELECT * FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $email);
+        $q->execute();
+        $result = $q->get_result()->fetch_assoc();
+
+        $this->assertEquals($result['email'], $email); 
+        $this->assertEquals($result['fName'], $fname);
+        $this->assertEquals($result['lName'], $lname);
+        $this->assertEquals($result['address'], $address);
+        $this->assertEquals($result['phoneNo'], $phone);
+        $this->assertEquals($result['password'], $pword); 
+        $this->assertEquals($result['password'], $pword2);
+
     }
+    
 
 }

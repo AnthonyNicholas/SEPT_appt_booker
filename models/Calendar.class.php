@@ -68,4 +68,43 @@ class Calendar
       return $output;
 
   }
+
+  /* This function handles booking of appointments
+   * All of this should be transferred to the controller at some point and a view implemented
+   * Brainstorming: its likely none of the current stuff needs to be here and the page
+   * should show booking details and a message to confirm the booking
+   */
+  public function bookingConfirm()
+  {
+  ?>
+    <div class="container">
+      <div class="row marg-top">  
+       <?php 
+       $timestamp = (isset($_GET['timestamp']) && is_numeric($_GET['timestamp']))? (int)$_GET['timestamp'] : "0";
+       $calendar_id = (isset($_GET['calendar_id']) && is_numeric($_GET['calendar_id']))? (int)$_GET['calendar_id'] : "0";
+
+      $query = "SELECT empID as calendar_id
+                FROM Employees WHERE empID = ?;";
+      $stmt = $this->db->prepare($query);
+      $stmt->bind_param('s', $calendar_id);
+      $stmt->execute();
+      $res = $stmt->get_result();
+      $calendar_details = $res->fetch_all(MYSQLI_ASSOC);
+         /*
+         $db = new DB();
+         $query_calendar = "SELECT * FROM `mariocoski_calendar` WHERE calendar_id=:calendar_id";
+         $run_calendar = $db->prepare($query_calendar);
+         $run_calendar->execute(array(":calendar_id"=>$calendar_id));
+         $calendar_details = $run_calendar->fetchAll(PDO::FETCH_ASSOC); 
+         */
+          $company_name = (isset($calendar_details[0]['company_name']))?  $calendar_details[0]['company_name']:"Company Name";
+          $company_address = (isset($calendar_details[0]['address']))?  $calendar_details[0]['address']:"Street Name";
+          $company_postcode = (isset($calendar_details[0]['postcode']))?  $calendar_details[0]['postcode']:"Postcode";
+          $company_city = (isset($calendar_details[0]['city']))?  $calendar_details[0]['city']:"City";
+          $company_country = (isset($calendar_details[0]['country']))?  $calendar_details[0]['country']:"Country";
+          $company_website = (isset($calendar_details[0]['website']))?  $calendar_details[0]['website']:"www.example.com";
+        
+       ?>
+  <?php
+  }
 }
