@@ -314,7 +314,7 @@ class Controller
 
     // displays the form for adding employees
     // possibly lists all current employees too?
-    public function addEmpFormOwner()
+    public function addEmpFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
         {
@@ -338,7 +338,12 @@ class Controller
         $site->printHeader();
         $site->printNav("owner");
         $error_page->printHtml($error);
-        $page->printHtml();
+        if($added)    {
+            $page->printSuccessHtml();
+        }
+        else    {
+            $page->printHtml();
+        }
         $site->printFooter();   
 
     }
@@ -441,11 +446,10 @@ class Controller
                 return false;
             }
         }
-return true;
 
         header('Location: WorkerAvailability.php');
         
-     //   return true;
+        return true;
     }
     
     public function workers_availability() // essentially load employees from database, return associative array including shifts
@@ -724,6 +728,12 @@ return true;
     // handles fetching the view for an owner to view employees' working times
     public function show_worker_availability()
     {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+        
         $employees = $this->workers_availability();
         
         require_once('views/WorkerAvailability.class.php');

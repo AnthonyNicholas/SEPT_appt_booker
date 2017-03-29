@@ -5,14 +5,18 @@
 
 require_once('Controller.class.php');
 
+$added = false;
 $ctrl = new Controller();
 
 if ($ctrl->ownerLoggedIn())    {
     
-    $ctrl->addEmpFormOwner();
+    $ctrl->addEmpFormOwner($added);
     
     if (isset($_POST['fname']))    {
-        $ctrl->addEmpOwner($_POST['fname'], $_POST['lname']);
+        if ($ctrl->addEmpOwner($_POST['fname'], $_POST['lname']))    {
+            $added = true;
+            $ctrl->addEmpFormOwner($added);
+        }
     }
     
 }
