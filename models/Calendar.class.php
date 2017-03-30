@@ -104,7 +104,95 @@ class Calendar
           $company_country = (isset($calendar_details[0]['country']))?  $calendar_details[0]['country']:"Country";
           $company_website = (isset($calendar_details[0]['website']))?  $calendar_details[0]['website']:"www.example.com";
         
-       ?>
-  <?php
   }
+
+    /* Returns JSON settings to the clientside js.  The owner calendar shows the booked slots rather than the free ones 
+    (seperate calendar for each employee) */
+
+  public function ajaxGetOwnerCal( $empNo , $weeks)
+  {
+    $calendar_id = (int)($empNo); //sanitize numeric value
+    $number_of_weeks = (int)($weeks);//sanitize numeric value
+    if($number_of_weeks == 0 || $calendar_id == 0){
+    return false;
+    }
+    $booking_url = isset($_POST['booking_url'])? Helper::sanitize($_POST['booking_url']):"";
+    $max_display = (isset($_POST['max_display']))? (int)($_POST['max_display']) : 7;
+    //set first day
+    if(isset($_POST['first_day']) && strtolower($_POST['first_day'])=='sunday'){
+    $first_day = 0;
+    }else{
+    $first_day = 1;
+    }
+
+   $query = "SELECT b.empID as calendar_id, b.dateTime as timestamp,
+              '' as firstname,
+              '' as lastname,
+              '' as email,
+              '' as phone,
+              0 as booked,
+              0 as noticed,
+              '' as deleted
+              FROM Bookings b
+              WHERE b.empID = ?
+              ORDER BY b.dateTime ASC;";
+      $stmt = $this->db->prepare($query);
+      $stmt->bind_param('s', $empNo);
+      $stmt->execute();
+      $res = $stmt->get_result();
+      $results = $res->fetch_all(MYSQLI_ASSOC);
+      $helper = new Helper();
+    
+      $output = $helper->prepareBigOutput($results,$calendar_id,$first_day,$number_of_weeks, $booking_url ,$max_display);
+      return $output;
+  
+    }
+
+    /* Returns JSON settings to the clientside js.  The owner calendar shows the booked slots rather than the free ones 
+    (one calendar combining all employees) */
+
+
+  public function ajaxGetOwnerCombinedCal( $empNo , $weeks)
+  {
+    $combined = true;
+    
+    $calendar_id = (int)($empNo); //sanitize numeric value
+    $number_of_weeks = (int)($weeks);//sanitize numeric value
+    if($number_of_weeks == 0 || $calendar_id == 0){
+    return false;
+    }
+    $booking_url = isset($_POST['booking_url'])? Helper::sanitize($_POST['booking_url']):"";
+    $max_display = (isset($_POST['max_display']))? (int)($_POST['max_display']) : 7;
+    //set first day
+    if(isset($_POST['first_day']) && strtolower($_POST['first_day'])=='sunday'){
+    $first_day = 0;
+    }else{
+    $first_day = 1;
+    }
+
+   $query = "SELECT b.empID as calendar_id, b.dateTime as timestamp,
+              '' as firstname,
+              '' as lastname,
+              '' as email,
+              '' as phone,
+              0 as booked,
+              0 as noticed,
+              '' as deleted
+              FROM Bookings b
+              ORDER BY b.dateTime ASC;";
+      $stmt = $this->db->prepare($query);
+      $stmt->execute();
+      $res = $stmt->get_result();
+      $results = $res->fetch_all(MYSQLI_ASSOC);
+      $helper = new Helper();
+    
+      $output = $helper->prepareBigOutput($results,'99',$first_day,$number_of_weeks, $booking_url ,$max_display, $combined);
+      return $output;
+  
+    }
+
+
+
+
+  
 }

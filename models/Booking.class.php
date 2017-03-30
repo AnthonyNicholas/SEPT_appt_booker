@@ -54,7 +54,7 @@ class Booking
                 INNER JOIN Employees e ON w.empID = e.empID
                 WHERE w.empID = ?
                 AND w.dateTime = ?;
-        "; // BAD PLEASE FIX TODO
+        ";
         $stmt = $db->prepare($sql);
         // Insert our given username into the statement safely
         

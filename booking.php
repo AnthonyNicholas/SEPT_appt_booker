@@ -9,8 +9,18 @@
     $ctrl = new Controller();
 
     // call the method in Controller class to retrieve appointment details from DB.
-    //$empno = $_POST['id'];
-    //$caltype = $_POST['calendar_type'];
-    //$weeks = $_POST['number_of_weeks'];
-    
-    $ctrl->makeBooking();
+    if (isset($_GET['calendar_id']))
+    {
+        $empid = $_GET['calendar_id'];
+        $ts = $_GET['timestamp'];
+
+        // Check if we are actually making a booking or just confirming a selection
+        if ( empty($_POST) )
+        {
+            $ctrl->bookingConfirm($empid, $ts);
+
+        } else if ($_POST['a'] == 'create')
+        {
+            $ctrl->bookingCreate($empid, $ts);
+        }
+    }

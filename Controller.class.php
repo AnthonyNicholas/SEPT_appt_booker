@@ -11,6 +11,7 @@
 define('MINIMUM_INTERVAL', 30);
 
 require_once('views/SiteContainer.class.php');
+require('libs/Helper.php');
 
 class Controller
 {
@@ -217,7 +218,29 @@ class Controller
         $site->printNav("owner");
         $site->printFooter();
         $page->printHtml();
-        $page->printCalendar($empArray);
+        $page->printCalendar($empArray); // to show combined view - change $empArray to just one entry with $empID = -1?
+
+    }
+
+    // Handles the display of the combined calendar page for owners
+    public function ownerCombinedCal()
+    {
+        // Restricted access
+        if ( ! $this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+
+        require_once('views/OwnerCombinedCalView.class.php');
+        $site = new SiteContainer();
+        $page = new OwnerCombinedCalView();
+        
+        $site->printHeader();
+        $site->printNav("owner");
+        $site->printFooter();
+        $page->printHtml();
+        $page->printCalendar(); // Shows combined view - uses $empID = 99
 
     }
 
@@ -368,6 +391,19 @@ class Controller
              return true;
         }
         
+    }
+    
+    public function helpPage()
+    {
+        require_once('views/CustHelpPage.class.php');
+        $site = new SiteContainer();
+        $page = new CustHelpPage();
+
+        $site->printHeader();
+        $site->printNav("customer");
+        $page->printHtml();
+        $site->printFooter();   
+
     }
 
     // Very basic if logged in function
@@ -642,15 +678,34 @@ class Controller
     public function getCustCal($empNo, $weeks, $caltype = '')
     {
         require_once('models/Calendar.class.php');
-
+        
         $cal = new Calendar($this->db);
         try{
             // Attempt to generate the calendar
-            if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
-                echo json_encode(array("success"=>true,"content"=>$json_cal));
+            if ($_SESSION['type'] == 'owner')
+            {
+                // Combined calendar view
+                if ($caltype == 'combined'){
+                    if ( $json_cal = $cal->ajaxGetOwnerCombinedCal($empNo, $weeks) )  // Successful, send calendar
+                        echo json_encode(array("success"=>true,"content"=>$json_cal));
+                    else
+                        throw new Exception("Failed to render Calendar");
+                }
+                else{
+                    // // Otherwise show all bookings in each seperate employee calendar 
+                    if ( $json_cal = $cal->ajaxGetOwnerCal($empNo, $weeks) )  // Successful, send calendar
+                        echo json_encode(array("success"=>true,"content"=>$json_cal));
+                    else
+                        throw new Exception("Failed to render Calendar");
+                }
+            }
             else
-                throw new Exception("Failed to render Calendar");
-                
+            {
+                if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
+                    echo json_encode(array("success"=>true,"content"=>$json_cal));
+                else
+                    throw new Exception("Failed to render Calendar");
+            }
         }catch(Exception $e){
           echo json_encode(array("success"=>false,"content"=>array(), "error"=>$e->getMessage()));
           return false;
@@ -664,9 +719,9 @@ class Controller
     public function bookingConfirm($empId, $timestamp)
     {
         require_once('models/Calendar.class.php');
+        require_once('models/Customer.class.php');
         require_once('models/Booking.class.php');
         require_once('views/BookingView.class.php');
-        
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
@@ -676,8 +731,17 @@ class Controller
         try{
             // Attempt to generate the calendar
             $site->printHeader();
-            $site->printNav("cust");
-            $bkv->printConfirm($bk->d);
+            //var_dump($bk);
+            if ($_SESSION['type'] == 'owner'){
+                $bk->load($empId, $timestamp, $this->db);
+                // $cust = new Customer();
+                $site->printNav("owner");
+                $bkv->printOwnerBookingInfo($bk); 
+            }
+            else{
+                $site->printNav("cust");
+                $bkv->printConfirm($bk->d);
+            }
             $site->printFooter();   
                 
         }catch(Exception $e){
@@ -695,20 +759,24 @@ class Controller
         require_once('models/Calendar.class.php');
         require_once('models/Booking.class.php');
         require_once('views/BookingView.class.php');
-        
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
+        
         $bk = new Booking($empID, $timestamp, $this->db);
         $bkv = new BookingView();
         
         // Here we want to insert the booking, possibly check that it hasnt already been
         // taken, but not doing now TODO
-        $sql = "INSERT INTO Bookings (empID, email, datetime) VALUES (?,?,FROM_UNIXTIME(?+3600));";
-        // BAD PLEASE FIX TODO
+        $sql = "INSERT INTO Bookings (empID, email, datetime) VALUES (?,?,?);";
         $stmt = $this->db->prepare($sql);
         // Insert our given username into the statement safely
-        $stmt->bind_param('sss', $empID, $_SESSION['email'], $timestamp);
+        
+        $dt = new DateTime();
+        $dt->setTimestamp($timestamp);
+        $dts = $dt->format('Y-m-d H:i:s');
+        
+        $stmt->bind_param('sss', $empID, $_SESSION['email'], $dts);
         
         
         $site->printHeader();
@@ -724,6 +792,28 @@ class Controller
         //return $res->fetch_object();
         
     }
+    
+    public function bookingViewByOwner($empId, $timestamp)
+    {
+        require_once('models/Calendar.class.php');
+        require_once('models/Customer.class.php');
+        require_once('models/Booking.class.php');
+        require_once('views/BookingView.class.php');
+
+        $site = new SiteContainer();
+        $cal = new Calendar($this->db);
+        $bk = new Booking($empId, $timestamp, $this->db);
+        $bkv = new BookingView();
+        $bk->load($empId, $timestamp, $this->db);
+        $email = $bk->get_email();
+        
+    	// generate the booking info page
+    	$site->printHeader();
+   	$site->printNav("owner");
+    	$bkv->printOwnerBookingInfo($bk, $email); 
+    	$site->printFooter();   
+    }
+
     
     // handles fetching the view for an owner to view employees' working times
     public function show_worker_availability()
@@ -769,3 +859,4 @@ class Controller
         $site->printFooter(); 
     }
 }
+

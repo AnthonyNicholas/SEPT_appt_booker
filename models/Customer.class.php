@@ -13,6 +13,7 @@ class Customer
 
     public $data; // userdata object, names are exactly as defined in SQL
     public $type = "customer";
+    public $bookings;
 
     public function __construct( $email, $db )
     {
@@ -32,18 +33,37 @@ class Customer
         // Fetch the result
         $res = $stmt->get_result();
 
-        return $res->fetch_object();
+        $res = $res->fetch_object();
 
-    }
+        // Load the customers bookings
+        $q = $db->prepare("SELECT * FROM Bookings WHERE email = ?;");
+        $q->bind_param('s', $email);
+        $q->execute();
+        $result = $q->get_result();
+        
+        $this->bookings = array();
+        
+        while ($row = mysqli_fetch_array($result))
+        {
+            //////
+            // DON'T STORE PAST BOOKINGS 
+            /////
+            $now = new DateTime();
+            $dt = new DateTime($row['dateTime']);
+            
+            if ($now > $dt) // check timeslot isn't in the past
+                continue;
+            
+            
+            // store customers bookings
+           $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db);
+        }
 
-    public function makeBooking($empID, $timestamp){ 
-    return booking;
+        return $res;
     }
-    
-    public function getBookings(){
-    $booking = [];
-    return $booking;
+    public function get_bookings()
+    {
+       return $this->bookings;
     }
-    
 
 }
