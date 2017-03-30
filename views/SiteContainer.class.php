@@ -74,16 +74,14 @@ public function printNav($type = "none")
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="..."><span class="red">Appointment Booker</span></a>
+                <a class="navbar-brand" href="index.php"><span class="red">Appointment Booker</span></a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
             
             <?php if ($type == "owner"){ ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="...">Book Appointment</a></li>
-                    <li><a href="...">Add Employee</a></li>
-                    <li><a href="...">Set Employee Times</a></li>
-                    <li><a href="...">View Calander</a></li>
+                    <li><a href="mainPageOwner.php">Book Appointment</a></li>
+                    <li><a href="../empOwnerAdd.php">Add Employee</a></li>
                     <li><a href="../WorkerAvailability.php">Employee Times</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -93,9 +91,8 @@ public function printNav($type = "none")
             
             if ($type == "customer"){ ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="...">Book Appointment</a></li>
-                    <li><a href="...">View Calender</a></li>
-                    <li><a href="...">View History</a></li>
+                    <li><a href="mainPageCust.php">Book Appointment</a></li>
+                    <li><a href="BookingSummary.php">My Bookings</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="logout.php">Log Out</a></li>
