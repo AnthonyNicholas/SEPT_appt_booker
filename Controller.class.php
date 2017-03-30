@@ -721,26 +721,27 @@ class Controller
         require_once('models/Calendar.class.php');
         require_once('models/Customer.class.php');
         require_once('models/Booking.class.php');
+        require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
-        $bk = new Booking($empId, $timestamp, $this->db);
         $bkv = new BookingView();
         
         try{
             // Attempt to generate the calendar
             $site->printHeader();
             //var_dump($bk);
-            if ($_SESSION['type'] == 'owner'){
-                $bk->load($empId, $timestamp, $this->db);
+            if ($_SESSION['type'] == 'owner'){ // View an existing booking
+                $bk = new Booking($empId, $timestamp, $this->db);
                 // $cust = new Customer();
                 $site->printNav("owner");
-                $bkv->printOwnerBookingInfo($bk); 
+                $bkv->printOwnerBookingInfo($bk->getThis(), $bk->getEmployee(), $bk->getCustomer()); 
             }
-            else{
+            else{ // Confirm a booking to be made by a client
+                $cw = new CanWork($empId, $timestamp, $this->db); // not a booking yet!!
                 $site->printNav("cust");
-                $bkv->printConfirm($bk->d);
+                $bkv->printConfirm($cw->getThis(), $cw->getEmployee());
             }
             $site->printFooter();   
                 
@@ -757,13 +758,13 @@ class Controller
     public function bookingCreate($empID, $timestamp)
     {
         require_once('models/Calendar.class.php');
-        require_once('models/Booking.class.php');
+        require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
         
-        $bk = new Booking($empID, $timestamp, $this->db);
+        $cw = new CanWork($empID, $timestamp, $this->db); // Still not a booking!!
         $bkv = new BookingView();
         
         // Here we want to insert the booking, possibly check that it hasnt already been
@@ -782,8 +783,8 @@ class Controller
         $site->printHeader();
         $site->printNav("cust");
         
-        if( $stmt->execute() ) // Our appointment was successfully booked
-            $bkv->printSuccess($bk->d);
+        if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
+            $bkv->printSuccess($cw->getThis(), $cw->getEmployee());
         else
             $bkv->printError();
 
