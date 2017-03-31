@@ -68,11 +68,11 @@ class Customer
             
             
             // store customers bookings
-           $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db, false); // Not top level
+           $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db);
         }
     }
     
-    public function getCustomer()
+    public function getThis()
     {
         return $this->data;
     }

@@ -16,8 +16,6 @@ class Booking
     private $db;
     
     public $data; // Booking data object, values are exactly as they appear in database
-    private $employee; // employee data object, values are exactly as they appear in database
-    private $customer; // customer data object, values are exactly as they appear in database
     
     private $empId;
     private $dateTime;
@@ -34,10 +32,8 @@ class Booking
 
     /**
      * The constructor for the Booking class
-     * The toplevel variable determines whether we should fetch additional data related
-     * to this booking
      */ 
-    public function __construct( $empID, $timestamp, $db, $toplevel = true )
+    public function __construct( $empID, $timestamp, $db)
     {
         $this->db = $db;
         $this->empID = $empID;
@@ -48,23 +44,6 @@ class Booking
         // If we cant find a booking, error
         if ( ! ($this->data = $this->readFromDb($empID, $timestamp)) )
             throw new Exception("Unable to find booking at $timestamp with Employee: $empID");
-        
-        // Add employee and Customer objects here
-        if ( $toplevel )
-        {
-            if ( ! ($this->employee = $this->fetchEmployeeFromDb($empID)) )
-                throw new Exception("Employee $empID could not be found for booking at time: ".$timestamp);
-            
-            try {
-                // Customer already throws an exception if it cant find a user, we need to catch it
-                // and rethrow a new error
-                $cust = new Customer($this->email, $this->db, false); // not top level
-                $this->customer = $cust->getCustomer();
-            }
-            catch(Exception $e) { // No Customer was found
-                throw new Exception("Unable to find customer with email: $this->email booking at time: $timestamp with Employee: $empID");
-            }
-        }
        
     }
 
@@ -108,6 +87,8 @@ class Booking
     }
     
     // alternative load function
+    // Used to populate this objects attributes, rather than dumping it all in
+    // a data object. Both methods have their merits
     public function load($empID, $dateTime, $db)
     {
         
@@ -147,29 +128,10 @@ class Booking
     public function get_email() { return $this->email; }
     public function get_fname() { return $this->emp_fname; }
     public function get_lname() { return $this->emp_lname; }
-    
-    /**
-     * Employee doesnt have an object, so fetching it here
-     */
-     private function fetchEmployeeFromDb($empId)
-     {
-         $sql = "SELECT * FROM Employees WHERE empID = ?;";
-        $stmt = $this->db->prepare($sql);
-        // Insert our given username into the statement safely
-        $stmt->bind_param('s', $empId);
-        // Execute the query
-        $stmt->execute();
-        // Fetch the result
-        $res = $stmt->get_result();
-
-        return $res->fetch_object();
-     }
      
      // These functions serve to fetch the objects pulled from mySQL
      
      public function getThis() { return $this->data; } // This booking
-     public function getEmployee() { return $this->employee; }
-     public function getCustomer() { return $this->customer; }
     
     
 }

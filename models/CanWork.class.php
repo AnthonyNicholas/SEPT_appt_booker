@@ -12,7 +12,6 @@ class CanWork
     private $db;
     
     public $data; // CanWork data object, values are exactly as they appear in database
-    private $employee; // employee data object, values are exactly as they appear in database
     
 
     // I prepared another load function to store the data into separate variables, as above
@@ -26,20 +25,13 @@ class CanWork
      * The toplevel variable determines whether we should fetch additional data related
      * to this booking
      */ 
-    public function __construct( $empID, $timestamp, $db, $toplevel = true )
+    public function __construct( $empID, $timestamp, $db )
     {
         $this->db = $db;
        
         // If we cant find a CanWork, error
         if ( ! ($this->data = $this->readFromDb($empID, $timestamp)) )
             throw new Exception("Unable to find Canwork at $timestamp with Employee: $empID");
-        
-        // Add employee object here
-        if ( $toplevel )
-        {
-            if ( ! ($this->employee = $this->fetchEmployeeFromDb($empID)) )
-                throw new Exception("Employee $empID could not be found for CanWork at time: ".$timestamp);
-        }
        
     }
 
@@ -80,28 +72,9 @@ class CanWork
         return $res->fetch_object();
 
     }
-    
-    /**
-     * Employee doesnt have an object, so fetching it here
-     */
-     private function fetchEmployeeFromDb($empId)
-     {
-         $sql = "SELECT *, CONCAT_WS(' ', fName, lName) as fullName FROM Employees WHERE empID = ?;";
-        $stmt = $this->db->prepare($sql);
-        // Insert our given username into the statement safely
-        $stmt->bind_param('s', $empId);
-        // Execute the query
-        $stmt->execute();
-        // Fetch the result
-        $res = $stmt->get_result();
-
-        return $res->fetch_object();
-     }
-     
      // These functions serve to fetch the objects pulled from mySQL
      
      public function getThis() { return $this->data; } // This CanWork
-     public function getEmployee() { return $this->employee; }
     
     
 }

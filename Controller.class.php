@@ -727,21 +727,39 @@ class Controller
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
         $bkv = new BookingView();
-        
-        try{
-            // Attempt to generate the calendar
+
+        // This wont be different regardless of owner/customer
+        if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
+            throw new Exception("Employee $empId could not be found for booking at time: ".$timestamp);
+
+        try{ // Print out booking to be booked/view booking
             $site->printHeader();
-            //var_dump($bk);
+            
             if ($_SESSION['type'] == 'owner'){ // View an existing booking
+
+                // Grab the booking we want
                 $bk = new Booking($empId, $timestamp, $this->db);
-                // $cust = new Customer();
+                $bkdata = $bk->getThis(); // mysql object
+
+                try {
+                    // Customer already throws an exception if it cant find a user, we need to catch it
+                    // and rethrow a new error
+                    $cust = new Customer($bkdata->email, $this->db, false); // no bookings please
+                    $custdata = $cust->getThis(); // mysql object
+                }
+                catch(Exception $e) { // No Customer was found
+                    throw new Exception("Unable to find customer with email: ".$bkdata->email." booking at time: $timestamp with Employee: $empID");
+                }
+                
+                
                 $site->printNav("owner");
-                $bkv->printOwnerBookingInfo($bk->getThis(), $bk->getEmployee(), $bk->getCustomer()); 
+                $bkv->printOwnerBookingInfo($bkdata, $empdata, $custdata); 
             }
             else{ // Confirm a booking to be made by a client
                 $cw = new CanWork($empId, $timestamp, $this->db); // not a booking yet!!
+                $cwdata = $cw->getThis();// mysql object
                 $site->printNav("cust");
-                $bkv->printConfirm($cw->getThis(), $cw->getEmployee());
+                $bkv->printConfirm($cwdata, $empdata);
             }
             $site->printFooter();   
                 
@@ -762,10 +780,16 @@ class Controller
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
+        $bkv = new BookingView();
         $cal = new Calendar($this->db);
         
+        // Grab the canwork from the databse
         $cw = new CanWork($empID, $timestamp, $this->db); // Still not a booking!!
-        $bkv = new BookingView();
+        $cwdata = $cw->getThis();
+        
+        // Grab the employee from the database
+        if (! ($empdata = $this->fetchEmployeeFromDb($empID)) )
+            throw new Exception("Employee $empID could not be found for booking at time: ".$timestamp);
         
         // Here we want to insert the booking, possibly check that it hasnt already been
         // taken, but not doing now TODO
@@ -784,13 +808,11 @@ class Controller
         $site->printNav("cust");
         
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
-            $bkv->printSuccess($cw->getThis(), $cw->getEmployee());
+            $bkv->printSuccess($cwdata, $empdata);
         else
             $bkv->printError();
 
         $site->printFooter();   
-
-        //return $res->fetch_object();
         
     }
     
@@ -859,5 +881,23 @@ class Controller
         $bs->printHtml($customer);
         $site->printFooter(); 
     }
+    
+    
+    /**
+     * Employee doesnt have an object, so fetching it here
+     */
+     private function fetchEmployeeFromDb($empId)
+     {
+         $sql = "SELECT *, CONCAT_WS(' ', fName, lName) as fullName FROM Employees WHERE empID = ?;";
+        $stmt = $this->db->prepare($sql);
+        // Insert our given username into the statement safely
+        $stmt->bind_param('s', $empId);
+        // Execute the query
+        $stmt->execute();
+        // Fetch the result
+        $res = $stmt->get_result();
+
+        return $res->fetch_object();
+     }
 }
 
