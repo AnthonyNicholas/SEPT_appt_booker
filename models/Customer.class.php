@@ -17,16 +17,16 @@ class Customer
 
     /**
      * The constructor for the Customer class
-     * The toplevel variable determines whether we should fetch additional data related
-     * to this booking
+     * The getbookings variable determines whether we should fetch additional data related
+     * to this customer
      */
-    public function __construct( $email, $db, $toplevel = true )
+    public function __construct( $email, $db, $getbookings = true )
     {
-        if ( ! ($this->data = $this->readFromDb($email, $db, $toplevel)) )
+        if ( ! ($this->data = $this->readFromDb($email, $db, $getbookings)) )
             throw new Exception('Unable to find user, do they still exist?');
     }
 
-    private function readFromDb($email, $db, $toplevel)
+    private function readFromDb($email, $db, $getbookings)
     {
         $stmt = $db->prepare("SELECT * FROM Customers WHERE email = ?;");
         // Insert our given username into the statement safely
@@ -37,34 +37,39 @@ class Customer
         $res = $stmt->get_result();
         $res = $res->fetch_object();
 
-        if ($toplevel) // We only want extras if this object is "top level"
+        if ($getbookings)
         {
-            // Load the customers bookings
-            $q = $db->prepare("SELECT * FROM Bookings WHERE email = ?;");
-            $q->bind_param('s', $email);
-            $q->execute();
-            $result = $q->get_result();
-            
-            $this->bookings = array();
-            
-            while ($row = mysqli_fetch_array($result))
-            {
-                //////
-                // DON'T STORE PAST BOOKINGS 
-                /////
-                $now = new DateTime();
-                $dt = new DateTime($row['dateTime']);
-                
-                if ($now > $dt) // check timeslot isn't in the past
-                    continue;
-                
-                
-                // store customers bookings
-               $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db, false); // Not top level
-            }
+            $this->loadBookingsFromDb($email, $db);
         }
 
         return $res;
+    }
+    
+    public function loadBookingsFromDb($email, $db)
+    {
+        // Load the customers bookings
+        $q = $db->prepare("SELECT * FROM Bookings WHERE email = ?;");
+        $q->bind_param('s', $email);
+        $q->execute();
+        $result = $q->get_result();
+        
+        $this->bookings = array();
+        
+        while ($row = mysqli_fetch_array($result))
+        {
+            //////
+            // DON'T STORE PAST BOOKINGS 
+            /////
+            $now = new DateTime();
+            $dt = new DateTime($row['dateTime']);
+            
+            if ($now > $dt) // check timeslot isn't in the past
+                continue;
+            
+            
+            // store customers bookings
+           $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db, false); // Not top level
+        }
     }
     
     public function getCustomer()
