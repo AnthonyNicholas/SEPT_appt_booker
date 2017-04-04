@@ -130,7 +130,7 @@ class Calendar
               '' as lastname,
               '' as email,
               '' as phone,
-              0 as booked,
+              1 as booked,
               0 as noticed,
               '' as deleted
               FROM Bookings b
@@ -154,7 +154,7 @@ class Calendar
 
   public function ajaxGetOwnerCombinedCal( $empNo , $weeks)
   {
-    $combined = true;
+    // $combined = true;
     
     $calendar_id = (int)($empNo); //sanitize numeric value
     $number_of_weeks = (int)($weeks);//sanitize numeric value
@@ -175,7 +175,7 @@ class Calendar
               '' as lastname,
               '' as email,
               '' as phone,
-              0 as booked,
+              1 as booked,
               0 as noticed,
               '' as deleted
               FROM Bookings b
@@ -186,7 +186,7 @@ class Calendar
       $results = $res->fetch_all(MYSQLI_ASSOC);
       $helper = new Helper();
     
-      $output = $helper->prepareBigOutput($results,'99',$first_day,$number_of_weeks, $booking_url ,$max_display, $combined);
+      $output = $helper->prepareBigOutput($results,'',$first_day,$number_of_weeks, $booking_url ,$max_display, true);
       return $output;
   
     }

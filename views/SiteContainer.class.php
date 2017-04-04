@@ -57,6 +57,38 @@ class SiteContainer
     
     <?php
     }
+    
+    public function printCombinedCalFooter()
+    {
+    ?>
+
+            <!--Close body divs-->
+             </div>
+             </div>
+             </div>
+
+            <footer>
+                    <p class="text-muted text-center">Contact information: <a href="mailto:ourTeam@student.rmit.edu.au"> ourTeam@student.rmit.edu.au</a>.</p>
+            </footer>
+
+            <!-- Bootstrap & calendar core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
+            <!--Bootstrap javascript-->
+            <script src="/jquery/jquery-3.1.1.js"></script>
+            <script src="/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src='<?php echo JS; ?>cors.js'></script>
+            <script type="text/javascript" src='<?php echo JS; ?>combinedCalendar.js'></script>
+            <script type="text/javascript" src='<?php echo JS; ?>bootstrap-calendar.js'></script>
+
+
+        </body>
+
+        </html>
+    
+    <?php
+    }
 
 // Prints appropriate navigation bar.  Argument $type can be "owner", "customer" or for anything else 
 // standard navigation bar is printed.
@@ -83,6 +115,7 @@ public function printNav($type = "none")
                     <li><a href="mainPageOwner.php">Book Appointment</a></li>
                     <li><a href="../empOwnerAdd.php">Add Employee</a></li>
                     <li><a href="../WorkerAvailability.php">Employee Times</a></li>
+                    <li><a href="../ownerCombinedCal.php">Combined calendar view</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="logout.php">Log Out</a></li>

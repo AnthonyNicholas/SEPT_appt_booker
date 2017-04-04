@@ -21,5 +21,10 @@
         $caltype = $_POST['calendar_type'];
         $weeks = $_POST['number_of_weeks'];
         
-        $ctrl->getCustCal($empno, $weeks, $caltype);
+        if ($caltype == 'combined') {
+            $ctrl->getCustCal($empno, $weeks, 'combined');
+        }
+        else {
+            $ctrl->getCustCal($empno, $weeks, $caltype);
+        }        
     }

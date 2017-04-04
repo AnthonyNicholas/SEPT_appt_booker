@@ -33,17 +33,6 @@ class LoginForm
             </form>
         </div>
         
-        <table class = "table-striped table-bordered">
-            <tr><th>!! Links for Testing Site !!</th></tr>
-            <tr><td><a href="register.php">Register</a></td></tr>
-            <tr><td><a href="mainPageCust.php">Customer Mainpage</a></td></tr>
-            <tr><td><a href="mainPageOwner.php">Owner Mainpage</a></td></tr>
-            <tr><td><a href="logout.php">Logout</a></td></tr>
-        </table>
-
-        
-        
-        
     <?php
     }
 }

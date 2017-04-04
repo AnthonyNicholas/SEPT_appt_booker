@@ -8,25 +8,40 @@ use PHPUnit\Framework\TestCase;
 class registerCustTest extends TestCase
 {
 
+    protected $email;
+    protected $fname;
+    protected $lname;
+    protected $address;
+    protected $phone;
+    protected $pword;
+    protected $pword2;
+
+    protected function setUp()
+    {
+        $this->email = 'amy@aardvark.com';
+        $this->fname = 'Amy';
+        $this->lname = 'Aardvark';
+        $this->address = '21 Aardvark Court, Melbourne, Vic 3000';
+        $this->phone = '99999999';
+        $this->pword = 'aardvark';
+        $this->pword2 = 'aardvark';
+    }
+
     //  Test that when the customer registers with valid details, the customer is logged in. 
     /**
      * @runInSeparateProcess
      */
     public function testRegisterSuccessGoToLoginFunctionality()
     {
-        
-        $email = 'amy@aardvark.com';
-        $fname = 'Amy';
-        $lname = 'Aardvark';
-        $address = '21 Aardvark Court, Melbourne, Vic 3000';
-        $phone = '99999999';
-        $pword = 'aardvark';
-        $pword2 = 'aardvark';
-        
         $ctrl = new Controller();
-        $ctrl->registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2);
+        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
 
-        $this->assertEquals($_SESSION['email'], $email); // Is failing - don't know why.
+        $this->assertEquals($_SESSION['email'], $this->email);
+    
+        // Delete test record from DB        
+        $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $this->email);
+        $q->execute();
     
     }
     
@@ -38,32 +53,65 @@ class registerCustTest extends TestCase
      */
     public function testRegisterSuccessRecordedByDBFunctionality()
     {
-        
-        $email = 'amy@aardvark.com';
-        $fname = 'Amy';
-        $lname = 'Aardvark';
-        $address = '21 Aardvark Court, Melbourne, Vic 3000';
-        $phone = '99999999';
-        $pword = 'aardvark';
-        $pword2 = 'aardvark';
-        
         $ctrl = new Controller();
-        $ctrl->registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2);
+        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
 
         $q = $ctrl->get_db()->prepare("SELECT * FROM Customers WHERE email = ?;");
-        $q->bind_param('s', $email);
+        $q->bind_param('s', $this->email);
         $q->execute();
         $result = $q->get_result()->fetch_assoc();
 
-        $this->assertEquals($result['email'], $email); 
-        $this->assertEquals($result['fName'], $fname);
-        $this->assertEquals($result['lName'], $lname);
-        $this->assertEquals($result['address'], $address);
-        $this->assertEquals($result['phoneNo'], $phone);
-        $this->assertEquals($result['password'], $pword); 
-        $this->assertEquals($result['password'], $pword2);
+        $this->assertEquals($result['email'], $this->email); 
+        $this->assertEquals($result['fName'], $this->fname);
+        $this->assertEquals($result['lName'], $this->lname);
+        $this->assertEquals($result['address'], $this->address);
+        $this->assertEquals($result['phoneNo'], $this->phone);
+        $this->assertEquals($result['password'], $this->pword); 
+        $this->assertEquals($result['password'], $this->pword2);
+        
+        // Delete test record from DB        
+        $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $this->email);
+        $q->execute();
+
 
     }
     
+    //  Tests that when the customer registers but email is already in DB, registration fails. 
+    
+     /**
+     * @runInSeparateProcess
+     */
+    public function testRegisterFailureBecauseDuplicate()
+    {
+        $ctrl = new Controller();
+        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
+
+        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
+        
+        $this->expectOutputString("duplicate");
+
+        // Delete test record from DB        
+        $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $this->email);
+        $q->execute();
+
+    }
+    
+    //  Tests that when the customer registers but password2 doesn't match password, registration fails. 
+    
+     /**
+     * @runInSeparateProcess
+     */
+    public function testRegisterFailurePasswordsDontMatch()
+    {
+        $this->expectOutputString("password");
+
+        $this->pword2 = 'aaardvark';
+        
+        $ctrl = new Controller();
+        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
+    }
+
 
 }

@@ -28,7 +28,7 @@ class Customer
 
     private function readFromDb($email, $db, $getbookings)
     {
-        $stmt = $db->prepare("SELECT * FROM Customers WHERE email = ?;");
+        $stmt = $db->prepare("SELECT *, CONCAT_WS(' ', fName, lName) as fullName FROM Customers WHERE email = ?;");
         // Insert our given username into the statement safely
         $stmt->bind_param('s', $email);
         // Execute the query

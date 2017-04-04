@@ -45,7 +45,10 @@ class Helper{
 * $param int     $max_display - how many visits are visible in day column
 * @return string
 */   
-public function prepareBigOutput($results=array(),$calendar_id,$first_day=0,$number_of_weeks=4, $booking_url="", $max_display, $combined = false){
+public function prepareBigOutput($results=array(),$calendar_id,$first_day=0,$number_of_weeks=4, $booking_url="", $max_display, $combined=false){
+  
+  
+  
   $output = "<div class='carousel-inner' id='carousel_inner_$calendar_id' role='listbox'>";
   //preparing datetime variables
   $current_week = date('W'); // i.e. 14
@@ -77,7 +80,7 @@ public function prepareBigOutput($results=array(),$calendar_id,$first_day=0,$num
     $output .= $this->prepareDayNumbersHeadings($first_day,$week_number,$year_number);
     //prepareDayContent i.e. 12.00, 13.00. 14.00 etc.
     //this method return table row
-    $output .= $this->prepareDayContent($results,$first_day,$week_number,$year_number,$booking_url ,$max_display,$calendar_id, $combined = "false");
+    $output .= $this->prepareDayContent($results,$first_day,$week_number,$year_number,$booking_url ,$max_display,$calendar_id, $combined);
     //horizontal-calendar-big-content and table ending
     $output .= "</table></div><!--end of horizontal-calendar-bit-content-->";
     //item background 
@@ -269,7 +272,7 @@ private function prepareDayNumbersHeadings($first_day = 0,$week_number,$year_num
 * $param int     $calendar_id - contains calendar id
 * @return string
 */ 
-private function prepareDayContent($results,$first_day,$week_number,$year_number,$booking_url ,$max_display,$calendar_id, $combined = false){
+private function prepareDayContent($results,$first_day,$week_number,$year_number,$booking_url,$max_display,$calendar_id, $combined = false){
   if($first_day == 0){
     $day = 0; //first day is sunday
   }else{
@@ -295,9 +298,11 @@ private function prepareDayContent($results,$first_day,$week_number,$year_number
     for($l=0; $l<count($day_visits);$l++){
         //checking if record is not marked as deleted
      $visit_timestamp = strtotime($day_visits[$l]['timestamp']);
+    
+    
      
         // For owner combined view calendar - insert the empID into each booking confirmation link.   
-         if (($_SESSION['type'] == 'owner') && $combined == true){
+        if (($_SESSION['type'] == 'owner') && ($combined)){
             $calendar_id = $day_visits[$l]['calendar_id'];
          }
     
@@ -308,10 +313,11 @@ private function prepareDayContent($results,$first_day,$week_number,$year_number
               //if the visit is booked - if customer - bookings are greyed out.  If owner, can still see booked appointments.
                 if (($_SESSION['type'] == 'owner')){     
                     $output .= "<li class='horizontal-calendar-big-list-item'><a rel='nofollow' class='horizontal-calendar-big-link' href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
-                  } else{
+                } 
+                else{
                     $output .= "<li class='horizontal-calendar-big-list-item'><span class='booked-visit'>".date("H:i",$visit_timestamp)."</span></li>";
-                  }
-                }else{
+                }
+              }else{
                 $output .= "<li class='horizontal-calendar-big-list-item'><a rel='nofollow' class='horizontal-calendar-big-link' href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
               }
           }else if($l == $max_display && ($visit_timestamp > time() || ($l+1 > $max_display))){

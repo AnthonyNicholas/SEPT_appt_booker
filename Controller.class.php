@@ -238,7 +238,7 @@ class Controller
         
         $site->printHeader();
         $site->printNav("owner");
-        $site->printFooter();
+        $site->printCombinedCalFooter();
         $page->printHtml();
         $page->printCalendar(); // Shows combined view - uses $empID = 99
 
@@ -731,7 +731,7 @@ class Controller
         // This wont be different regardless of owner/customer
         if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
             throw new Exception("Employee $empId could not be found for booking at time: ".$timestamp);
-
+    
         try{ // Print out booking to be booked/view booking
             $site->printHeader();
             
@@ -744,13 +744,12 @@ class Controller
                 try {
                     // Customer already throws an exception if it cant find a user, we need to catch it
                     // and rethrow a new error
-                    $cust = new Customer($bkdata->email, $this->db, false); // no bookings please
+                    $cust = new Customer($bk->get_email(), $this->db, false); // no bookings please
                     $custdata = $cust->getThis(); // mysql object
                 }
                 catch(Exception $e) { // No Customer was found
                     throw new Exception("Unable to find customer with email: ".$bkdata->email." booking at time: $timestamp with Employee: $empID");
                 }
-                
                 
                 $site->printNav("owner");
                 $bkv->printOwnerBookingInfo($bkdata, $empdata, $custdata); 
@@ -827,13 +826,17 @@ class Controller
         $cal = new Calendar($this->db);
         $bk = new Booking($empId, $timestamp, $this->db);
         $bkv = new BookingView();
+        
+        
         $bk->load($empId, $timestamp, $this->db);
         $email = $bk->get_email();
         
+        $cust = new Customer($email, $this->db, false);
+        
     	// generate the booking info page
     	$site->printHeader();
-   	$site->printNav("owner");
-    	$bkv->printOwnerBookingInfo($bk, $email); 
+       	$site->printNav("owner");
+    	$bkv->printOwnerBookingInfo($bk, $this->getEmployee($empId), $cust); 
     	$site->printFooter();   
     }
 
