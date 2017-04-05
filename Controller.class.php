@@ -804,31 +804,6 @@ class Controller
         
     }
     
-    public function bookingViewByOwner($empID, $timestamp)
-    {
-        require_once('models/Calendar.class.php');
-        require_once('models/Customer.class.php');
-        require_once('models/Booking.class.php');
-        require_once('views/BookingView.class.php');
-
-        $site = new SiteContainer();
-        $cal = new Calendar($this->db);
-        $bk = new Booking($empID, $timestamp, $this->db);
-        $bkv = new BookingView();
-        
-        $bk->load($empID, $timestamp, $this->db);
-        $email = $bk->get_email();
-        
-        $cust = new Customer($email, $this->db, false);
-        
-    	// generate the booking info page
-    	$site->printHeader();
-       	$site->printNav("owner");
-    	$bkv->printOwnerBookingInfo($bk, $this->fetchEmployeeFromDb($empID), $cust); 
-    	$site->printFooter();   
-    }
-
-    
     // handles fetching the view for an owner to view employees' working times
     public function show_worker_availability()
     {
