@@ -1,5 +1,8 @@
 <?php
 
+// author: Jake Williams s3448342
+// purpose: test functionality for adding an employee to the system
+
 use PHPUnit\Framework\TestCase;
 
 class addEmpTest extends TestCase

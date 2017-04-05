@@ -1,8 +1,8 @@
 <?php
-// the registration form submits to itself
-// so this page handles both before and after the form is submitted
-// for now if registration fails, the errors are being sent back with the form via GET variables
-// as yet it still won't display the error message, not sure if we want a new view for that or something else
+// Registration form which submits to itself
+// handles both before and after the form is submitted
+// If registration fails, the errors are being sent back with the form via GET variables
+// and delegated to FormError view
 
 require_once('Controller.class.php');
 

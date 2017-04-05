@@ -1,5 +1,10 @@
 <?php
 
+// author: Jake Williams s3448342
+// purpose: test controller functionality relating to the addition/removal 
+//          of employee shifts and working times from the database, and
+//          retrieving such information for viewing by the users
+
 use PHPUnit\Framework\TestCase;
 
 class EmployeeTests extends TestCase

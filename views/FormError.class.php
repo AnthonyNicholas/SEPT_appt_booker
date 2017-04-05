@@ -1,5 +1,10 @@
 <?php
 
+/** Handles the printing of errors
+ *  Usually the error is printed above a form
+ *  if it was submitted with invalid data
+ */
+  
 class FormError
 {
     private $error = array(
@@ -10,7 +15,7 @@ class FormError
                            "duplicate" => "An account with that email address already exists",
                            "err_login_failed" => "Invalid username or password - please try again");
 
-    public function printHtml($errors)
+    public function printHtml($errors) // take the list of errors and print relevant messages
     {
          echo "<div class = \"error_list\">";
 

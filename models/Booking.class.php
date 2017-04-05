@@ -1,11 +1,13 @@
 <?php
-/**
- * Booking Class
- *
- * Shell for the booking class. Should, given a booking number, pull the requested
- * booking data into class variables
- * 
- */
+
+ /**
+  * Booking Class
+  * Authors: Adam Young, Jake Williams
+  * Purpose: A class to load and store booking data from 
+  *         the database, based on the Booking table,
+  *         and provide basic access to such data.
+  */
+  
 class Booking
 {
     public $d;
@@ -16,45 +18,14 @@ class Booking
     private $emp_fname;
     private $emp_lname;
     
-
-    // I prepared another load function to store the data into separate variables, as above
-    // I think it is more clear, personally
- 
     public function __construct( $empID, $dateTime, $db )
     {
         $this->empID = $empID;
-        
-        $this->d = $this->readFromDb($empID, $dateTime, $db);
-       
-       $this->load($empID, $dateTime, $db);
-    }
 
-    public function readFromDb($empID, $dt, $db)
-    {
-        // store timestamp in this datetime to correct timezone
-        
-        $sql = "SELECT CONCAT_WS(' ', e.fName, e.lName) as empName, dateTime as timestamp
-                FROM CanWork w
-                INNER JOIN Employees e ON w.empID = e.empID
-                WHERE w.empID = ?
-                AND w.dateTime = ?;
-        "; 
-        $stmt = $db->prepare($sql);
-        // Insert our given username into the statement safely
-        
-        $dts = $dt->format('Y-m-d H:i:s');
-        
-        $stmt->bind_param('ss', $empID, $dts);
-        // Execute the query
-        $stmt->execute();
-        // Fetch the result
-        $res = $stmt->get_result();
-
-        return $res->fetch_object();
-
+        $this->load($empID, $dateTime, $db);
     }
     
-    // alternative load function
+    // load Booking table data into member variables, helper for the constructor
     public function load($empID, $dateTime, $db)
     {
         $dts = $dateTime->format('Y-m-d H:i:s');
@@ -85,6 +56,4 @@ class Booking
     public function get_email() { return $this->email; }
     public function get_fname() { return $this->emp_fname; }
     public function get_lname() { return $this->emp_lname; }
-    
-    
 }

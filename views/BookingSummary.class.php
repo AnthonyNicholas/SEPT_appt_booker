@@ -1,6 +1,6 @@
 <?php
 
-// Shows the customer any bookings they have upcoming
+// Shows the customer a simple list of any bookings they have upcoming
 
 class BookingSummary
 {
