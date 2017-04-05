@@ -1,5 +1,7 @@
 <?php
 
+// Shows the customer any bookings they have upcoming
+
 class BookingSummary
 {
     public function printHtml($customer)
@@ -18,7 +20,7 @@ class BookingSummary
             $date = $date_time->format("d-m-Y");
             $time = $date_time->format("H:i:s");
                 
-            echo "<div class = \"list-group-item\">".$date."   ".$time." with ".$fname." ".$lname."</div>";  
+            echo "<div class = \"list-group-item\">".$date."&nbsp;&nbsp;&nbsp;".$time."&nbsp;&nbsp;&nbsp; with ".$fname." ".$lname."</div>";  
         }
     }
 }
