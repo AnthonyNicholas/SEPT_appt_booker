@@ -8,7 +8,7 @@
  * 
  */
 
-define('MINIMUM_INTERVAL', 30);
+define('MINIMUM_INTERVAL', 30); // smallest timeslot duration
 
 require_once('views/SiteContainer.class.php');
 require('libs/Helper.php');
@@ -475,12 +475,7 @@ class Controller
         }
     }
     
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////// ALL FUNCTIONS BELOW SHOULD BE CONSIDERED IN TESTING PHASE /////////////////
-    
-    public function add_working_times($times)
+    public function add_working_times($times) // process an employee working times to add one by one to the database
     {
         if (!isset($times['date']))
             return false;
@@ -568,35 +563,6 @@ class Controller
         return $timeslots;
     }
     
-    public function add_appointments($interval, $start, $end) // add all appointments within given start and end time
-    {
-        while ($start <= $end)
-        {
-            $sd = $start->format("Y-m-d H:i:s");
-            $q = $this->db->prepare("SELECT * FROM TimeSlot WHERE dateTime = ?;");
-            $q->bind_param('s', $sd);
-            
-            if (!$q->execute())
-                return false;
-                
-            $result = $q->get_result();
-            
-          //  echo $sd;
-
-            if (mysqli_num_rows($result) == 0) // check appointment doesn't already exist
-            {
-                $q = $this->db->prepare("INSERT INTO TimeSlot (dateTime) VALUES ('$sd')");
-                
-                if (!$q->execute())
-                    return false;
-            }
-            
-            $start->modify('+'.$interval.' minutes');
-        }
-        
-        return true;
-    }
-    
     public function add_working_time($empID, $start, $end) // associate employee to all appointments between $start and $end
     {
         while ($start < $end)
@@ -680,11 +646,6 @@ class Controller
             return ($t1->get_start()<$t1->get_start())?-1:1;
         });
     }
-
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
 
     /**
      * Should be called by an ajax request for employee calendar HTML, not fully implemented
