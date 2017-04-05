@@ -28,7 +28,7 @@ class CustMainPageView    {
               <div class="panel panel-default panel-address panel-calendar-height">
                 <div class="company-tag label label-primary">Employee details</div>
                   <div class='panel-body'>
-                    <h4> <?php echo $e['fName'].''.$e['lName']; ?> </h4> 
+                    <h4> <?php echo $e['fName'].' '.$e['lName']; ?> </h4> 
                     <img src="smiley.jpg" height="250" width="250">
                   </div><!--end of panel-body-->        
                 </div><!--end of panel--> 
