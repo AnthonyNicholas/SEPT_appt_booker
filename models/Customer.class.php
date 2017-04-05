@@ -14,19 +14,21 @@ class Customer
     public $data; // userdata object, names are exactly as defined in SQL
     public $type = "customer";
     public $bookings;
+    
+    private $email;
+    private $fullName;
+    private $pw;
 
-    /**
-     * The constructor for the Customer class
-     * The getbookings variable determines whether we should fetch additional data related
-     * to this customer
-     */
-    public function __construct( $email, $db, $getbookings = true )
+    public function __construct( $email, $db )
     {
-        if ( ! ($this->data = $this->readFromDb($email, $db, $getbookings)) )
+        if ($this->data = $this->readFromDb($email, $db))
+            return;
+        else
             throw new Exception('Unable to find user, do they still exist?');
+            
     }
 
-    private function readFromDb($email, $db, $getbookings)
+    private function readFromDb($email, $db)
     {
         $stmt = $db->prepare("SELECT *, CONCAT_WS(' ', fName, lName) as fullName FROM Customers WHERE email = ?;");
         // Insert our given username into the statement safely
@@ -35,18 +37,9 @@ class Customer
         $stmt->execute();
         // Fetch the result
         $res = $stmt->get_result();
+
         $res = $res->fetch_object();
 
-        if ($getbookings)
-        {
-            $this->loadBookingsFromDb($email, $db);
-        }
-
-        return $res;
-    }
-    
-    public function loadBookingsFromDb($email, $db)
-    {
         // Load the customers bookings
         $q = $db->prepare("SELECT * FROM Bookings WHERE email = ?;");
         $q->bind_param('s', $email);
@@ -68,18 +61,33 @@ class Customer
             
             
             // store customers bookings
-           $this->bookings[] = new Booking($row['empID'], $row['dateTime'], $db);
+           $this->bookings[] = new Booking($row['empID'], $dt, $db);
         }
+
+        $this->email = $res->email;
+        $this->fullName = $res->fullName;
+        
+        return $res;
+    }
+/*
+    public function makeBooking($empID, $timestamp){ 
+    return booking;
     }
     
-    public function getThis()
-    {
-        return $this->data;
+    public function getBookings(){
+    $booking = [];
+    return $booking;
     }
-    
+  */  
     public function get_bookings()
     {
        return $this->bookings;
     }
+    
+    public function get_email() { return $this->email; }
+    public function get_fullName() { return $this->fullName; }
+    
+    
+    
 
 }

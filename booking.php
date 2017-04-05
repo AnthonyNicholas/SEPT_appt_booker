@@ -13,14 +13,21 @@
     {
         $empid = $_GET['calendar_id'];
         $ts = $_GET['timestamp'];
+        
+        $dt = new DateTime();
+        $dt->setTimestamp($ts);
 
         // Check if we are actually making a booking or just confirming a selection
-        if ( empty($_POST) )
+        if ( empty($_POST) && $_SESSION['type'] == 'customer')
         {
-            $ctrl->bookingConfirm($empid, $ts);
+            $ctrl->bookingConfirm($empid, $dt);
 
+        } else if (empty($_POST) && $_SESSION['type'] == 'owner')
+        {
+            // If owner we are viewing an existing booking
+            $ctrl->bookingView($empid, $dt);
         } else if ($_POST['a'] == 'create')
         {
-            $ctrl->bookingCreate($empid, $ts);
+            $ctrl->bookingCreate($empid, $dt);
         }
     }

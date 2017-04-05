@@ -9,8 +9,8 @@
 class BusinessOwner
 {
 
-    public var $data; // associative array of userdata
-    public var $type = "owner";
+    public $data; // associative array of userdata
+    public $type = "owner";
 
     public function __construct( $email, $db )
     {
@@ -33,6 +33,7 @@ class BusinessOwner
         return $res->fetch_object();
 
     }
+
 
 
 }

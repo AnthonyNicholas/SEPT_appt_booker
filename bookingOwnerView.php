@@ -13,7 +13,8 @@
     {
         $empid = $_GET['calendar_id'];
         $ts = $_GET['timestamp'];
-        
-        $ctrl->bookingViewByOwner($empid, $ts);
+        $dt = new DateTime();
+        $dt->setTimestamp($ts);
+        $ctrl->bookingViewByOwner($empid, $dt);
         
     }

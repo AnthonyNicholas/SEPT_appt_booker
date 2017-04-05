@@ -395,12 +395,20 @@ class Controller
     
     public function helpPage()
     {
-        require_once('views/CustHelpPage.class.php');
         $site = new SiteContainer();
-        $page = new CustHelpPage();
+        $page;
+
+        if ($_SESSION['type'] == 'owner'){
+            require_once('views/OwnerHelpPage.class.php');
+            $page = new OwnerHelpPage();
+        }
+        else {
+            require_once('views/CustHelpPage.class.php');
+            $page = new CustHelpPage();
+        }
 
         $site->printHeader();
-        $site->printNav("customer");
+        $site->printNav($_SESSION['type']);
         $page->printHtml();
         $site->printFooter();   
 
@@ -409,12 +417,19 @@ class Controller
     // Very basic if logged in function
     public function custLoggedIn()
     {
-        // For now just check session for an email and customer type
+        // check session for an email and customer type
         if ( empty($_SESSION['email']) || $_SESSION['type'] != 'customer')
             return false;
         else
             return true;
-
+        // // Now check whether these are in our database, and add to user
+        // // attribute for later use
+        // try{
+        //     $this->user = new Customer($_SESSION['email'], $this->db);
+        // } catch (Exception $e)
+        // {
+        //     return false;
+        // }
     }
     // Owner logged in function
     public function ownerLoggedIn()
@@ -716,7 +731,7 @@ class Controller
     /**
      * Confirms that a user would like to book an appointment with employee and time
      */
-    public function bookingConfirm($empId, $timestamp)
+    public function bookingConfirm($empId, $dt)
     {
         require_once('models/Calendar.class.php');
         require_once('models/Customer.class.php');
@@ -730,36 +745,16 @@ class Controller
 
         // This wont be different regardless of owner/customer
         if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
-            throw new Exception("Employee $empId could not be found for booking at time: ".$timestamp);
+            throw new Exception("Employee $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
     
         try{ // Print out booking to be booked/view booking
             $site->printHeader();
             
-            if ($_SESSION['type'] == 'owner'){ // View an existing booking
-
-                // Grab the booking we want
-                $bk = new Booking($empId, $timestamp, $this->db);
-                $bkdata = $bk->getThis(); // mysql object
-
-                try {
-                    // Customer already throws an exception if it cant find a user, we need to catch it
-                    // and rethrow a new error
-                    $cust = new Customer($bk->get_email(), $this->db, false); // no bookings please
-                    $custdata = $cust->getThis(); // mysql object
-                }
-                catch(Exception $e) { // No Customer was found
-                    throw new Exception("Unable to find customer with email: ".$bkdata->email." booking at time: $timestamp with Employee: $empID");
-                }
-                
-                $site->printNav("owner");
-                $bkv->printOwnerBookingInfo($bkdata, $empdata, $custdata); 
-            }
-            else{ // Confirm a booking to be made by a client
-                $cw = new CanWork($empId, $timestamp, $this->db); // not a booking yet!!
-                $cwdata = $cw->getThis();// mysql object
-                $site->printNav("cust");
-                $bkv->printConfirm($cwdata, $empdata);
-            }
+            $cw = new CanWork($empId, $dt, $this->db); // not a booking yet!!
+            
+            $site->printNav("cust");
+            $bkv->printConfirm($cw, $empdata);
+            
             $site->printFooter();   
                 
         }catch(Exception $e){
@@ -768,11 +763,47 @@ class Controller
         }
     }
     
+    public function bookingView($empId, $dt)
+    {
+        require_once('models/Calendar.class.php');
+        require_once('models/Customer.class.php');
+        require_once('models/Booking.class.php');
+        require_once('models/CanWork.class.php');
+        require_once('views/BookingView.class.php');
+
+        $site = new SiteContainer();
+        $cal = new Calendar($this->db);
+        $bkv = new BookingView();
+        
+        // Grab the booking we want
+        $bk = new Booking($empId, $dt, $this->db);
+        
+        // This wont be different regardless of owner/customer
+        if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
+            throw new Exception("Employee $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
+    
+        try {
+            // Customer already throws an exception if it cant find a user, we need to catch it
+            // and rethrow a new error
+            $cust = new Customer($bk->get_email(), $this->db, false); // no bookings please
+        }
+        catch(Exception $e) { // No Customer was found
+            throw new Exception("Unable to find customer with email: ".$bk->get_email." booking at time: ".$dt->format('Y-m-d H:i:s')." with Employee: $empID");
+        }
+        
+        $site->printHeader();
+        
+        $site->printNav("owner");
+        $bkv->printOwnerBookingInfo($bk, $empdata, $cust); 
+        
+        $site->printFooter();
+    }
+    
     /**
      * books an appointment with employee and time, needs lots of error checking and fallbacks implemented
      * TODO
      */
-    public function bookingCreate($empID, $timestamp)
+    public function bookingCreate($empID, $dt)
     {
         require_once('models/Calendar.class.php');
         require_once('models/CanWork.class.php');
@@ -783,12 +814,11 @@ class Controller
         $cal = new Calendar($this->db);
         
         // Grab the canwork from the databse
-        $cw = new CanWork($empID, $timestamp, $this->db); // Still not a booking!!
-        $cwdata = $cw->getThis();
+        $cw = new CanWork($empID, $dt, $this->db); // Still not a booking!!
         
         // Grab the employee from the database
         if (! ($empdata = $this->fetchEmployeeFromDb($empID)) )
-            throw new Exception("Employee $empID could not be found for booking at time: ".$timestamp);
+            throw new Exception("Employee $empID could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
         
         // Here we want to insert the booking, possibly check that it hasnt already been
         // taken, but not doing now TODO
@@ -796,8 +826,6 @@ class Controller
         $stmt = $this->db->prepare($sql);
         // Insert our given username into the statement safely
         
-        $dt = new DateTime();
-        $dt->setTimestamp($timestamp);
         $dts = $dt->format('Y-m-d H:i:s');
         
         $stmt->bind_param('sss', $empID, $_SESSION['email'], $dts);
@@ -807,7 +835,7 @@ class Controller
         $site->printNav("cust");
         
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
-            $bkv->printSuccess($cwdata, $empdata);
+            $bkv->printSuccess($cw, $empdata);
         else
             $bkv->printError();
 
@@ -815,7 +843,7 @@ class Controller
         
     }
     
-    public function bookingViewByOwner($empId, $timestamp)
+    public function bookingViewByOwner($empID, $timestamp)
     {
         require_once('models/Calendar.class.php');
         require_once('models/Customer.class.php');
@@ -824,11 +852,10 @@ class Controller
 
         $site = new SiteContainer();
         $cal = new Calendar($this->db);
-        $bk = new Booking($empId, $timestamp, $this->db);
+        $bk = new Booking($empID, $timestamp, $this->db);
         $bkv = new BookingView();
         
-        
-        $bk->load($empId, $timestamp, $this->db);
+        $bk->load($empID, $timestamp, $this->db);
         $email = $bk->get_email();
         
         $cust = new Customer($email, $this->db, false);
@@ -836,7 +863,7 @@ class Controller
     	// generate the booking info page
     	$site->printHeader();
        	$site->printNav("owner");
-    	$bkv->printOwnerBookingInfo($bk, $this->getEmployee($empId), $cust); 
+    	$bkv->printOwnerBookingInfo($bk, $this->fetchEmployeeFromDb($empID), $cust); 
     	$site->printFooter();   
     }
 

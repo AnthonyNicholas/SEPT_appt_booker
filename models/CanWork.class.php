@@ -12,47 +12,33 @@ class CanWork
     private $db;
     
     public $data; // CanWork data object, values are exactly as they appear in database
+
+    private $empId;
+    private $dateTime;
+    private $email;
+    private $emp_fname;
+    private $emp_lname;
     
-
-    // I prepared another load function to store the data into separate variables, as above
-    // I think it is more clear, personally
-
-    // Fair enough, I did it this way to make it easier to print in views
-    // What if I need customer fname and lname? - Adam
-
     /**
      * The constructor for the Booking class
      * The toplevel variable determines whether we should fetch additional data related
      * to this booking
      */ 
-    public function __construct( $empID, $timestamp, $db )
+    public function __construct( $empID, $dateTime, $db )
     {
         $this->db = $db;
        
         // If we cant find a CanWork, error
-        if ( ! ($this->data = $this->readFromDb($empID, $timestamp)) )
-            throw new Exception("Unable to find Canwork at $timestamp with Employee: $empID");
+        //if ( ! ($this->data = $this->readFromDb($empID, $timestamp)) )
+        //    throw new Exception("Unable to find Canwork at $timestamp with Employee: $empID");
+
+       $this->load($empID, $dateTime, $db);
        
     }
 
-    public function readFromDb($empID, $timestamp)
+    public function readFromDb($empID, $dt)
     {
         
-        // for some reason, sometimes this function receives a timestamp
-        // other time it receives a date time
-        // this is a hack solution to make this work in both cases
-        // should not be permanent fix
-        try {
-            $dt = new DateTime($timestamp);
-        } catch (Exception $e) {
-            $dt = new DateTime();
-            $dt->setTimestamp($timestamp);
-        }
-        
-        // I deleted that unix timestamp rubbish and created 
-        // new datetimes before the queries to make this work
-        // the correct times in our timezone are now being read/written to database
-        // needs alot of testing
         $sql = "SELECT *, dateTime as timestamp
                 FROM CanWork
                 WHERE empID = ?
@@ -72,9 +58,34 @@ class CanWork
         return $res->fetch_object();
 
     }
-     // These functions serve to fetch the objects pulled from mySQL
-     
-     public function getThis() { return $this->data; } // This CanWork
     
-    
+    public function load($empID, $dateTime, $db)
+    {
+        $dts = $dateTime->format('Y-m-d H:i:s');
+        $q = $db->prepare("SELECT * FROM Bookings WHERE empID = ? AND dateTime = ?;");
+        $q->bind_param('ss', $empID, $dts);
+        $q->execute();
+        
+        $result = $q->get_result();
+        $result = mysqli_fetch_array($result);
+        
+        $this->empId = $result['empID'];
+        $this->email = $result['email'];
+        $this->dateTime = new DateTime($result['dateTime']);
+        
+        $q = $db->prepare("SELECT fName, lName FROM Employees WHERE empID = ?;");
+        $q->bind_param('s', $empID);
+        $q->execute();
+        
+        $result = $q->get_result();
+        $result = mysqli_fetch_array($result);
+        
+        $this->emp_fname = $result['fName'];
+        $this->emp_lname = $result['lName'];
+    }
+    public function get_empId() { return $this->empId; }
+    public function get_dateTime() { return $this->dateTime; }
+    public function get_email() { return $this->email; }
+    public function get_fname() { return $this->emp_fname; }
+    public function get_lname() { return $this->emp_lname; }
 }
