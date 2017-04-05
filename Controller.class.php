@@ -185,11 +185,9 @@ class Controller
 
         $site->printHeader();
         $site->printNav($this->user->type);
-        $site->printFooter();
-        // data is an object containing userdata exactly how it appears in the db
-
         $page->printHtml($this->user->data);
         $page->printCalendar($empArray);
+        $site->printFooter();
 
     }
 
@@ -216,10 +214,9 @@ class Controller
 
         $site->printHeader();
         $site->printNav("owner");
-        $site->printFooter();
         $page->printHtml();
         $page->printCalendar($empArray); // to show combined view - change $empArray to just one entry with $empID = -1?
-
+        $site->printFooter();
     }
 
     // Handles the display of the combined calendar page for owners

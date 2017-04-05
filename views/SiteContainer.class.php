@@ -145,8 +145,7 @@ public function printNav($type = "none")
     </nav>
 
     <div class="container-fluid text-center">    
-        <div class="col-sm-2 text-left"></div> 
-        <div class="col-sm-8 text-left"> 
+        <div class="col-sm-12 text-left"> 
 
     <?php
     }
