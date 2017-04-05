@@ -6,13 +6,13 @@ class CustMainPageView    {
     ?>
     <div class="container">
       <div class = "jumbotron jumbotron-fluid">
-          <?php echo "Welcome, $u->fName $u->lName"; ?>
+          <h3>Book an Appointment</h3>
+          <?php echo "Welcome to the appointment booking system, ".$u->get_fullName(); ?>.<br>
+          Click on a desired appointment under a particular staff member to
+          make a booking, or view current bookings by clicking the link in the
+          navigation bar above.
       </div>
-    <!--<div class="menu">-->
     </div>
-    <!--</div>-->
-    <!--<div class="bookings">-->
-    <!--</div>-->
 
     <?php
     }

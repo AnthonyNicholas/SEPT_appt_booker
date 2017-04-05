@@ -2,15 +2,17 @@
 
 class OwnerMainPageView    {
     
-    public function printHtml($fName = "Sample", $lName = "Owner")    {
+    public function printHtml($bo)
+    {
     ?>
     <div class="container">
         <div class = "jumbotron jumbotron-fluid">
-            <?php echo "Welcome, ".$fName." ".$lName; ?>
+            <h3>Current Appointments</h3>
+            <?php echo "Welcome to your business' appointment management application, ".$bo->get_fullName(); ?>.<br>
+            Click on one of the navigation items above, or select a current
+            booking below to get started.
         </div>
     </div>
-
-    <!--<div class="bookings"></div>-->
     
     <?php
         

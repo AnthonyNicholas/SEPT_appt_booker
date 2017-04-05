@@ -10,6 +10,9 @@ class BusinessOwner
 {
 
     public $data; // associative array of userdata
+
+    public $fullName;
+    public $email;
     public $type = "owner";
 
     public function __construct( $email, $db )
@@ -22,18 +25,23 @@ class BusinessOwner
 
     private function readFromDb($email, $db)
     {
-        $stmt = $db->prepare("SELECT * FROM BusinessOwner WHERE email = ?;");
+        $stmt = $db->prepare("SELECT *, CONCAT_WS(' ', fName, lName) as fullName FROM BusinessOwner WHERE email = ?;");
         // Insert our given username into the statement safely
         $stmt->bind_param('s', $email);
         // Execute the query
         $stmt->execute();
         // Fetch the result
         $res = $stmt->get_result();
+        $obj = $res->fetch_object();
+        
+        $this->fullName = $obj->fullName;
+        $this->email = $obj->email;
 
-        return $res->fetch_object();
+        return $obj;
 
     }
 
-
+    public function get_email() { return $this->email; }
+    public function get_fullName() { return $this->fullName; }
 
 }

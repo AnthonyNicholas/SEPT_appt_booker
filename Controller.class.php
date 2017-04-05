@@ -185,7 +185,7 @@ class Controller
 
         $site->printHeader();
         $site->printNav($this->user->type);
-        $page->printHtml($this->user->data);
+        $page->printHtml($this->user);
         $page->printCalendar($empArray);
         $site->printFooter();
 
@@ -201,6 +201,9 @@ class Controller
             return;
         }
 
+        require_once('models/BusinessOwner.class.php');
+        $bo = new BusinessOwner($_SESSION['email'], $this->db);
+
         require_once('views/OwnerMainPageView.class.php');
         $site = new SiteContainer();
         $page = new OwnerMainPageView();
@@ -214,7 +217,7 @@ class Controller
 
         $site->printHeader();
         $site->printNav("owner");
-        $page->printHtml();
+        $page->printHtml($bo);
         $page->printCalendar($empArray); // to show combined view - change $empArray to just one entry with $empID = -1?
         $site->printFooter();
     }
