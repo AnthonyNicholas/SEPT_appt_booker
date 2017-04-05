@@ -324,8 +324,14 @@ private function prepareDayContent($results,$first_day,$week_number,$year_number
             $output .= "<li><a rel='nofollow' class='horizontal-calendar-big-link dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>more</a>
               <ul class='dropdown-menu'>";
               if($day_visits[$l]['booked']==1 || $visit_timestamp  < time()){
-              //if the visit is booked
-                $output .= "<li rel='nofollow' class='horizontal-calendar-big-booked'><span class='booked-visit'>".date('H:i',$visit_timestamp)."</span></li>";
+              //if the visit is booked - if customer - bookings are greyed out
+                if (($_SESSION['type'] == 'owner')){     
+                    $output .= "<li><a rel='nofollow' href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
+                } 
+                else{
+                    $output .= "<li rel='nofollow' class='horizontal-calendar-big-booked'><span class='booked-visit'>".date('H:i',$visit_timestamp)."</span></li>";
+                }
+                  
               }else{
                 $output .= " <li><a rel='nofollow'  href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
               }
@@ -336,8 +342,13 @@ private function prepareDayContent($results,$first_day,$week_number,$year_number
           }else if($l > $max_display && $visit_timestamp > time()){
             //booking method == link
               if($day_visits[$l]['booked']==1 || $visit_timestamp < time()){
-              //if the visit is booked
-                 $output .= "<li rel='nofollow' class='horizontal-calendar-big-booked'><span class='booked-visit'>".date('H:i',$visit_timestamp)."</span></li>";
+              //if the visit is booked - if customer - bookings are greyed out
+                if (($_SESSION['type'] == 'owner')){     
+                    $output .= "<li><a rel='nofollow' href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
+                } 
+                else{
+                    $output .= "<li rel='nofollow' class='horizontal-calendar-big-booked'><span class='booked-visit'>".date('H:i',$visit_timestamp)."</span></li>";
+                }
               }else{
                  $output .= " <li><a rel='nofollow'  href='".$booking_url."?calendar_id=".$calendar_id."&timestamp=".$visit_timestamp."'>".date("H:i",$visit_timestamp)."</a></li>";
               }
