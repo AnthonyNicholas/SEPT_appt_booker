@@ -25,7 +25,6 @@ class Customer
             return;
         else
             throw new Exception('Unable to find user, do they still exist?');
-            
     }
 
     private function readFromDb($email, $db)
@@ -59,7 +58,6 @@ class Customer
             if ($now > $dt) // check timeslot isn't in the past
                 continue;
             
-            
             // store customers bookings
            $this->bookings[] = new Booking($row['empID'], $dt, $db);
         }
@@ -69,25 +67,8 @@ class Customer
         
         return $res;
     }
-/*
-    public function makeBooking($empID, $timestamp){ 
-    return booking;
-    }
-    
-    public function getBookings(){
-    $booking = [];
-    return $booking;
-    }
-  */  
-    public function get_bookings()
-    {
-       return $this->bookings;
-    }
-    
+ 
+    public function get_bookings() { return $this->bookings; }
     public function get_email() { return $this->email; }
     public function get_fullName() { return $this->fullName; }
-    
-    
-    
-
 }
