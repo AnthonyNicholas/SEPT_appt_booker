@@ -2,7 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-require_once('models/Owner.class.php');
+require_once('models/BusinessOwner.class.php');
 
 class OwnerTest extends TestCase
 {
@@ -19,8 +19,9 @@ class OwnerTest extends TestCase
     protected function setUp()
     {
         $this->email = 'owner1@example.com';
-        $this->pword = 'owner';
+        $this->fname = 'owner';
         $this->lname = 'juan';
+        $this->pword = 'pw';
         $this->address = 'the moon';
         $this->phone = '99999999';
         $this->pword = 'password';
