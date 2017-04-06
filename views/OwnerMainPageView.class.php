@@ -7,10 +7,10 @@ class OwnerMainPageView    {
     ?>
     <div class="container">
         <div class = "jumbotron jumbotron-fluid">
-            <h3>Current Appointments</h3>
+            <h3>Current Bookings</h3>
             <?php echo "Welcome to your business' appointment management application, ".$bo->get_fullName(); ?>.<br>
-            Click on one of the navigation items above, or select a current
-            booking below to get started.
+            Click on one of the navigation items above, or view a current booking by scrolling down to 
+            relevant employee and selecting relevant time.  Full details of that booking will then be displayed.  
         </div>
     </div>
     
