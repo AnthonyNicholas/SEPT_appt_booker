@@ -6,7 +6,13 @@ class OwnerCombinedCalView    {
     ?>
     <div class="container">
         <div class = "jumbotron jumbotron-fluid">
-            <?php echo "Welcome, ".$fName." ".$lName; ?>
+            <h3>Combined view of all Bookings</h3>
+            <br>
+            Select and click on a current booking to view full details of that booking.  
+        </div>
+    </div>
+
+            
         </div>
     </div>
 
