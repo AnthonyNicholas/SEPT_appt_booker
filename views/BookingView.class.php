@@ -5,9 +5,6 @@ class BookingView
     {
       $date = $cw->get_dateTime();
     ?>
-  <div class="container">
-    <div class="row marg-top "> 
-      <div class="col-sm-offset-3 col-sm-6">
         <div class="panel panel-default panel-address panel-appointment-height">
               <div class="company-tag label label-primary">Confirm appointment details</div>
             <div class='panel-body'>
@@ -22,9 +19,6 @@ class BookingView
               </form>
             </div><!--end of panel-body-->        
           </div><!--end of panel-->
-        </div>
-      </div>
-    </div><!--end container-->
       <?php
     }
     
@@ -32,9 +26,6 @@ class BookingView
     {
       $date = $cw->get_dateTime();
     ?>
-  <div class="container">
-    <div class="row marg-top "> 
-      <div class="col-sm-offset-3 col-sm-6">
         <div class="panel panel-default panel-address panel-appointment-height">
               <div class="company-tag label label-primary">Confirm appointment details</div>
             <div class='panel-body'>
@@ -45,9 +36,6 @@ class BookingView
                 <div><a class="btn btn-link" href="index.php">Return to main page</a></div>
             </div><!--end of panel-body-->        
           </div><!--end of panel-->
-        </div>
-      </div>
-    </div><!--end container-->
       <?php
       
     }
@@ -55,9 +43,6 @@ class BookingView
     public function printError()
     {
     ?>
-  <div class="container">
-    <div class="row marg-top "> 
-      <div class="col-sm-offset-3 col-sm-6">
         <div class="panel panel-default panel-address panel-appointment-height">
               <div class="company-tag label label-primary">Confirm appointment details</div>
             <div class='panel-body'>
@@ -65,9 +50,6 @@ class BookingView
                 <div><a class="btn btn-link" href="index.php">Return to main page</a></div>
             </div><!--end of panel-body-->        
           </div><!--end of panel-->
-        </div>
-      </div>
-    </div><!--end container-->
       <?php
     }
 
@@ -75,23 +57,20 @@ class BookingView
     {
       $date = $bk->get_datetime();
     ?>
-  <div class="container">
-    <div class="row marg-top "> 
-      <div class="col-sm-offset-3 col-sm-6">
         <div class="panel panel-default panel-address panel-appointment-height">
-              <div class="company-tag label label-primary">Customer Appointment details</div>
-            <div class='panel-body'>
-              <h3>Appointment details</h3>
-              <h4><?php echo Helper::sanitize($emp->fullName); ?></h4>
-              <h4><?php echo "Customer Email: ".$cust->get_email(); ?></h4>
-              <h4><?php echo "Customer Name: ".$cust->get_fullName(); ?></h4>
-              <p>Date: <?php echo $date->format("d/m/Y"); ?> </p>
-              <p>Time: <?php echo $date->format("H:i"); ?> </p>
-            </div><!--end of panel-body-->        
+            <div class="company-tag label label-primary">Customer Appointment details</div>
+              <div class='panel-body'>
+                <h3>Appointment details</h3>
+                <h4>Date: <?php echo $date->format("d/m/Y"); ?> </h4>
+                <h4>Time: <?php echo $date->format("H:i"); ?> </h4>
+                <h4>Employee Name: <?php echo Helper::sanitize($emp->fullName); ?></h4>
+                <h4><?php echo "Customer Email: ".$cust->get_email(); ?></h4>
+                <h4><?php echo "Customer Name: ".$cust->get_fullName(); ?></h4>
+              </div><!--end of panel-body-->  
+            
+            
+            
           </div><!--end of panel-->
-        </div>
-      </div>
-    </div><!--end container-->
       <?php
     }
 
