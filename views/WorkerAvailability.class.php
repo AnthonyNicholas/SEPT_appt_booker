@@ -6,6 +6,17 @@ class WorkerAvailability
     {                                     // of workers_availability() function
     
      echo "<script src=\"js/main.js\"></script>"; 
+    
+    ?>
+    <div class="container">
+        <div class = "jumbotron jumbotron-fluid">
+            <h3>Employee Times</h3><br>
+            View available work times for each employee below.  Add additional availabilities for an employee via the add more times function.  
+        </div>
+    </div>
+    
+    <?php
+        
      
         $employee_additions = array();
         $employee_additions = array_fill(0, count($employees), 0);
