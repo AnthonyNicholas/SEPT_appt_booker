@@ -14,11 +14,8 @@ $config = array(
     'debug' => true
 );
 
-define("BOOSTRAP_JS", "calendar/bootstrap/js/");
-define("BOOTSTRAP_CSS", "calendar/bootstrap/css/");
 define("CSS","css/");
 define("JS","js/");
-define("HOST_URL","https://localhost/");
 
 //set default timezone to maintain proper event calculations
 date_default_timezone_set("Australia/Melbourne");
