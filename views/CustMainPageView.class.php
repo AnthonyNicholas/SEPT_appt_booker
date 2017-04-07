@@ -29,7 +29,7 @@ class CustMainPageView    {
                 <div class="company-tag label label-primary">Employee details</div>
                   <div class='panel-body'>
                     <h4> <?php echo $e['fName'].' '.$e['lName']; ?> </h4> 
-                    <img src="smiley.jpg" height="250" width="250">
+                    <img src="img/blank-profile.png" height="250" width="250">
                   </div><!--end of panel-body-->        
                 </div><!--end of panel-->
               </div><!--end of col-sm-4-->
