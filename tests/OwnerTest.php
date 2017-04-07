@@ -37,7 +37,7 @@ class OwnerTest extends TestCase
         $ctrl = new Controller();
         
         $q = $ctrl->get_db()->prepare("INSERT INTO BusinessOwner (fName, lName, email, password, address, phoneNo, busName) VALUES  (?, ?, ?, ?, ?, ?, ?);");
-        $q->bind_param('ssssss', $this->fname, $this->lname, $this->email, $this->pword, $this->address, $this->phone, $this->busName);
+        $q->bind_param('sssssss', $this->fname, $this->lname, $this->email, $this->pword, $this->address, $this->phone, $this->busName);
         $q->execute();
 
         $testOwner = new BusinessOwner($this->email,$ctrl->get_db());

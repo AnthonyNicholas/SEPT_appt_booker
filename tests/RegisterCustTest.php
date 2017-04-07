@@ -33,15 +33,16 @@ class registerCustTest extends TestCase
      */
     public function testRegisterSuccessGoToLoginFunctionality()
     {
+	$emtemp = $this->email."1";
         $ctrl = new Controller();
-        $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
+        $ctrl->registerCust($emtemp, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
 
-        $this->assertEquals($_SESSION['email'], $this->email);
-    
         // Delete test record from DB        
         $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
-        $q->bind_param('s', $this->email);
+        $q->bind_param('s', $emtemp);
         $q->execute();
+
+        $this->assertEquals($_SESSION['email'], $emtemp);
     
     }
     
@@ -84,12 +85,11 @@ class registerCustTest extends TestCase
      */
     public function testRegisterFailureBecauseDuplicate()
     {
+        $this->expectOutputString("duplicate");
         $ctrl = new Controller();
         $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
 
         $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
-        
-        $this->expectOutputString("duplicate");
 
         // Delete test record from DB        
         $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");

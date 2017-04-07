@@ -11,6 +11,7 @@ class LoginTest extends TestCase
      */
     public function testLoginSuccessfulFunctionality()
     {
+	unset($_SESSION);
         $email = 'test@example.com';
         $ctrl = new Controller();
         $ctrl->login($email,'testPwor');

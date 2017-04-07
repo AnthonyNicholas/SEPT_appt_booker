@@ -11,7 +11,7 @@
 define('MINIMUM_INTERVAL', 30); // smallest timeslot duration
 
 require_once('views/SiteContainer.class.php');
-require('libs/Helper.php');
+require_once('libs/Helper.php');
 
 class Controller
 {
@@ -294,15 +294,14 @@ class Controller
 
         if (mysqli_num_rows($result) > 0) // check email doesn't already exist
             $errors[] = 'duplicate';
-
-        $testOutput = implode(" ", $errors);
-        echo $testOutput; // have inserted for unit testing purposes
   
         if (!empty($errors)) // if registration fails, back to form with errors
         {       
             $errors = implode(',', $errors);
-            //$this->redirect("/register.php?error=".htmlspecialchars(urlencode($errors))"")
-            header("Location: /register.php?error=".htmlspecialchars(urlencode($errors))); 
+            $this->redirect("/register.php?error=".htmlspecialchars(urlencode($errors)));
+            echo $errors;
+            return false;
+            //header("Location: /register.php?error=".htmlspecialchars(urlencode($errors))); 
         }
         else  // if registration succeeds, log in
         { 

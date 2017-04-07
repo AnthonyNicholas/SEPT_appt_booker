@@ -45,15 +45,23 @@ class CustomerTest extends TestCase
         
         // Delete test record from DB        
         $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
-        $q->bind_param('s', $this->email);
+        $q->bind_param('s', $this->get_email);
         $q->execute();
         
     }
     
+    /**
+     * @runInSeparateProcess
+     */
     public function testNotACustomer()    {
-        $email = 'xxx@xxx.com'
+        $email = 'xxxzzz@xxxzzzyyyy.com';
         $ctrl = new Controller();
-        $testCustomer = new Customer($email,$ctrl->get_db());
-        $this->assertNull($testCustomer->data->fName);
+	try{
+        	$testCustomer = new Customer($email,$ctrl->get_db());
+	} catch( Exception $e)
+	{
+		$this->assertNotNull($e);
+		//$this->assertNull($testCustomer);
+	}
     }
 }
