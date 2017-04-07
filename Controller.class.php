@@ -240,7 +240,7 @@ class Controller
         $site->printNav("owner");
         $site->printCombinedCalFooter();
         $page->printHtml();
-        $page->printCalendar(); // Shows combined view - uses $empID = 99
+        $page->printCalendar(); 
 
     }
 
@@ -261,7 +261,7 @@ class Controller
         $error_page = new FormError();
         $form = new RegistrationForm();
         $site->printHeader();
-        $site->printNav("customer");
+        $site->printNav("reg");
 
         $error_page->printHtml($error);
         $form->printHtml();
@@ -328,7 +328,7 @@ class Controller
 
     }
 
-    // Main management page for manages
+    // Main management page for managers
     public function managementPageOwner()
     {
 
@@ -447,7 +447,7 @@ class Controller
         $site = new SiteContainer();
 
         $site->printHeader();
-        $site->printNav($_SESSION);
+        $site->printNav($_SESSION['type']);
         echo "You are not allowed to access this resource. Return <a href=\"/\">Home</a>";
         $site->printFooter();
 
@@ -565,6 +565,9 @@ class Controller
     
     public function add_working_time($empID, $start, $end) // associate employee to all appointments between $start and $end
     {
+        if ($end <= $start)
+            return false;
+        
         while ($start < $end)
         {
             $sd = $start->format("Y-m-d H:i:s");
@@ -648,8 +651,7 @@ class Controller
     }
 
     /**
-     * Should be called by an ajax request for employee calendar HTML, not fully implemented
-     * still needs to deal with booking links etc
+     * Handles Ajax request for employee calendar HTML.
      */
     public function getCustCal($empNo, $weeks, $caltype = '')
     {
@@ -713,7 +715,7 @@ class Controller
             
             $cw = new CanWork($empId, $dt, $this->db); // not a booking yet!!
             
-            $site->printNav("cust");
+            $site->printNav($_SESSION['type']);
             $bkv->printConfirm($cw, $empdata);
             
             $site->printFooter();   
@@ -813,14 +815,32 @@ class Controller
             return;
         }
         
+        
+        
+        
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
+            $error = explode(',', $error_string);
+        }
+        
+
+
+        
+        // add error form
+        
         $employees = $this->workers_availability();
         
+        require_once('views/FormError.class.php');
         require_once('views/WorkerAvailability.class.php');
+        $error_page = new FormError();
         $site = new SiteContainer();
         $page = new WorkerAvailability();
 
         $site->printHeader();
         $site->printNav("owner");
+        $error_page->printHtml($error);
         $page->printHtml($employees);
         $site->printFooter();   
 

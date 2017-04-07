@@ -134,6 +134,13 @@ public function printNav($type = "none")
                 </ul>
             <?php }
             
+            elseif ($type == "reg"){ ?>
+            
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="login.php">Login</a></li>
+                </ul>
+            <?php }
+            
             else { ?>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="register.php">Register</a></li>

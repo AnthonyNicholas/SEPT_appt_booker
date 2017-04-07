@@ -12,6 +12,7 @@ class RegistrationForm
     ?>
     
     <div class = "jumbotron jumbotron-fluid">
+        Register a new customer account for the booking system below.<br><br>
          <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
            <div class="form-group">
                <label class="control-label col-sm-3" for="email">Email *</label>
