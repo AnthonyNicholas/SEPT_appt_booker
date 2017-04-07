@@ -6,6 +6,15 @@ class AddEmpOwner
     public function printHtml()
     {
         ?>
+        
+        <div class="container">
+            <div class = "jumbotron jumbotron-fluid">
+                <h3>Add an Employee</h3><br>
+                Add an employee into the system by entering their details below.    
+            </div>
+        </div>
+
+        <div class="container">
         <div class = "jumbotron jumbotron-fluid">
             <form class="form-horizontal" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post">
                 <div class="form-group">
@@ -27,6 +36,8 @@ class AddEmpOwner
                 </div>
             </form>
         </div>
+        </div>
+
         
         <?php
     }
