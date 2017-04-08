@@ -1,7 +1,8 @@
-# SEPT_appt_booker - Peer assessment
+# SEPT_appt_booker
+An appointment booking system able to be used by wide range of businesses.
 
-Team Members:
-Adam Young s3564209 - 25% Contribution
-Anthony Nicholas s3607162 - 25% Contribution
-Danny Ho s3603075 - 25% Contribution
-Jake Williams s3448342 - 25% Contribution
+Team Members and contributions:
+Adam Young s3564209 - 25% 
+Anthony Nicholas s3607162 - 25%
+Jake Williams s3448342 - 25%
+Danny Ho s3603075 - 25%
