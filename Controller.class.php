@@ -375,13 +375,13 @@ class Controller
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
             $error = 'fname';
-            header("Location: /empOwnerAdd.php?error=$error"); //Check first name
+            header("Location: empOwnerAdd.php?error=$error"); //Check first name
             return false;
         } 
         
         if (!preg_match("/^[a-zA-Z'-]+$/", $lname))    {
             $error = 'lname';
-            header("Location: /empOwnerAdd.php?error=$error"); //Check last name
+            header("Location: empOwnerAdd.php?error=$error"); //Check last name
             return false;
         } 
         else    {
@@ -446,7 +446,8 @@ class Controller
         $site = new SiteContainer();
 
         $site->printHeader();
-        $site->printNav($_SESSION['type']);
+        if (isset($_SESSION['type']))
+            $site->printNav($_SESSION['type']);
         echo "You are not allowed to access this resource. Return <a href=\"/\">Home</a>";
         $site->printFooter();
 

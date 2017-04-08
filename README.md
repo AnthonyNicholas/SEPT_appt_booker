@@ -11,7 +11,17 @@ Tutors name: Lawerence Cavedon
 Tute/lab day/time: Tuesday 9.30am
 
 ## Installation ##
-This PHP application will run on PHP 7.0.16-4 and MySQL Server. 
+This PHP application will run on PHP 7.0.16-4 and MySQL Server.
+
+1. Unzip all files into the root directory of public_html. This application will
+not work under a subfolder due to the nature of some redirect implementations.
+
+2. Edit config.php with the database username, password and name. Ensure
+the database has been created and appt_booker.sql tables and data imported into
+the new database.
+
+3. Login to the owner account with the provided credentials.
+
 
 ## Testing ##
 The PHPUnit testing command is phpunit.phar. All test classes are contained
