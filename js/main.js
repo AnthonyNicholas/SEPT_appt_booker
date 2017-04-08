@@ -38,6 +38,7 @@ function add_hrs(empID)
   date.setAttribute('placeholder',"yyyy-mm-dd");
   date.setAttribute('name',"date[]");
   date.setAttribute('class', "form-control");
+  date.required = true;
   
   date_group.appendChild(date_label);
   date_group.appendChild(date);
@@ -56,6 +57,7 @@ function add_hrs(empID)
   start.setAttribute('name',"start[]");
   start.setAttribute('id',"start[]");
   start.setAttribute('class', "form-control");
+  start.required = true;
   
   start_group.appendChild(start_label);
   start_group.appendChild(start);
@@ -72,6 +74,7 @@ function add_hrs(empID)
   end.setAttribute('type',"time");
   end.setAttribute('name',"end[]");
   end.setAttribute('class', "form-control");
+  end.required = true;
   
   
   end_group.appendChild(end_label);
