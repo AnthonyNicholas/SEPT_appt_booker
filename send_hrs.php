@@ -9,6 +9,7 @@ $controller = new Controller();
 if (!isset($_POST))
     header('Location: WorkerAvailability.php');
 else
-    $controller->add_working_times($_POST);
+    if (!$controller->add_working_times($_POST))
+        header('Location: WorkerAvailability.php?error=bad_time');
 
 

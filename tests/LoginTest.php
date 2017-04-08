@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 // pass is testPwor
 class LoginTest extends TestCase
 {
+
+    // When customer logs in with valid details, customer is logged in & email is stored in session. 
     /**
      * @runInSeparateProcess
      */
@@ -19,6 +21,9 @@ class LoginTest extends TestCase
         $this->assertEquals($_SESSION['email'], $email);
 
     }
+
+    // When customer logs in with incorrect password, login fails. 
+
     /**
      * @runInSeparateProcess
      */
@@ -31,6 +36,9 @@ class LoginTest extends TestCase
         $ctrl->login($email,'wrong password');
 
     }
+
+    // When customer logs in with incorrect password due to incorrect letter case (ie lowercase rather than uppercase being used), login fails. 
+
     /**
      * @runInSeparateProcess
      */

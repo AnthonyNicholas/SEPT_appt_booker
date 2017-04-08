@@ -7,7 +7,7 @@
 
 use PHPUnit\Framework\TestCase;
 
-class EmployeeTests extends TestCase
+class EmployeeTest extends TestCase
 {
   
     /**
@@ -17,7 +17,7 @@ class EmployeeTests extends TestCase
     {
         $controller = new Controller();
         
-        $result = $controller->add_working_time(8, new DateTime('2017-04-26 08:00:00'), new DateTime('2017-04-26 16:00:00'));
+        $result = $controller->add_working_time(8, new DateTime('2017-08-29 08:00:00'), new DateTime('2017-08-29 16:00:00'));
         
         $this->assertEquals($result, true);
         
@@ -30,7 +30,7 @@ class EmployeeTests extends TestCase
     {
         $controller = new Controller();
         
-        $result = $controller->add_working_time(8, new DateTime('2017-04-26 08:00:00'), new DateTime('2017-04-26 16:00:00'));
+        $result = $controller->add_working_time(8, new DateTime('2017-09-26 08:00:00'), new DateTime('2017-09-26 16:00:00'));
         
         $this->assertEquals($result, false);
         
@@ -43,7 +43,7 @@ class EmployeeTests extends TestCase
     {
         $controller = new Controller();
         
-        $result = $controller->add_working_time(80, new DateTime('2017-04-01 08:00:00'), new DateTime('2017-04-01 16:00:00'));
+        $result = $controller->add_working_time(80, new DateTime('2017-09-01 08:00:00'), new DateTime('2017-09-01 16:00:00'));
         
         $this->assertEquals($result, false);
     }
@@ -134,7 +134,7 @@ class EmployeeTests extends TestCase
     {
         $controller = new Controller();
         
-        $time['date'][0] = "2017-04-19";
+        $time['date'][0] = "2017-09-30";
         $time['start'][0] = "08:00";
         $time['end'][0] = "16:00";
         $time['empID'] = 8;
@@ -151,7 +151,7 @@ class EmployeeTests extends TestCase
     {
         $controller = new Controller();
         
-        $time['date'][0] = "2017-04-19";
+        $time['date'][0] = "2017-04-10";
         $time['start'][0] = "08:00";
         $time['end'][0] = "16:00";
         $time['empID'] = 80;

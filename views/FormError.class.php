@@ -15,14 +15,14 @@ class FormError
                            "duplicate" => "An account with that email address already exists",
                            "err_login_failed" => "Invalid username or password - please try again",
                            "login_required" => "Please log in to access restricted content",
-                           "bad_time" => "Please enter valid future times only");
+                           "bad_time" => "Please enter valid times only");
 
     public function printHtml($errors) // take the list of errors and print relevant messages
     {
          echo "<div class = \"error_list\">";
 
          for ($i = 0; $i < count($errors); $i++) 
-             echo "<div class = \"error_msg\"><h2>".$this->error[$errors[$i]]."</h2></br></div>"; 
+             echo "<div class = \"text-danger\"><h3>".$this->error[$errors[$i]]."</h3></br></div>"; 
 
          echo "</div>";
     }

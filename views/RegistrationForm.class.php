@@ -47,13 +47,13 @@ class RegistrationForm
             <div class="form-group">
                <label class="control-label col-sm-3" for="password">Password *</label>
                <div class="col-sm-9">
-                   <input name="pword" type="text_input" class="form-control" id="password" placeholder="Paswword" required>
+                   <input name="pword" type="password" class="form-control" id="password" placeholder="Paswword" required>
               </div>
             </div>
             <div class="form-group">
                <label class="control-label col-sm-3" for="pword2">Retype password *</label>
                <div class="col-sm-9">
-                   <input name="pword2" type="text" class="form-control" id="pword2" placeholder="Retype Password" required>
+                   <input name="pword2" type="password" class="form-control" id="pword2" placeholder="Retype Password" required>
               </div>
             </div>
             <div class="form-group"> 
