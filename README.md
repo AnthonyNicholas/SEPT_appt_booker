@@ -20,8 +20,10 @@ not work under a subfolder due to the nature of some redirect implementations.
 the database has been created and appt_booker.sql tables and data imported into
 the new database.
 
-3. Login to the owner account with the provided credentials.
+3. Login to the default owner account with the provided credentials.
 
+Default Owner login: owner@email.com 
+           Password: pw
 
 ## Testing ##
 The PHPUnit testing command is phpunit.phar. All test classes are contained
