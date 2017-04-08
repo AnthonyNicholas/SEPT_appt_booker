@@ -1,38 +1,7 @@
-# SEPT_appt_booker
-An appointment booking system able to be used by wide range of businesses.
+# SEPT_appt_booker - Peer assessment
 
 Team Members:
-Adam Young s3564209
-Anthony Nicholas s3607162
-
-
-## Testing ##
-The PHPUnit testing command is phpunit.phar. All test classes are contained
-in the tests subfolder and can be run individually or all at once.
-Example cammands for the test cases Adam wrote are below.
-
-
-Test a single function (Will give you more detailed results in the event of failure):
-
-php phpunit.phar --bootstrap Controller.class.php tests/LoginTest.php
-
-Run all tests
-php phpunit.phar --bootstrap Controller.class.php --testdox testsAn
-
-Resources:
-
-https://phpunit.de/getting-started.html
-
-https://phpunit.de/manual/current/en/writing-tests-for-phpunit.html
-
-Test addition
-
-12345
-
-6789
-
-09876
-
-9999
-
-1234
+Adam Young s3564209 - 25% Contribution
+Anthony Nicholas s3607162 - 25% Contribution
+Danny Ho s3603075 - 25% Contribution
+Jake Williams s3448342 - 25% Contribution
