@@ -64,13 +64,13 @@ class Controller
     {
         if ($this->custLoggedIn())
         {
-            $this->redirect("/mainPageCust.php");
+            $this->redirect("mainPageCust.php");
         } elseif ($this->ownerLoggedIn())
         {
-            $this->redirect("/mainPageOwner.php");
+            $this->redirect("mainPageOwner.php");
         } else
         {
-            $this->redirect("/login.php");
+            $this->redirect("login.php");
         }
 
     }
@@ -80,10 +80,10 @@ class Controller
         // If already logged in, redirect appropriately
         if ($this->custLoggedIn())
         {
-            $this->redirect("/mainPageCust.php");
+            $this->redirect("mainPageCust.php");
         } elseif ($this->ownerLoggedIn())
         {
-            $this->redirect("/mainPageOwner.php");
+            $this->redirect("mainPageOwner.php");
         }
         
         // prepare errors to display if there are any
@@ -135,19 +135,19 @@ class Controller
             // Login successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'customer';
-            $this->redirect("/");
+            $this->redirect("index.php");
 
         } elseif ($user = $res_own->fetch_assoc())
         {
             // Login of owner successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'owner';
-            $this->redirect("/");
+            $this->redirect("index.php");
 
         } else
         {
             $error = "err_login_failed";
-            $this->redirect("/login.php?error=$error");
+            $this->redirect("login.php?error=$error");
             echo $error;
         }
 
@@ -158,7 +158,7 @@ class Controller
     {
         // Restricted access
         if ( ! $this->custLoggedIn() )
-            $this->redirect("/login.php?error=login_required");
+            $this->redirect("login.php?error=login_required");
 
         // here the login form view class is loaded and method printHtml() is called    
         require_once('views/CustMainPageView.class.php');
@@ -172,7 +172,7 @@ class Controller
             $this->user = new Customer($_SESSION['email'], $this->db);
         } catch (Exception $e)
         {
-            $this->redirect("/login.php?error=login_required");
+            $this->redirect("login.php?error=login_required");
             echo "err_user_not_found";
         }
 
@@ -298,7 +298,7 @@ class Controller
         if (!empty($errors)) // if registration fails, back to form with errors
         {       
             $errors = implode(',', $errors);
-            $this->redirect("/register.php?error=".htmlspecialchars(urlencode($errors)));
+            $this->redirect("register.php?error=".htmlspecialchars(urlencode($errors)));
             echo $errors;
             return false;
             //header("Location: /register.php?error=".htmlspecialchars(urlencode($errors))); 
@@ -471,7 +471,9 @@ class Controller
         if ( isset($_SERVER['HTTP_HOST']) )
         {
             $site_url = empty($this->config['site_url']) ? '//'.$_SERVER['HTTP_HOST'] : $this->config['site_url'];
-            header('Location: ' . $site_url . $page);
+
+            //header('Location: ' . $site_url . $page);
+            header('Location: ' . $page);
         }
     }
     
@@ -851,7 +853,7 @@ class Controller
     {
         // check logged in
         if ( ! $this->custLoggedIn() )
-            $this->redirect("/login.php?error=login_required");
+            $this->redirect("login.php?error=login_required");
             
         require_once('models/Customer.class.php');
         require_once('views/BookingSummary.class.php'); 
