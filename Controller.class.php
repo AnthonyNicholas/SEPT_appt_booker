@@ -276,6 +276,18 @@ class Controller
      
         if (strcmp($pword, $pword2)) // check passwords match
             $errors[] = 'password';
+
+        // different regexes for clarity
+        $containsLowerLetter  = preg_match('/[a-z]/',    $pword);
+        $containsUpperLetter  = preg_match('/[A-Z]/',    $pword);
+        $containsDigit   = preg_match('/\d/',          $pword);
+        $containsSpecial = preg_match('/[^a-zA-Z\d]/', $pword);
+
+        $goodPassword = $containsLowerLetter && $containsUpperLetter && $containsDigit && $containsSpecial && strlen($pword) >=6;
+
+        // Only enforce password strength if this file doesnt exist
+        if (!file_exists('IGNORE_PASSWORD_STRENGTH') && ! $goodPassword)
+            $errors[] = 'pstrength';
   
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) // validate email
             $errors[] = 'email';
