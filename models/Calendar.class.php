@@ -195,7 +195,6 @@ class Calendar
 
   public function ajaxGetCustCalByType( $empNo , $weeks, $appType)
   {
-      require_once('models/AppType.class.php');
     
       //HORIZONTAL BIG CALENDAR
       $calendar_id = (int)($empNo); //sanitize numeric value
@@ -212,10 +211,6 @@ class Calendar
         $first_day = 1;
       }
       
-      
-      $appType = new AppType($appType); // retrieves appType object
-      $duration = $appType->get_appDuration(); // retrieves appDuration - an integer between 1 and 4
-
       // Query should select available times for given employee
       $query = "SELECT w.empID as calendar_id, t.dateTime as timestamp,
               '' as firstname,
@@ -243,7 +238,7 @@ class Calendar
               )
               ORDER BY t.dateTime ASC;";
       $stmt = $this->db->prepare($query);
-      $stmt->bind_param('siss', $empNo, $duration, $empNo, $appType); // check variable types - what does 's' mean is it string?
+      $stmt->bind_param('siss', $empNo, $appType->get_appDuration(), $empNo, $appType->get_appType()); // check variable types - what does 's' mean is it string?
       $stmt->execute();
       $res = $stmt->get_result();
       $results = $res->fetch_all(MYSQLI_ASSOC);

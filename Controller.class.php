@@ -741,8 +741,16 @@ class Controller
     public function getCustCal($empNo, $weeks, $caltype = '')
     {
         require_once('models/Calendar.class.php');
+        require_once('models/AppType.class.php');
         
         $cal = new Calendar($this->db);
+
+        // retrieves appType object
+        if ($caltype != '' && $caltype != 'big'){
+            if (!$appType = new AppType($caltype, $this->db)) //If can't retrieve type from DB, set to no type
+                $caltype = '';
+        }
+        
         try{
             // Attempt to generate the calendar
             if ($_SESSION['type'] == 'owner')
@@ -764,9 +772,9 @@ class Controller
             }
             else
             {
-                // if (($caltype != '') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
-                //     echo json_encode(array("success"=>true,"content"=>$json_cal));
-                if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
+                if (($caltype != '' && $caltype != 'big') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
+                    echo json_encode(array("success"=>true,"content"=>$json_cal));
+                elseif ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
                     echo json_encode(array("success"=>true,"content"=>$json_cal));
                 else
                     throw new Exception("Failed to render Calendar");

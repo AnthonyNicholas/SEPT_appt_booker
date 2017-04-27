@@ -26,9 +26,6 @@ class AppType
     public function load($appType, $db)
     {
         
-        $db->query("INSERT INTO AppType (appType, appDesc, appDuration)
-        VALUES ('$appType','$appDesc', '$appDuration')"); //Insert new app type
-
         $q = $db->prepare("SELECT * FROM AppType WHERE appType = ?;");
         $q->bind_param('s', $appType);
         $q->execute();
