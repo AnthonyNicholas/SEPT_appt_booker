@@ -6,19 +6,25 @@ class CustMainPageView    {
     ?>
     <div class="container">
       <div class = "jumbotron jumbotron-fluid">
-          <h3>Book an Appointment</h3>
-          <?php echo "Welcome to the appointment booking system, ".$u->get_fullName(); ?>.<br>
-          Click on a desired appointment under a particular staff member to
-          make a booking, or view current bookings by clicking the link in the
-          navigation bar above.
-      </div>
-    </div>
-    
-    <select name="appType" >
-              <option value="Appointment Type 1" >Appointment Type 1</option>
-              <option value="Appointment Type 2" >Appointment Type 2</option>
-    </select>
+        <h3>Book an Appointment</h3>
+        <?php echo "Welcome to the appointment booking system, ".$u->get_fullName(); ?>.
 
+        Click on a desired appointment under a particular staff member to
+        make a booking, or view current bookings by clicking the link in the
+        navigation bar above.
+        <p></p>
+        <div class="row">
+          <!--<div class="form-group">-->
+            <label class="control-label col-sm-4" for="selectAppType">Select appointment type (Not yet functional):</label>
+            <div class="col-sm-8">
+              <select id = "selectAppType" name="selectAppType" class="form-control">
+                  <option value="1" >Appointment Type 1</option>
+                  <option value="2" >Appointment Type 2</option>
+              </select>
+            </div>
+        </div> <!-- end row-->
+      </div> <!-- end jumbotron-->
+    </div> <!-- end container-->
     <?php
     }
 
