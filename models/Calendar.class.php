@@ -191,6 +191,65 @@ class Calendar
   
     }
 
+   /* Returns JSON settings to the clientside js.  Retrieves employee availabilities by type of appointment  */
+
+  public function ajaxGetCustCalByType( $empNo , $weeks, $appType)
+  {
+      //HORIZONTAL BIG CALENDAR
+      $calendar_id = (int)($empNo); //sanitize numeric value
+      $number_of_weeks = (int)($weeks);//sanitize numeric value
+      if($number_of_weeks == 0 || $calendar_id == 0){
+        return false;
+      }
+      $booking_url = isset($_POST['booking_url'])? Helper::sanitize($_POST['booking_url']):"";
+      $max_display = (isset($_POST['max_display']))? (int)($_POST['max_display']) : 7;
+      //set first day
+      if(isset($_POST['first_day']) && strtolower($_POST['first_day'])=='sunday'){
+        $first_day = 0;
+      }else{
+        $first_day = 1;
+      }
+      
+      $appType = new appType($appType); // retrieves appType object
+      $duration = $appType->get_appDuration(); // retrieves appDuration - an integer between 1 and 4
+
+      // Query should select available times for given employee
+      $query = "SELECT w.empID as calendar_id, t.dateTime as timestamp,
+              '' as firstname,
+              '' as lastname,
+              '' as email,
+              '' as phone,
+              0 as booked,
+              0 as noticed,
+              '' as deleted
+              FROM CanWork w, TimeSlot t
+              WHERE w.dateTime = t.dateTime
+              -- Depending on the duration of the appointment type, check enough consecutive timeslots are free
+              AND NOT EXISTS ( 
+                  SELECT b.dateTime
+                  FROM Bookings b
+                  WHERE b.empID = ?
+                  AND b.dateTime >= t.dateTime
+                  AND b.dateTime <= t.dateTime + (?*30*60) - 10; -- if duration = 1, just check one slot.  Minus 10 seconds to ensure we are not checking too many slots.
+              ) 
+              AND w.empID = ?
+              AND w.empID IN (  --Get employees who have right skill for this type of Appointment
+                  SELECT empID
+                  FROM HasSkill
+                  WHERE appType = ?
+              )
+              ORDER BY t.dateTime ASC;";
+      $stmt = $this->db->prepare($query);
+      $stmt->bind_param('siss', $empNo, $duration, $empNo, $appType); // check variable types - what does 's' mean is it string?
+      $stmt->execute();
+      $res = $stmt->get_result();
+      $results = $res->fetch_all(MYSQLI_ASSOC);
+      $helper = new Helper();
+    
+      $output = $helper->prepareBigOutput($results,$calendar_id,$first_day,$number_of_weeks, $booking_url ,$max_display);
+      return $output;
+
+  }
 
 
 
