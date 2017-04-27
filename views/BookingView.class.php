@@ -1,7 +1,7 @@
 <?php
 class BookingView
 {
-    public function printConfirm($cw, $emp) // CanWork, Employee
+    public function printConfirm($cw, $emp, $apptypes, $apptype) // CanWork, Employee
     {
       $date = $cw->get_dateTime();
     ?>
@@ -14,6 +14,12 @@ class BookingView
               <p>Time: <?php echo $date->format("H:i"); ?> </p>
               <form class='modal-form' id='modal_form_<?php echo $cw->timestamp ;?>' action="" method="post">
                 <input type="hidden" name="a" value="create"/>
+                <div>Type: <select name="apptype">
+                  <?php foreach($apptypes as $id => $type) {
+                    $state = (!empty($apptype) && $apptype == $id) ? " selected":"";
+                    echo "<option value=\"$id\"$state>$type</option>";
+                  } ?>
+                </select></div>
                 <div><a class="btn btn-link" href="index.php">Return to calendar</a>
                 <input type="submit" class="btn btn-primary" value="Confirm Booking"/></div>    
               </form>
@@ -40,13 +46,14 @@ class BookingView
       
     }
     
-    public function printError()
+    public function printError($msg = "")
     {
     ?>
         <div class="panel panel-default panel-address panel-appointment-height">
               <div class="company-tag label label-primary">Confirm appointment details</div>
             <div class='panel-body'>
               <h3>Appointment Booking Unsuccessful</h3>
+              <p><?php echo $msg;?></p>
                 <div><a class="btn btn-link" href="index.php">Return to main page</a></div>
             </div><!--end of panel-body-->        
           </div><!--end of panel-->
