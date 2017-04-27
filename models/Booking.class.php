@@ -18,6 +18,8 @@ class Booking
     private $emp_fname;
     private $emp_lname;
     
+    private $type;
+    
     public function __construct( $empID, $dateTime, $db )
     {
         $this->empID = $empID;
@@ -38,6 +40,11 @@ class Booking
         
         $this->empId = $result['empID'];
         $this->email = $result['email'];
+        $this->type = $result['appType'];
+        
+        if ($this->type == null)
+            $this->type = "Unspecified";
+        
         $this->dateTime = new DateTime($result['dateTime']);
         
         $q = $db->prepare("SELECT fName, lName FROM Employees WHERE empID = ?;");
@@ -56,4 +63,5 @@ class Booking
     public function get_email() { return $this->email; }
     public function get_fname() { return $this->emp_fname; }
     public function get_lname() { return $this->emp_lname; }
+    public function get_type() { return $this->type; }
 }

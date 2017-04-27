@@ -16,11 +16,12 @@ class BookingSummary
             $date_time = $bookings[$i]->get_dateTime();
             $fname = $bookings[$i]->get_fname();
             $lname = $bookings[$i]->get_lname();
+            $type = $bookings[$i]->get_type();
 
             $date = $date_time->format("d-m-Y");
             $time = $date_time->format("H:i:s");
                 
-            echo "<div class = \"list-group-item\">".$date."&nbsp;&nbsp;&nbsp;".$time."&nbsp;&nbsp;&nbsp; with ".$fname." ".$lname."</div>";  
+            echo "<div class = \"list-group-item\">".$date."&nbsp;&nbsp;&nbsp;".$time."&nbsp;&nbsp;&nbsp; with ".$fname." ".$lname."&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;".$type."</div>";  
         }
     }
 }

@@ -9,7 +9,7 @@ function add_hrs(empID)
   {
     f = document.createElement("form");
     f.setAttribute('method',"post");
-    f.setAttribute('action',"../send_hrs.php");
+    f.setAttribute('action',"send_hrs.php");
     f.setAttribute('id',"form_"+empID);
     f.setAttribute('class',"form-inline");
     
@@ -129,10 +129,3 @@ function add_hrs(empID)
   
 }
 
-
-
-
-function addItemToUsersList(itemId)
-{
- 
-}
