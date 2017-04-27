@@ -229,8 +229,8 @@ class Calendar
                   SELECT b.dateTime
                   FROM Bookings b
                   WHERE b.empID = ?
-                  AND b.dateTime >= t.dateTime
-                  AND b.dateTime <= t.dateTime + (?*30*60) - 10; -- if duration = 1, just check one slot.  Minus 10 seconds to ensure we are not checking too many slots.
+                  AND b.dateTime >= t.dateTime;
+                  AND b.dateTime < (t.dateTime + INTERVAL (?)*30 MINUTE);  
               ) 
               AND w.empID = ?
               AND w.empID IN (  --Get employees who have right skill for this type of Appointment

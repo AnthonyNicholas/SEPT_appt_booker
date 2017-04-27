@@ -752,7 +752,9 @@ class Controller
             }
             else
             {
-                if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
+                if (($caltype != '') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
+                    echo json_encode(array("success"=>true,"content"=>$json_cal));
+                elseif ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
                     echo json_encode(array("success"=>true,"content"=>$json_cal));
                 else
                     throw new Exception("Failed to render Calendar");
