@@ -16,7 +16,9 @@ class FormError
                            "duplicate" => "An account with that email address already exists",
                            "err_login_failed" => "Invalid username or password - please try again",
                            "login_required" => "Please log in to access restricted content",
-                           "bad_time" => "Please enter valid times only");
+                           "bad_time" => "Please enter valid times only",
+                           "appType" => "Please re-enter name of new appointment. Name must consist of alphanumeric characters only.",
+                           "appDesc" => "Please enter valid times only");
 
     public function printHtml($errors) // take the list of errors and print relevant messages
     {

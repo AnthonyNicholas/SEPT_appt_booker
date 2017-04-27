@@ -383,7 +383,7 @@ class Controller
     }
 
     // processes and adds entered employee into the database
-    public function addActivityOwner($fname,$lname)
+    public function addEmpOwner($fname,$lname)
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
             $error = 'fname';
@@ -404,8 +404,8 @@ class Controller
         
     }
 
-    // displays the form for adding employees
-    // possibly lists all current employees too?
+   // displays the form for adding new Appointment Types
+    // possibly lists all current app types too?
     public function addActivityFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
@@ -440,28 +440,28 @@ class Controller
 
     }
 
-    // processes and adds entered employee into the database
-    public function addEmpOwner($fname,$lname)
+
+    // processes and adds new activity type into the database
+    public function addActivityOwner($appType,$appDesc,$appDuration)
     {
-        if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
-            $error = 'fname';
-            header("Location: empOwnerAdd.php?error=$error"); //Check first name
+        if (!preg_match("/^[a-zA-Z ]+$/", $appType))    { // need to check regex
+            $error = 'appType'; 
+            header("Location: addActivityOwner.php?error=$error"); // need to add appropriate error
             return false;
         } 
         
-        if (!preg_match("/^[a-zA-Z'-]+$/", $lname))    {
-            $error = 'lname';
-            header("Location: empOwnerAdd.php?error=$error"); //Check last name
+        if (!preg_match("/^[a-zA-Z0-9'-. ]+$/", $appDesc))    { // need to check regex
+            $error = 'appDesc';
+            header("Location: addActivityOwner.php?error=$error"); 
             return false;
         } 
         else    {
-            $this->db->query("INSERT INTO Employees (empID, fName, lName)
-            VALUES ('NULL', '$fname','$lname')"); //Insert new employee
+            $this->db->query("INSERT INTO AppType (appType, appDesc, appDuration)
+            VALUES ('$appType','$appDesc', '$appDuration')"); //Insert new app type
              return true;
         }
         
     }
-
     
     public function helpPage()
     {

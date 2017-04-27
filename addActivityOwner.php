@@ -9,8 +9,9 @@ $ctrl = new Controller();
 
 if ($ctrl->ownerLoggedIn())    {
     
-    if (isset($_POST['fname']))    {
-        if ($ctrl->addActivityOwner($_POST['fname'], $_POST['lname'])) {
+    if (isset($_POST['appType']))    {
+        
+        if ($ctrl->addActivityOwner($_POST['appType'], $_POST['appDesc'], $_POST['appDuration'])) {
             $ctrl->addActivityFormOwner(true);
         }
     }
