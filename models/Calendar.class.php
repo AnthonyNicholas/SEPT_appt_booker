@@ -195,6 +195,8 @@ class Calendar
 
   public function ajaxGetCustCalByType( $empNo , $weeks, $appType)
   {
+      require_once('models/AppType.class.php');
+    
       //HORIZONTAL BIG CALENDAR
       $calendar_id = (int)($empNo); //sanitize numeric value
       $number_of_weeks = (int)($weeks);//sanitize numeric value
@@ -210,7 +212,8 @@ class Calendar
         $first_day = 1;
       }
       
-      $appType = new appType($appType); // retrieves appType object
+      
+      $appType = new AppType($appType); // retrieves appType object
       $duration = $appType->get_appDuration(); // retrieves appDuration - an integer between 1 and 4
 
       // Query should select available times for given employee

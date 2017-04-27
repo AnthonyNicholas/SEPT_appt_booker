@@ -162,11 +162,14 @@ class Controller
 
         // here the login form view class is loaded and method printHtml() is called    
         require_once('views/CustMainPageView.class.php');
+        
         $site = new SiteContainer();
         $page = new CustMainPageView();
 
-        // Load the Customer model, because this is a customer page
+        // Load the Customer model, because this is a customer page & AppType which is needed to retrieve correct calendar
         require_once('models/Customer.class.php');
+        require_once('models/AppType.class.php'); 
+        
         // Give the model the email address in the session and the database object
         try{
             $this->user = new Customer($_SESSION['email'], $this->db);
@@ -761,9 +764,9 @@ class Controller
             }
             else
             {
-                if (($caltype != '') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
-                    echo json_encode(array("success"=>true,"content"=>$json_cal));
-                elseif ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
+                // if (($caltype != '') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
+                //     echo json_encode(array("success"=>true,"content"=>$json_cal));
+                if ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
                     echo json_encode(array("success"=>true,"content"=>$json_cal));
                 else
                     throw new Exception("Failed to render Calendar");
