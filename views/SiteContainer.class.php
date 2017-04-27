@@ -115,6 +115,7 @@ public function printNav($type = "none")
                     <li><a href="mainPageOwner.php">View Bookings</a></li>
                     <li><a href="../empOwnerAdd.php">Add Employee</a></li>
                     <li><a href="../WorkerAvailability.php">Employee Times</a></li>
+                    <li><a href="addActivityOwner.php">Add Appointment Type</a></li>
                     <li><a href="../ownerCombinedCal.php">Combined calendar view</a></li>
                     <li><a href="../helpPage.php">Help</a></li>
                 </ul>
