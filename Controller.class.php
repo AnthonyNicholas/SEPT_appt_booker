@@ -444,7 +444,7 @@ class Controller
     // processes and adds new activity type into the database
     public function addActivityOwner($appType,$appDesc,$appDuration)
     {
-        if (!preg_match("/^[a-zA-Z ]+$/", $appType))    { // need to check regex
+        if (!preg_match("/^[a-zA-Z0-9'-. ]+$/", $appType))    { // need to check regex
             $error = 'appType'; 
             header("Location: addActivityOwner.php?error=$error"); // need to add appropriate error
             return false;
@@ -455,10 +455,19 @@ class Controller
             header("Location: addActivityOwner.php?error=$error"); 
             return false;
         } 
+        if (!preg_match("/^[1-4]+$/", $appDuration))    { // need to check regex
+            $error = 'appDuration';
+            header("Location: addActivityOwner.php?error=$error"); 
+            return false;
+        } 
         else    {
-            $this->db->query("INSERT INTO AppType (appType, appDesc, appDuration)
-            VALUES ('$appType','$appDesc', '$appDuration')"); //Insert new app type
-             return true;
+            $q = $this->db->prepare("INSERT INTO AppType (appType, appDesc, appDuration)
+            VALUES ('$appType','$appDesc', '$appDuration')");
+        
+            if (!$q->execute())
+                return false;
+                
+            return true;
         }
         
     }

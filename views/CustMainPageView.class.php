@@ -13,6 +13,11 @@ class CustMainPageView    {
           navigation bar above.
       </div>
     </div>
+    
+    <select name="appType" >
+              <option value="Appointment Type 1" >Appointment Type 1</option>
+              <option value="Appointment Type 2" >Appointment Type 2</option>
+    </select>
 
     <?php
     }
