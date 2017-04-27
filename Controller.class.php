@@ -987,12 +987,21 @@ class Controller
         return $res->fetch_object();
      }
      
+    //BOOK AS OWNER FUNCTIONS
+     
     public function searchCustomerView()
     {
         if ( !$this->ownerLoggedIn() )
         {
             $this->restricted();
             return;
+        }
+        
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
+            $error = explode(',', $error_string);
         }
         
         require_once('views/SearchCustomer.class.php');
@@ -1003,6 +1012,7 @@ class Controller
         
         $site->printHeader();
         $site->printNav("owner");
+        $error_page->printHtml($error);
         $page->printHtml();
         $site->printFooter();   
         
@@ -1010,6 +1020,12 @@ class Controller
     
     public function bookAsCustomer($email)
     {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))    {
+            $error = 'email';
+            $this->redirect("bookAsCustomer.php?error=$error"); //Check email
+            return;
+        } 
+        
         $cust = $this->db->prepare("SELECT email FROM Customers WHERE email = ?;");
         $cust->bind_param('s', $email);
         $cust->execute();
@@ -1020,6 +1036,12 @@ class Controller
         }
         
         $row = mysqli_fetch_row($result);
+        
+        if (empty($row[0]))   {
+            $error = 'email';
+            $this->redirect("bookAsCustomer.php?error=$error"); //Check email
+            return;    
+        }
         
         if($row[0] == $email)   {
             $_SESSION['cust_email'] = $row[0];
