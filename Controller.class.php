@@ -400,8 +400,12 @@ class Controller
             return false;
         } 
         else    {
-            $this->db->query("INSERT INTO Employees (empID, fName, lName)
-            VALUES ('NULL', '$fname','$lname')"); //Insert new employee
+            $empID = NULL;
+            $q = $this->db->prepare("INSERT INTO Employees (empID, fName, lName)
+            VALUES (?,?,?);");
+            $q->bind_param('sss', $empID, $fname, $lname);
+            $q->execute();
+            //Insert new employee
              return true;
         }
         
@@ -983,7 +987,7 @@ class Controller
         return $res->fetch_object();
      }
      
-     public function searchCustomerView()
+    public function searchCustomerView()
     {
         if ( !$this->ownerLoggedIn() )
         {
