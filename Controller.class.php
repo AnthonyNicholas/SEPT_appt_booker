@@ -982,5 +982,78 @@ class Controller
 
         return $res->fetch_object();
      }
+     
+     public function searchCustomerView()
+    {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+        
+        require_once('views/SearchCustomer.class.php');
+        require_once('views/FormError.class.php');
+        $site = new SiteContainer();
+        $page = new SearchCustomer();
+        $error_page = new FormError();
+        
+        $site->printHeader();
+        $site->printNav("owner");
+        $page->printHtml();
+        $site->printFooter();   
+        
+    }
+    
+    public function bookAsCustomer($email)
+    {
+        $cust = $this->db->prepare("SELECT email FROM Customers WHERE email = ?;");
+        $cust->bind_param('s', $email);
+        $cust->execute();
+        $result = $cust->get_result();
+        
+        if (!$result)   {
+            return;
+        }
+        
+        $row = mysqli_fetch_row($result);
+        
+        if($row[0] == $email)   {
+            $_SESSION['cust_email'] = $row[0];
+            //Need to set user type
+            return true;
+        }
+  
+    }
+    
+    public function bookAsCustomerView()
+    {
+        require_once('views/CustMainPageView.class.php');
+        $site = new SiteContainer();
+        $page = new CustMainPageView();
+
+        // Load the Customer model, because this is a customer page
+        require_once('models/Customer.class.php');
+        // Give the model the email address in the session and the database object
+        try{
+            $this->user = new Customer($_SESSION['cust_email'], $this->db);
+        } catch (Exception $e)
+        {
+            $this->redirect("login.php?error=login_required");
+            echo "err_user_not_found";
+        }
+
+        $query = "SELECT fName, lName, empID
+                FROM Employees;";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $empArray = $res->fetch_all(MYSQLI_ASSOC);
+
+        $site->printHeader();
+        $site->printNav($this->user->type);
+        $page->printHtml($this->user);
+        $page->printCalendar($empArray);
+        $site->printFooter();
+    }
 }
 
