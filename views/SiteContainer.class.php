@@ -113,11 +113,11 @@ public function printNav($type = "none")
             <?php if ($type == "owner"){ ?>
                 <ul class="nav navbar-nav">
                     <li><a href="mainPageOwner.php">View Bookings</a></li>
-                    <li><a href="../empOwnerAdd.php">Add Employee</a></li>
-                    <li><a href="../WorkerAvailability.php">Employee Times</a></li>
+                    <li><a href="empOwnerAdd.php">Add Employee</a></li>
+                    <li><a href="WorkerAvailability.php">Employee Times</a></li>
                     <li><a href="addActivityOwner.php">Add Appointment Type</a></li>
-                    <li><a href="../ownerCombinedCal.php">Combined calendar view</a></li>
-                    <li><a href="../helpPage.php">Help</a></li>
+                    <li><a href="ownerCombinedCal.php">Combined calendar view</a></li>
+                    <li><a href="helpPage.php">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="logout.php">Log Out</a></li>
@@ -128,7 +128,7 @@ public function printNav($type = "none")
                 <ul class="nav navbar-nav">
                     <li><a href="mainPageCust.php">Book Appointment</a></li>
                     <li><a href="BookingSummary.php">My Bookings</a></li>
-                    <li><a href="../helpPage.php">Help</a></li>
+                    <li><a href="helpPage.php">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="logout.php">Log Out</a></li>

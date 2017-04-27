@@ -27,7 +27,7 @@ class WorkerAvailability
             $lname = $employees[$i]['lName'];
             
             echo "<br>";
-            echo "<form id=\"form\" method=\"POST\" action = \"../send_hrs.php\">";
+            echo "<form id=\"form\" method=\"POST\" action = \"send_hrs.php\">";
             echo "<h4 class = \"list-group-item-heading\">".$fname." ".$lname."</h4>";
               
             foreach($employees[$i]['shifts'] as $value)
