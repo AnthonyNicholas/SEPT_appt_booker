@@ -745,11 +745,10 @@ class Controller
         
         $cal = new Calendar($this->db);
 
-        // retrieves appType object
-        if ($caltype != '' && $caltype != 'big'){
-            if (!$appType = new AppType($caltype, $this->db)) //If can't retrieve type from DB, set to no type
-                $caltype = '';
-        }
+        if (!preg_match("/^[a-zA-Z0-9 ]+$/", $caltype))    { // need to check regex
+              $error = "bad_apptype";
+              header("Location: mainPageCust.php?error=$error"); 
+        } 
         
         try{
             // Attempt to generate the calendar
@@ -772,8 +771,11 @@ class Controller
             }
             else
             {
-                if (($caltype != '' && $caltype != 'big') && ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype)))
-                    echo json_encode(array("success"=>true,"content"=>$json_cal));
+                // If selecting calendar by appointment type (numeric value, retrieves appType object & correct calendar)
+                if (is_numeric($caltype) && $appType = new AppType($caltype, $this->db)){
+                    if ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype))
+                        echo json_encode(array("success"=>true,"content"=>$json_cal));
+                }
                 elseif ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
                     echo json_encode(array("success"=>true,"content"=>$json_cal));
                 else

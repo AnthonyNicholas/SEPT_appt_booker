@@ -15,11 +15,11 @@ class CustMainPageView    {
         <p></p>
         <div class="row">
           <!--<div class="form-group">-->
-            <label class="control-label col-sm-4" for="appType">Select appointment type (Not yet functional):</label>
+            <label class="control-label col-sm-4" for="selectAppType">Select appointment type (Not yet functional):</label>
             <div class="col-sm-8">
-              <select name="appType" class="form-control">
-                          <option value="Appointment Type 1" >Appointment Type 1</option>
-                          <option value="Appointment Type 2" >Appointment Type 2</option>
+              <select id = "selectAppType" name="selectAppType" class="form-control">
+                  <option value="1" >Appointment Type 1</option>
+                  <option value="2" >Appointment Type 2</option>
               </select>
             </div>
         </div> <!-- end row-->
