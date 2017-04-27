@@ -383,6 +383,64 @@ class Controller
     }
 
     // processes and adds entered employee into the database
+    public function addActivityOwner($fname,$lname)
+    {
+        if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
+            $error = 'fname';
+            header("Location: empOwnerAdd.php?error=$error"); //Check first name
+            return false;
+        } 
+        
+        if (!preg_match("/^[a-zA-Z'-]+$/", $lname))    {
+            $error = 'lname';
+            header("Location: empOwnerAdd.php?error=$error"); //Check last name
+            return false;
+        } 
+        else    {
+            $this->db->query("INSERT INTO Employees (empID, fName, lName)
+            VALUES ('NULL', '$fname','$lname')"); //Insert new employee
+             return true;
+        }
+        
+    }
+
+    // displays the form for adding employees
+    // possibly lists all current employees too?
+    public function addActivityFormOwner($added)
+    {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+        
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
+            $error = explode(',', $error_string);
+        }
+
+        require_once('views/AddActivityOwner.class.php');
+        require_once('views/FormError.class.php');
+        $site = new SiteContainer();
+        $page = new AddActivityOwner();
+        $error_page = new FormError();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        $error_page->printHtml($error);
+        if($added)    {
+            $page->printSuccessHtml();
+        }
+        else    {
+            $page->printHtml();
+        }
+        $site->printFooter();   
+
+    }
+
+    // processes and adds entered employee into the database
     public function addEmpOwner($fname,$lname)
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
@@ -403,6 +461,7 @@ class Controller
         }
         
     }
+
     
     public function helpPage()
     {
