@@ -191,7 +191,8 @@ class Controller
         $page->printHtml($this->user);
         $page->printCalendar($empArray);
         $site->printFooter();
-        // $site->printSpecialFooter("calendarByType.js");
+        // // $site->printSpecialFooter("calendarByType.js");
+        // $site->printSpecialFooter("calendar.js");
 
     }
 
@@ -856,7 +857,7 @@ class Controller
             $cust = new Customer($bk->get_email(), $this->db, false); // no bookings please
         }
         catch(Exception $e) { // No Customer was found
-            throw new Exception("Unable to find customer with email: ".$bk->get_email." booking at time: ".$dt->format('Y-m-d H:i:s')." with Employee: $empID");
+            throw new Exception("Unable to find customer with email: ".$bk->get_email." booking at time: ".$dt->format('Y-m-d H:i:s')." with Employee: $empId");
         }
         
         $site->printHeader();

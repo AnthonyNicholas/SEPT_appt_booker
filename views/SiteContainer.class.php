@@ -112,7 +112,7 @@ class SiteContainer
             <script src="js/bootstrap.min.js"></script>
             <script type="text/javascript" src='<?php echo JS; ?>cors.js'></script>
             <!--<script type="text/javascript" src='<?php echo JS; ?>combinedCalendar.js'></script>-->
-            <script type="text/javascript" src='< echo JS $calJSFileName; ?>'></script>
+            <script type="text/javascript" src='<?php echo 'JS'.$calJSFileName; ?>'></script>
             <script type="text/javascript" src='<?php echo JS; ?>bootstrap-calendar.js'></script>
 
 
