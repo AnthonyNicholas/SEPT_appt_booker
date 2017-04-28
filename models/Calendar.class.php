@@ -249,7 +249,97 @@ class Calendar
 
   }
 
+   /**
+    * Fetches the available appointment types for a given employee and datetime
+    * Basic Implementation just returns all appointment types atm
+    * Authors: Adam Young
+    */
+    public function fetchAvailableTypes($empId, $dt, $db)
+    {
+      $types = array();
+      $query = "
+            SELECT id, appType
+            FROM AppType;";
+      $res = $this->db->query($query);
 
+      while ($row = $res->fetch_assoc()) {
+        $types[$row['id']] = $row['appType'];
+      }
+      /* free result set */
+      $res->free();
 
+      return $types;
+    }
+
+   /**
+    * Checks if the booking is available to book, based on the type, employee
+    * and duration
+    * Authors: Adam Young
+    */
+    public function bookingCheckAndReturnMeta($empId, $dt, $appType)
+    {
+      $typeid = $appType->get_id();
+      $slots = $appType->get_appDuration();
+      $applen = $slots * SLOT_LEN; // Minutes
+      $dts = $dt->format('Y-m-d H:i');
+
+      if (empty($slots))
+        throw new Exception("An appointment type was not supplied");
+
+      $query = "SELECT empID, w.dateTime
+              FROM CanWork w
+              WHERE w.empID = ?
+              -- Depending on the duration of the appointment type, check enough consecutive timeslots are free
+              AND w.dateTime IN (
+                SELECT w1.dateTime
+                  FROM CanWork w1
+                  WHERE w1.empID = w.empID
+                  AND w1.dateTime >= ?
+                  AND w1.dateTime < (? + INTERVAL ? MINUTE)
+              )
+              AND w.dateTime NOT IN ( 
+                  SELECT b.dateTime
+                  FROM Bookings b
+                  WHERE b.empID = w.empID
+                  AND b.dateTime >= w.dateTime
+                  AND b.dateTime < (w.dateTime + INTERVAL ? MINUTE)
+              ) 
+-- ----------------------------- No HasSkill implementation yet
+--              AND w.empID IN (  --Get employees who have right skill for this type of Appointment
+--                  SELECT empID
+--                  FROM HasSkill
+--                  WHERE typeId = ?
+--              )
+-- -----------------------------
+              ORDER BY w.dateTime ASC;";
+
+      $stmt = $this->db->prepare($query);
+      //$stmt->bind_param('siis', $dts, $applen, $empId, $typeid);
+      $stmt->bind_param('issii', $empId, $dts, $dts, $applen, $applen);
+      $stmt->execute();
+      $res = $stmt->get_result();
+
+      // If our result doesnt give us the exact number of slots we asked for, throw
+      if ( $res->num_rows != $slots )
+        throw new Exception("Booking of type ".$appType->get_appType()." can not be made at time ".$dt->format('Y-m-d H:i:s')." with employee $empId because only ".$stmt->num_rows." slots out of the required $slots are available");
+
+      // Otherwise we're good
+      $booking = array('empId' => $empId, 'typeid' => $typeid);
+      $i = 0;
+      while($b = $res->fetch_assoc())
+      {
+        // The first record counts as our booking 
+        if ( $i == 0 )
+        {
+            $booking['dateTime'] = $b['dateTime'];
+            $booking['startTime'] = $b['dateTime'];
+        }
+        // If we are at the last element of the array
+        if ( ++$i == $slots )
+            $booking['endTime'] = strtotime("+$applen minutes", strtotime($b['dateTime']));
+      }
+      return $booking;
+
+    }
   
 }
