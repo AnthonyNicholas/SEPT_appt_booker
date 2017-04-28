@@ -36,7 +36,9 @@ class Booking
         $q->execute();
         
         $result = $q->get_result();
-        $result = mysqli_fetch_array($result);
+        
+        if( ! ($result = mysqli_fetch_array($result)) )
+            return; // No bookings here
         
         $this->empId = $result['empID'];
         $this->email = $result['email'];

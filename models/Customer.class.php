@@ -36,6 +36,9 @@ class Customer
         $stmt->execute();
         // Fetch the result
         $res = $stmt->get_result();
+        
+        if( $res->num_rows == 0 )
+            return false;
 
         $res = $res->fetch_object();
 

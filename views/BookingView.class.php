@@ -28,6 +28,37 @@ class BookingView
       <?php
     }
     
+    public function printConfirmOwner($cw, $emp, $apptypes, $apptype, $errorstr) // CanWork, Employee
+    {
+      $date = $cw->get_dateTime();
+      // if a form has previously been submitted with a customer email, clean and fill in
+      $cEmail = isset($_POST['custEmail']) ? strip_tags($_POST['custEmail']) : '';
+    ?>
+        <div class="panel panel-default panel-address panel-appointment-height">
+              <div class="company-tag label label-primary">Confirm appointment details</div>
+            <div class='panel-body'>
+              <h3>Appointment details</h3>
+              <h4><?php echo Helper::sanitize($emp->fullName); ?></h4>
+              <p>Date: <?php echo $date->format("d/m/Y"); ?> </p>
+              <p>Time: <?php echo $date->format("H:i"); ?> </p>
+              <form class='modal-form' id='modal_form_<?php echo $cw->timestamp ;?>' action="" method="post">
+                <input type="hidden" name="a" value="create"/>
+                <div>Type: <select name="apptype">
+                  <?php foreach($apptypes as $id => $type) {
+                    $state = (!empty($apptype) && $apptype == $id) ? " selected":"";
+                    echo "<option value=\"$id\"$state>$type</option>";
+                  } ?>
+                </select></div>
+                <p><?php echo $errorstr;?></p>
+              Customer Email: <input type="email" name="custEmail" value="<?php echo $cEmail;?>"/>
+                <div><a class="btn btn-link" href="index.php">Return to calendar</a>
+                <input type="submit" class="btn btn-primary" value="Confirm Booking"/></div>    
+              </form>
+            </div><!--end of panel-body-->        
+          </div><!--end of panel-->
+      <?php
+    }
+    
     public function printSuccess($cw, $emp) // CanWork, Employee
     {
       $date = $cw->get_dateTime();

@@ -553,6 +553,15 @@ class Controller
         $site->printFooter();
 
     }
+    public function err_page()
+    {
+        $site = new SiteContainer();
+
+        $site->printHeader();
+        $site->printNav();
+        echo "An Error has occured and your request could not be completed. Return <a href=\"index.php\">Home</a>";
+        $site->printFooter();
+    }
     // Handles PHP redirects
     public function redirect($page = '')
     {
@@ -788,7 +797,7 @@ class Controller
             {
                 // If selecting calendar by appointment type (numeric value, retrieves appType object & correct calendar)
                 if (is_numeric($caltype) && $appType = new AppType($caltype, $this->db)){
-                    if ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $caltype))
+                    if ($json_cal = $cal->ajaxGetCustCalByType($empNo, $weeks, $appType))
                         echo json_encode(array("success"=>true,"content"=>$json_cal));
                 }
                 elseif ( $json_cal = $cal->ajaxGetCustCal($empNo, $weeks) )  // Successful, send calendar
@@ -804,9 +813,34 @@ class Controller
     }
     
     /**
+     * Wrapper function that determines what to do if an owner requests a
+     * timestamp and ID, should we display a booking or are we requesting to
+     * create one for a client?
+     * Authors: Adam Young
+     */
+    public function bookingOwner($empId, $dt, $typeId='')
+    {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+        require_once('models/Booking.class.php');
+        
+        // Grab the booking we want
+        $bk = new Booking($empId, $dt, $this->db);
+        // If there is no booking, we must be booking for a customer
+        if ( empty($bk->get_email()) )
+            $this->bookingConfirm($empId, $dt, $typeId);
+        else
+            $this->bookingView($empId, $dt);
+        
+    }
+    
+    /**
      * Confirms that a user would like to book an appointment with employee and time
      */
-    public function bookingConfirm($empId, $dt, $typeId='')
+    public function bookingConfirm($empId, $dt, $typeId='', $errors='')
     {
         require_once('models/Calendar.class.php');
         require_once('models/Customer.class.php');
@@ -832,7 +866,10 @@ class Controller
             $cw = new CanWork($empId, $dt, $this->db); // not a booking yet!!
             
             $site->printNav($_SESSION['type']);
-            $bkv->printConfirm($cw, $empdata, $apptypes,$typeId);
+            if ($_SESSION['type'] == 'owner')
+                $bkv->printConfirmOwner($cw, $empdata, $apptypes,$typeId, $errors);
+            else
+                $bkv->printConfirm($cw, $empdata, $apptypes,$typeId);
             
             $site->printFooter();   
                 
@@ -894,6 +931,7 @@ class Controller
      */
     public function bookingCreate($empID, $dt, $custEmail = '', $typeId='')
     {
+        require_once('models/Customer.class.php');
         require_once('models/Calendar.class.php');
         require_once('models/CanWork.class.php');
         require_once('models/AppType.class.php');
@@ -904,8 +942,26 @@ class Controller
         $cal = new Calendar($this->db);
         
         // If no email supplied, we are booking for the current customer
-        if (empty($custEmail))
+        if ($this->custLoggedIn() && empty($custEmail))
+        {
             $custEmail = $_SESSION['email'];
+        } else if ($this->ownerLoggedIn() && empty($custEmail))
+        {
+            $errors= "Please provide a valid email address to create this appointment";
+            $this->bookingConfirm($empID, $dt, $typeId, $errors);
+            return;
+        } else if ($this->ownerLoggedIn()) // email not empty
+        {
+            try{
+                new Customer($custEmail, $this->db);
+            } catch(Exception $e){
+                // Was unable to find customer with this email
+                $errors = "Email must be of an existing valid customer";
+                // Re=present the booking confirmation
+                $this->bookingConfirm($empID, $dt, $typeId, $errors);
+                return;
+            }
+        }
         
         // Grab the canwork from the databse
         $cw = new CanWork($empID, $dt, $this->db); // Still not a booking!!

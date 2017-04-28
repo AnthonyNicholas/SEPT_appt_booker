@@ -199,6 +199,11 @@ class Calendar
       //HORIZONTAL BIG CALENDAR
       $calendar_id = (int)($empNo); //sanitize numeric value
       $number_of_weeks = (int)($weeks);//sanitize numeric value
+      
+      // Define appointment type parameters
+      $tDur = $appType->get_appDuration();
+      $tId = $appType->get_id();
+      
       if($number_of_weeks == 0 || $calendar_id == 0){
         return false;
       }
@@ -222,23 +227,27 @@ class Calendar
               '' as deleted
               FROM CanWork w, TimeSlot t
               WHERE w.dateTime = t.dateTime
+              AND w.empID = ?
               -- Depending on the duration of the appointment type, check enough consecutive timeslots are free
               AND NOT EXISTS ( 
                   SELECT b.dateTime
                   FROM Bookings b
-                  WHERE b.empID = ?
-                  AND b.dateTime >= t.dateTime;
-                  AND b.dateTime < (t.dateTime + INTERVAL (?)*30 MINUTE);  
-              ) 
-              AND w.empID = ?
-              AND w.empID IN (  --Get employees who have right skill for this type of Appointment
-                  SELECT empID
-                  FROM HasSkill
-                  WHERE appType = ?
+                  WHERE b.empID = w.empID
+                  AND b.dateTime >= t.dateTime
+                  AND b.dateTime < (t.dateTime + INTERVAL (?)*30 MINUTE)
               )
+-- ------------------------------ For now we take type out of equation, no table HasSkill exists
+--              AND w.empID IN (  --Get employees who have right skill for this type of Appointment
+--                  SELECT empID
+--                  FROM HasSkill
+--                  WHERE typeId = ?
+--              )
+-- ------------------------------
               ORDER BY t.dateTime ASC;";
       $stmt = $this->db->prepare($query);
-      $stmt->bind_param('siss', $empNo, $appType->get_appDuration(), $empNo, $appType->get_appType()); // check variable types - what does 's' mean is it string?
+      // For when hasskill is implemented
+      //$stmt->bind_param('isi', $empNo, $tDur, $tId); 
+      $stmt->bind_param('is', $empNo, $tDur); 
       $stmt->execute();
       $res = $stmt->get_result();
       $results = $res->fetch_all(MYSQLI_ASSOC);
