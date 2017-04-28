@@ -42,12 +42,21 @@ class Booking
         
         $this->empId = $result['empID'];
         $this->email = $result['email'];
-        $this->type = $result['appType'];
+        $this->dateTime = new DateTime($result['dateTime']);
         
-        if ($this->type == null)
+        $type_key = $result['appType'];
+        $q = $db->prepare("SELECT * FROM AppType WHERE id = ?;");
+        $q->bind_param('s', $type_key);
+        $q->execute();
+        $result = $q->get_result();
+        $result = mysqli_fetch_array($result);
+        
+        if ($result != null)
+            $this->type = $result['appDesc'];
+        else 
             $this->type = "Unspecified";
         
-        $this->dateTime = new DateTime($result['dateTime']);
+        
         
         $q = $db->prepare("SELECT fName, lName FROM Employees WHERE empID = ?;");
         $q->bind_param('s', $empID);
