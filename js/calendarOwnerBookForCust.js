@@ -19,7 +19,7 @@ $(document).ready(function(){
       "first_day"      : "monday", //or sunday
       "booking_url"    : "booking.php", //booking url 
       "max_display"    : 7, //how many visits display in a day calendar column - default is 7
-      "displaySlotType"    : "free" //how many visits display in a day calendar column - default is 7
+      "displaySlotType"    : "free" // we want free appointments in order to book for customer
 
   };
   $(".horizontal-calendar-big-wrapper").bootstrapBigCalendar(bigCalendarOptions);  

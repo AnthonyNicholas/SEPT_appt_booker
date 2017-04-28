@@ -743,11 +743,21 @@ class Controller
 
     /**
      * Handles Ajax request for employee calendar HTML.
+     * This function is used by both owner and employee to generate respective calendars
+     * If a customer is logged in, we want to show them available appointments always
+     * If an owner, we only want to show them available appointments in the case of them
+     * making an appointment on behalf of an owner
      */
-    public function getCustCal($empNo, $weeks, $caltype = '', $displaySlotType = 'free')
+    public function getCustCal($empNo, $weeks, $caltype = '', $displaySlotType = '')
     {
         require_once('models/Calendar.class.php');
         require_once('models/AppType.class.php');
+        
+        // Determine which calendar we want
+        if ($_SESSION['type'] == 'owner') // default booked appointments only
+            $displaySlotType = empty($displaySlotType) ? 'booked' : $displaySlotType;
+        else // A customer
+            $displaySlotType = 'free'; // free times only
         
         $cal = new Calendar($this->db);
 
@@ -758,7 +768,7 @@ class Controller
         
         try{
             // Attempt to generate the calendar
-            if ($_SESSION['type'] == 'owner' && $displaySlotType == 'booked')
+            if ($displaySlotType == 'booked')
             {
                 // Combined calendar view
                 if ($caltype == 'combined'){
@@ -857,7 +867,16 @@ class Controller
             $cust = new Customer($bk->get_email(), $this->db, false); // no bookings please
         }
         catch(Exception $e) { // No Customer was found
-            throw new Exception("Unable to find customer with email: ".$bk->get_email." booking at time: ".$dt->format('Y-m-d H:i:s')." with Employee: $empId");
+            $site->printHeader();
+            $site->printNav("owner");
+            if ( empty($bk->get_email()) )
+                echo "Unable to find a booking at time ".$dt->format('Y-m-d H:i:s')." with Employee: $empId";
+            else // Some other error
+                echo "Unable to find customer with email: ".$bk->get_email()." booking at time: ".$dt->format('Y-m-d H:i:s')." with Employee: $empId";
+            
+            $site->printFooter();
+            // return, nothing we can do
+            return;
         }
         
         $site->printHeader();
@@ -1015,38 +1034,36 @@ class Controller
      }
      
     //BOOK AS OWNER FUNCTIONS
-     
-    public function searchCustomerView()
+    // Possibly can be unsed in a modular way at a later date to search 
+    // for customers
+    public function searchCustomerBox($errors = '')
     {
-        if ( !$this->ownerLoggedIn() )
-        {
-            $this->restricted();
-            return;
-        }
         
         $error = array();
-        if (!empty($_GET['error']))
+        if (!empty($errors))
         {
-            $error_string = urldecode($_GET['error']);
+            $error_string = urldecode($errors);
             $error = explode(',', $error_string);
         }
         
         require_once('views/SearchCustomer.class.php');
         require_once('views/FormError.class.php');
-        $site = new SiteContainer();
         $page = new SearchCustomer();
         $error_page = new FormError();
         
-        $site->printHeader();
-        $site->printNav("owner");
         $error_page->printHtml($error);
         $page->printHtml();
-        $site->printFooter();   
         
     }
     
     public function bookAsCustomer($custEmail)
     {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return false;
+        }
+        
         require_once('models/Customer.class.php');
 
         if (!filter_var($custEmail, FILTER_VALIDATE_EMAIL))    {
@@ -1062,10 +1079,18 @@ class Controller
         } catch (Exception $e) {
             $this->redirect("bookAsCustomer.php?error=custNotFound");
         }
+        
+        
     }
     
-    public function bookAsCustomerView($cust)
+    public function bookAsCustomerView($cust = '')
     {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return false;
+        }
+        
         require_once('views/CustMainPageView.class.php');
         require_once('models/BusinessOwner.class.php');
         require_once('models/Customer.class.php');
@@ -1084,20 +1109,17 @@ class Controller
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
 
-
-        // Get the owner from the db
-        try{
-            $this->user = new BusinessOwner($_SESSION['email'], $this->db);
-        } catch (Exception $e)
-        {
-            $this->redirect("login.php?error=login_required");
-            echo "err_user_not_found";
-        }
-
         $site->printHeader();
-        $site->printNav($this->user->type);  //print the owner navbar
-        $page->printHtml($cust);  //pass in details for the customer
-        $page->printCalendar($empArray);
+        $site->printNav($_SESSION['type']);  //print the owner navbar
+        
+        // Handle errors for searchbox
+        $serr = isset($_GET['errors']) ? $_GET['errors'] : '';
+        $this->searchCustomerBox($serr);
+        if (! empty($cust))
+        {
+            $page->printHtml($cust);  //pass in details for the customer
+            $page->printCalendar($empArray);
+        }
         // $site->printFooter();
         $site->printSpecialFooter('calendarOwnerBookForCust.js');
     }

@@ -21,7 +21,8 @@
       "number_of_weeks": 4, //how many weeks to display
       "first_day"      : "sunday", //or sunday
       "booking_url"    : "make_an_appointment.php", //booking url 
-      "max_display"    : 7 //how many visits display in a day calendar column - default is 7
+      "max_display"    : 7, //how many visits display in a day calendar column - default is 7
+      "displaySlotType"    : "" // set to empty for default behaviour
     }; 
     //extending the settings by passed options
     if(options){

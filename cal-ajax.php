@@ -14,14 +14,12 @@
     && isset($_POST['id'])
     && is_numeric($_POST['id'])
     && isset($_POST['number_of_weeks'])
-    && is_numeric($_POST['number_of_weeks'])
-    && isset($_POST['displaySlotType'])
-    && !empty($_POST['displaySlotType']))
+    && is_numeric($_POST['number_of_weeks']))
     {
         $caltype = $_POST['calendar_type'];
         $empno = $_POST['id'];
         $weeks = $_POST['number_of_weeks'];
-        $displaySlotType = $_POST['displaySlotType'];
+        $displaySlotType = !empty($_POST['displaySlotType']) ? $_POST['displaySlotType'] : '';
         
         // if ($caltype == 'combined') {
         //     $ctrl->getCustCal($empno, $weeks, 'combined', );
