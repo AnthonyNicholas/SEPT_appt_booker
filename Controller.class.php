@@ -191,6 +191,7 @@ class Controller
         $page->printHtml($this->user);
         $page->printCalendar($empArray);
         $site->printFooter();
+        // $site->printSpecialFooter("calendarByType.js");
 
     }
 
