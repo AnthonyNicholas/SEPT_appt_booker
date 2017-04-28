@@ -26,26 +26,19 @@
     //extending the settings by passed options
     if(options){
       $.extend(settings, options);
-      console.log("test1");
     }
     //affect each calendar from certain class
     return this.each(function() {
-      console.log("test2");
       //get calendar_id
       var calendar_id = $(this).attr("id");
-      console.log(calendar_id);
       //get id
-      // console.log(settings['ajax_url']);
       var id = $(this).attr("data-calendar-id");
   
-      // console.log("id="+id+"&calendar_type="+settings['calendar_type']+"&number_of_weeks="+settings['number_of_weeks']+"&first_day="+settings['first_day']+"&booking_url="+settings['booking_url']+"&max_display="+settings['max_display']);
-      
-      console.log(id);
         $.ajax({
           type: "POST",
           dataType: "json",
           url: settings['ajax_url'],
-          data: "id="+id+"&calendar_type="+settings['calendar_type']+"&number_of_weeks="+settings['number_of_weeks']+"&first_day="+settings['first_day']+"&booking_url="+settings['booking_url']+"&max_display="+settings['max_display'],
+          data: "id="+id+"&calendar_type="+settings['calendar_type']+"&number_of_weeks="+settings['number_of_weeks']+"&first_day="+settings['first_day']+"&booking_url="+settings['booking_url']+"&max_display="+settings['max_display']+"&displaySlotType="+settings['displaySlotType'],
           success: function(json){
             if(json.success === true){
               //for debugging: console.log(json.content);

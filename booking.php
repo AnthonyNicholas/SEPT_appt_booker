@@ -26,6 +26,12 @@
         {
             // If owner we are viewing an existing booking
             $ctrl->bookingView($empid, $dt);
+        } else if (!empty($_POST) && $_SESSION['type'] == 'owner')
+        {
+            // If POST is set, we are probably trying to make a booking as an owner
+            $empID = $_POST['empID'];
+            $custEmail = $_POST['custEmail'];
+            // $ctrl->bookingCreate($empID, $dt, $custEmail);
         } else if ($_POST['a'] == 'create')
         {
             $ctrl->bookingCreate($empid, $dt);

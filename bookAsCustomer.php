@@ -9,9 +9,12 @@ $ctrl = new Controller();
 
 $ctrl->searchCustomerView();
 
-if (isset($_POST['email']))   {
-   if ($ctrl->bookAsCustomer($_POST['email']) === true)   {
-      $ctrl->bookAsCustomerView();
+if (isset($_POST['custEmail']))   {
+   if ($cust = $ctrl->bookAsCustomer($_POST['custEmail']))   {
+      $ctrl->bookAsCustomerView($cust);
+   }
+   else {
+      $this->redirect("bookAsCustomer.php?error=custNotFound");
    }
 }
 

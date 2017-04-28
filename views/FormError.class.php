@@ -19,7 +19,9 @@ class FormError
                            "bad_time" => "Please enter valid times only",
                            "appType" => "Please re-enter name of new appointment. Name must consist of alphanumeric characters only.",
                            "bad_apptype" => "Please select appointment type",
-                           "appDesc" => "Please enter valid times only");
+                           "appDesc" => "Please enter valid times only",
+                           "custNotFound" => "Could not find customer in System"
+                           );
 
 
     public function printHtml($errors) // take the list of errors and print relevant messages

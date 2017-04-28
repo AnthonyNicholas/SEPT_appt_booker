@@ -89,6 +89,40 @@ class SiteContainer
     
     <?php
     }
+    
+     public function printSpecialFooter($calJSFileName)
+    {
+    ?>
+
+            <!--Close body divs-->
+             </div>
+             </div>
+             </div>
+
+            <footer>
+                    <p class="text-muted text-center">Contact information: <a href="mailto:ourTeam@student.rmit.edu.au"> ourTeam@student.rmit.edu.au</a>.</p>
+            </footer>
+
+            <!-- Bootstrap & calendar core JavaScript
+            ================================================== -->
+            <!-- Placed at the end of the document so the pages load faster -->
+
+            <!--Bootstrap javascript-->
+            <script src="jquery/jquery-3.1.1.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script type="text/javascript" src='<?php echo JS; ?>cors.js'></script>
+            <!--<script type="text/javascript" src='<?php echo JS; ?>combinedCalendar.js'></script>-->
+            <script type="text/javascript" src='< echo JS $calJSFileName; ?>'></script>
+            <script type="text/javascript" src='<?php echo JS; ?>bootstrap-calendar.js'></script>
+
+
+        </body>
+
+        </html>
+    
+    <?php
+    }
+    
 
 // Prints appropriate navigation bar.  Argument $type can be "owner", "customer" or for anything else 
 // standard navigation bar is printed.
@@ -117,6 +151,7 @@ public function printNav($type = "none")
                     <li><a href="WorkerAvailability.php">Employee Times</a></li>
                     <li><a href="addActivityOwner.php">Add Appointment Type</a></li>
                     <li><a href="ownerCombinedCal.php">Combined calendar view</a></li>
+                    <li><a href="bookAsCustomer.php">Book for Customer</a></li>
                     <li><a href="helpPage.php">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

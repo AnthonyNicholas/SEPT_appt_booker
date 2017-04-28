@@ -18,7 +18,8 @@ $(document).ready(function(){
       "number_of_weeks": 5, //how many weeks to display
       "first_day"      : "monday", //or sunday
       "booking_url"    : "booking.php", //booking url 
-      "max_display"    : 7 //how many visits display in a day calendar column - default is 7
+      "max_display"    : 7, //how many visits display in a day calendar column - default is 7
+      "displaySlotType"    : "booked" //how many visits display in a day calendar column - default is 7
   };
   $(".horizontal-calendar-big-wrapper").bootstrapBigCalendar(bigCalendarOptions);  
   

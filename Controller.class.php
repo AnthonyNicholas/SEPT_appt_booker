@@ -742,7 +742,7 @@ class Controller
     /**
      * Handles Ajax request for employee calendar HTML.
      */
-    public function getCustCal($empNo, $weeks, $caltype = '')
+    public function getCustCal($empNo, $weeks, $caltype = '', $displaySlotType = 'free')
     {
         require_once('models/Calendar.class.php');
         require_once('models/AppType.class.php');
@@ -756,7 +756,7 @@ class Controller
         
         try{
             // Attempt to generate the calendar
-            if ($_SESSION['type'] == 'owner')
+            if ($_SESSION['type'] == 'owner' && $displaySlotType == 'booked')
             {
                 // Combined calendar view
                 if ($caltype == 'combined'){
@@ -765,8 +765,7 @@ class Controller
                     else
                         throw new Exception("Failed to render Calendar");
                 }
-                else{
-                    // // Otherwise show all bookings in each seperate employee calendar 
+                else { // Otherwise show all bookings in each seperate employee calendar 
                     if ( $json_cal = $cal->ajaxGetOwnerCal($empNo, $weeks) )  // Successful, send calendar
                         echo json_encode(array("success"=>true,"content"=>$json_cal));
                     else
@@ -864,10 +863,11 @@ class Controller
     }
     
     /**
-     * books an appointment with employee and time, needs lots of error checking and fallbacks implemented
-     * TODO
+     * books an appointment with employee and time
+     * If a customer email is supplied, we are booking the appointment as an
+     * owner and should take the customer email as an argument
      */
-    public function bookingCreate($empID, $dt)
+    public function bookingCreate($empID, $dt, $custEmail = '')
     {
         require_once('models/Calendar.class.php');
         require_once('models/CanWork.class.php');
@@ -876,6 +876,10 @@ class Controller
         $site = new SiteContainer();
         $bkv = new BookingView();
         $cal = new Calendar($this->db);
+        
+        // If no email supplied, we are booking for the current customer
+        if (empty($custEmail))
+            $custEmail = $_SESSION['email'];
         
         // Grab the canwork from the databse
         $cw = new CanWork($empID, $dt, $this->db); // Still not a booking!!
@@ -892,11 +896,11 @@ class Controller
         
         $dts = $dt->format('Y-m-d H:i:s');
         
-        $stmt->bind_param('sss', $empID, $_SESSION['email'], $dts);
+        $stmt->bind_param('sss', $empID, $custEmail, $dts);
         
         
         $site->printHeader();
-        $site->printNav("cust");
+        $site->printNav($_SESSION['type']);
         
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
             $bkv->printSuccess($cw, $empdata);
@@ -1018,55 +1022,37 @@ class Controller
         
     }
     
-    public function bookAsCustomer($email)
+    public function bookAsCustomer($custEmail)
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL))    {
+        require_once('models/Customer.class.php');
+
+        if (!filter_var($custEmail, FILTER_VALIDATE_EMAIL))    {
             $error = 'email';
             $this->redirect("bookAsCustomer.php?error=$error"); //Check email
-            return;
+            return false;
         } 
         
-        $cust = $this->db->prepare("SELECT email FROM Customers WHERE email = ?;");
-        $cust->bind_param('s', $email);
-        $cust->execute();
-        $result = $cust->get_result();
-        
-        if (!$result)   {
-            return;
+        // Get the customer from the database
+        try {
+            $cust = new Customer($custEmail,$this->db);
+            return $cust;
+        } catch (Exception $e) {
+            $this->redirect("bookAsCustomer.php?error=custNotFound");
         }
-        
-        $row = mysqli_fetch_row($result);
-        
-        if (empty($row[0]))   {
-            $error = 'email';
-            $this->redirect("bookAsCustomer.php?error=$error"); //Check email
-            return;    
-        }
-        
-        if($row[0] == $email)   {
-            $_SESSION['cust_email'] = $row[0];
-            //Need to set user type
-            return true;
-        }
-  
     }
     
-    public function bookAsCustomerView()
+    public function bookAsCustomerView($cust)
     {
         require_once('views/CustMainPageView.class.php');
+        require_once('models/BusinessOwner.class.php');
+        require_once('models/Customer.class.php');
+        
         $site = new SiteContainer();
         $page = new CustMainPageView();
 
         // Load the Customer model, because this is a customer page
         require_once('models/Customer.class.php');
         // Give the model the email address in the session and the database object
-        try{
-            $this->user = new Customer($_SESSION['cust_email'], $this->db);
-        } catch (Exception $e)
-        {
-            $this->redirect("login.php?error=login_required");
-            echo "err_user_not_found";
-        }
 
         $query = "SELECT fName, lName, empID
                 FROM Employees;";
@@ -1075,11 +1061,22 @@ class Controller
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
 
+
+        // Get the owner from the db
+        try{
+            $this->user = new BusinessOwner($_SESSION['email'], $this->db);
+        } catch (Exception $e)
+        {
+            $this->redirect("login.php?error=login_required");
+            echo "err_user_not_found";
+        }
+
         $site->printHeader();
-        $site->printNav($this->user->type);
-        $page->printHtml($this->user);
+        $site->printNav($this->user->type);  //print the owner navbar
+        $page->printHtml($cust);  //pass in details for the customer
         $page->printCalendar($empArray);
-        $site->printFooter();
+        // $site->printFooter();
+        $site->printSpecialFooter('calendarOwnerBookForCust.js');
     }
 }
 
