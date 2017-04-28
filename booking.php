@@ -18,6 +18,8 @@
     $empid = $_GET['calendar_id'];
     $ts = $_GET['timestamp'];
     $apptypeid = isset($_GET['apptype']) ? $_GET['apptype']:'';
+    // Override apptypeid if POST is set
+    $apptypeid = isset($_POST['apptype']) ? $_POST['apptype'] : $apptypeid;
     
     $dt = new DateTime();
     $dt->setTimestamp($ts);

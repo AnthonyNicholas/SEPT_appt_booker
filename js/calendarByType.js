@@ -9,12 +9,17 @@
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-$('#selectAppType').oninput(function(){
+$('#selectAppType').change(function(){
   
+  for (var key in types) 
+  {
+    if ($('#selectAppType').val() == types[key].appType)
+      break;
+  }
   /* run all big calendars */  
   var bigCalendarOptions = {
       "ajax_url"       : "cal-ajax.php", //url for retrieving the data
-      "calendar_type"  : $('#selectAppType').find(":selected").val(), //get the type selected by the customer
+      "calendar_type"  : types[key].id, //get the type selected by the customer
       "number_of_weeks": 5, //how many weeks to display
       "first_day"      : "monday", //or sunday
       "booking_url"    : "booking.php", //booking url 
@@ -23,6 +28,8 @@ $('#selectAppType').oninput(function(){
 
   };
   $(".horizontal-calendar-big-wrapper").bootstrapBigCalendar(bigCalendarOptions);  
+  
+  $(document).ajaxStop(set_type(types));
   
   //when you use the carousel do not display overflow 
   $('.horizontal-calendar-big-wrapper').on("click", ".carousel-control", function() {

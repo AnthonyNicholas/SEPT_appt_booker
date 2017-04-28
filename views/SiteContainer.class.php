@@ -92,6 +92,10 @@ class SiteContainer
     
      public function printSpecialFooter($calJSFileName)
     {
+        if (is_array($calJSFileName))
+            $scripts = $calJSFileName;
+        else
+            $scripts = array($calJSFileName);
     ?>
 
             <!--Close body divs-->
@@ -111,8 +115,9 @@ class SiteContainer
             <script src="jquery/jquery-3.1.1.js"></script>
             <script src="js/bootstrap.min.js"></script>
             <script type="text/javascript" src='<?php echo JS; ?>cors.js'></script>
-            <!--<script type="text/javascript" src='<?php echo JS; ?>combinedCalendar.js'></script>-->
-            <script type="text/javascript" src='<?php echo JS . $calJSFileName; ?>'></script>
+            <?php foreach ($scripts as $s):?>
+                <script type="text/javascript" src='<?php echo JS . $s; ?>'></script>
+            <?php endforeach;?>
             <script type="text/javascript" src='<?php echo JS; ?>bootstrap-calendar.js'></script>
 
 

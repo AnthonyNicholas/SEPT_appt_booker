@@ -185,14 +185,13 @@ class Controller
         $stmt->execute();
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
-
+        require_once('models/AppType.class.php');
+        $types = AppType::get_all_types($this->db);
         $site->printHeader();
         $site->printNav($this->user->type);
-        $page->printHtml($this->user);
+        $page->printHtml($this->user, $types, $empArray);
         $page->printCalendar($empArray);
-        $site->printFooter();
-        // // $site->printSpecialFooter("calendarByType.js");
-        // $site->printSpecialFooter("calendar.js");
+        $site->printSpecialFooter('calendarByType.js');
 
     }
 
@@ -769,13 +768,11 @@ class Controller
             $displaySlotType = 'free'; // free times only
         
         $cal = new Calendar($this->db);
-
-        if (!preg_match("/^[a-zA-Z0-9 ]+$/", $caltype))    { // need to check regex
-              $error = "bad_apptype";
-              header("Location: mainPageCust.php?error=$error"); 
-        } 
         
         try{
+            if (!preg_match("/^[a-zA-Z0-9_ ]+$/", $caltype)) // need to check regex
+                  throw new Exception("The provided appointment type was not valid.");
+                  
             // Attempt to generate the calendar
             if ($displaySlotType == 'booked')
             {
@@ -1168,16 +1165,23 @@ class Controller
         $site->printHeader();
         $site->printNav($_SESSION['type']);  //print the owner navbar
         
+        
+        require_once('models/AppType.class.php');
+        $types = AppType::get_all_types($this->db);
+        
+        
         // Handle errors for searchbox
         $serr = isset($_GET['errors']) ? $_GET['errors'] : '';
-        $this->searchCustomerBox($serr);
-        if (! empty($cust))
-        {
-            $page->printHtml($cust);  //pass in details for the customer
+        // Disabled for now AY
+        //$this->searchCustomerBox($serr);
+        //if (! empty($cust))
+        //{
+        //    $page->printHtml($cust, $types, $empArray);  //pass in details for the customer
+            $page->printHtml(null, $types, $empArray);
             $page->printCalendar($empArray);
-        }
+        //}
         // $site->printFooter();
-        $site->printSpecialFooter('calendarOwnerBookForCust.js');
+        $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));
     }
 }
 

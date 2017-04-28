@@ -236,6 +236,15 @@ class Calendar
                   AND b.dateTime >= t.dateTime
                   AND b.dateTime < (t.dateTime + INTERVAL (?)*30 MINUTE)
               )
+              AND (
+                SELECT COUNT(*)
+                FROM CanWork w1
+                WHERE w1.empID = w.empID
+                AND w1.dateTime >= t.dateTime
+                AND w1.dateTime < (t.dateTime + INTERVAL (?)*30 MINUTE)
+              ) = ?
+                
+                
 -- ------------------------------ For now we take type out of equation, no table HasSkill exists
 --              AND w.empID IN (  --Get employees who have right skill for this type of Appointment
 --                  SELECT empID
@@ -247,7 +256,7 @@ class Calendar
       $stmt = $this->db->prepare($query);
       // For when hasskill is implemented
       //$stmt->bind_param('isi', $empNo, $tDur, $tId); 
-      $stmt->bind_param('is', $empNo, $tDur); 
+      $stmt->bind_param('iiii', $empNo, $tDur, $tDur, $tDur); 
       $stmt->execute();
       $res = $stmt->get_result();
       $results = $res->fetch_all(MYSQLI_ASSOC);

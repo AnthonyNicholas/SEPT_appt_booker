@@ -129,3 +129,40 @@ function add_hrs(empID)
   
 }
 
+function toggle_emp(emps)
+{
+  for (var i = 0; i < emps.length; i++)
+  {
+    if (document.getElementById("emp_search").value == emps[i].fName + " " + emps[i].lName)
+      document.getElementById("row_" + emps[i].empID).style.display = 'inline';
+    else
+      document.getElementById("row_" + emps[i].empID).style.display = 'none';
+  }
+}
+
+function set_type(types)
+{
+  setTimeout(function(){
+  var a = document.getElementsByClassName('horizontal-calendar-big-link');
+  var length = a.length;
+  
+  for(var i=0; i< length; i++)
+  {
+    a[i].href = a[i].href.replace(/&?apptype=\d*/, "");
+  }
+ 
+  for (var key in types) 
+  {
+    if (document.getElementById("selectAppType").value == types[key].appType)
+    {
+      for(var i=0; i< length; i++)
+      {
+        a[i].href += '&apptype='+types[key].id;
+      }
+    }
+  } 
+  
+  }, 1000);
+}
+
+

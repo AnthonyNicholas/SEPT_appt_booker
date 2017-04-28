@@ -23,7 +23,7 @@ class OwnerMainPageView    {
     ?>
         <div class="container">
         <?php foreach ($empArray as $e) {  ?>
-          <div class="row marg-top "> 
+          <div style="display:inline" class="row marg-top " id="row-<?php echo $e['empID'];?>"> <!-- made hidden, added an id for choosing specific employee -->
             <!-- left column with employee details-->
             <div class="col-sm-4 hidden-xs">
               <div class="panel panel-default panel-address panel-calendar-height">

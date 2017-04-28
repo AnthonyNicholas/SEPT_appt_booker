@@ -2,27 +2,72 @@
 
 class CustMainPageView    {
     
-    public function printHtml($u)    {
+    public function printHtml($u, $types='', $employees='')    {
+      echo "<script src=\"js/main.js\"></script>";
+      if (!empty($types))
+      {
+        echo "\n<script type=\"text/javascript\">";
+        echo "types=".json_encode($types).";";
+        echo "</script>\n";
+      }
     ?>
     <div class="container">
       <div class = "jumbotron jumbotron-fluid">
         <h3>Book an Appointment</h3>
-        <?php echo "Welcome to the appointment booking system, ".$u->get_fullName(); ?>.
+        <?php if (!empty($u)):?>
+          <?php echo "Welcome to the appointment booking system, ".$u->get_fullName(); ?>.
+        <?php endif;?>
 
         Click on a desired appointment under a particular staff member to
         make a booking, or view current bookings by clicking the link in the
         navigation bar above.
         <p></p>
-        <div class="row">
-          <!--<div class="form-group">-->
-            <label class="control-label col-sm-4" for="selectAppType">Select appointment type (Not yet functional):</label>
-            <div class="col-sm-8">
-              <select id = "selectAppType" name="selectAppType" class="form-control">
-                  <option value="1" >Appointment Type 1</option>
-                  <option value="2" >Appointment Type 2</option>
-              </select>
-            </div>
-        </div> <!-- end row-->
+       
+        
+         <div class="row">
+                    <br>
+                    </div>
+                  
+
+
+
+            <div class="row">
+              <!--<div class="form-group">-->
+                <label class="control-label col-sm-4" for="selectAppType">Select appointment type (Not yet functional):</label>
+                  <div class="col-sm-8">
+                    <input id="selectAppType" type="text" list="types" class="form-control" oninput="set_type(<?php echo htmlspecialchars(json_encode($types));?>)"/>
+                      <datalist id="types">
+                        
+                        <?php //echo '<pre>'; print_r($types); echo '</pre>';
+                          foreach ($types as $key => $value)
+                            echo "<option id=\"".$value->get_id()."\">".$value->get_appType()."</option>";
+                        ?>
+                      </datalist>
+        
+                    </div>
+                  </div> <!-- end row-->
+                  
+                  <div class="row">
+                    <br>
+                    </div>
+             
+                  
+                  <div class="row">
+              <!--<div class="form-group">-->
+                <label class="control-label col-sm-4" for="selectAppType">Select employee (Not yet functional):</label>
+                  <div class="col-sm-8">
+                    <input id="emp_search" type="text" list="emps" class="form-control" oninput="toggle_emp(<?php echo htmlspecialchars(json_encode($employees));?>)"/>
+                      <datalist id="emps">
+                        <?php
+                        for ($i=0; $i<count($employees); $i++)
+                            echo "<option id=\"opt_".$employees[$i]['empID']."\">".$employees[$i]['fName']." ".$employees[$i]['lName']."</option>";
+                        ?>
+                      </datalist>
+        
+                    </div>
+                  </div> <!-- end row-->
+
+        
       </div> <!-- end jumbotron-->
     </div> <!-- end container-->
     <?php
@@ -33,7 +78,7 @@ class CustMainPageView    {
     ?>
         <div class="container">
         <?php foreach ($empArray as $e) {  ?>
-          <div class="row marg-top "> 
+          <div hidden class="row marg-top " id="row_<?php echo $e['empID']?>"> 
             <!-- left column with employee details-->
             <div class="col-sm-4 hidden-xs">
               <div class="panel panel-default panel-address panel-calendar-height">
