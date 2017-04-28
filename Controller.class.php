@@ -401,8 +401,12 @@ class Controller
             return false;
         } 
         else    {
-            $this->db->query("INSERT INTO Employees (empID, fName, lName)
-            VALUES ('NULL', '$fname','$lname')"); //Insert new employee
+            $empID = NULL;
+            $q = $this->db->prepare("INSERT INTO Employees (empID, fName, lName)
+            VALUES (?,?,?);");
+            $q->bind_param('sss', $empID, $fname, $lname);
+            $q->execute();
+            //Insert new employee
              return true;
         }
         
@@ -983,5 +987,100 @@ class Controller
 
         return $res->fetch_object();
      }
+     
+    //BOOK AS OWNER FUNCTIONS
+     
+    public function searchCustomerView()
+    {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+        
+        $error = array();
+        if (!empty($_GET['error']))
+        {
+            $error_string = urldecode($_GET['error']);
+            $error = explode(',', $error_string);
+        }
+        
+        require_once('views/SearchCustomer.class.php');
+        require_once('views/FormError.class.php');
+        $site = new SiteContainer();
+        $page = new SearchCustomer();
+        $error_page = new FormError();
+        
+        $site->printHeader();
+        $site->printNav("owner");
+        $error_page->printHtml($error);
+        $page->printHtml();
+        $site->printFooter();   
+        
+    }
+    
+    public function bookAsCustomer($email)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))    {
+            $error = 'email';
+            $this->redirect("bookAsCustomer.php?error=$error"); //Check email
+            return;
+        } 
+        
+        $cust = $this->db->prepare("SELECT email FROM Customers WHERE email = ?;");
+        $cust->bind_param('s', $email);
+        $cust->execute();
+        $result = $cust->get_result();
+        
+        if (!$result)   {
+            return;
+        }
+        
+        $row = mysqli_fetch_row($result);
+        
+        if (empty($row[0]))   {
+            $error = 'email';
+            $this->redirect("bookAsCustomer.php?error=$error"); //Check email
+            return;    
+        }
+        
+        if($row[0] == $email)   {
+            $_SESSION['cust_email'] = $row[0];
+            //Need to set user type
+            return true;
+        }
+  
+    }
+    
+    public function bookAsCustomerView()
+    {
+        require_once('views/CustMainPageView.class.php');
+        $site = new SiteContainer();
+        $page = new CustMainPageView();
+
+        // Load the Customer model, because this is a customer page
+        require_once('models/Customer.class.php');
+        // Give the model the email address in the session and the database object
+        try{
+            $this->user = new Customer($_SESSION['cust_email'], $this->db);
+        } catch (Exception $e)
+        {
+            $this->redirect("login.php?error=login_required");
+            echo "err_user_not_found";
+        }
+
+        $query = "SELECT fName, lName, empID
+                FROM Employees;";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $empArray = $res->fetch_all(MYSQLI_ASSOC);
+
+        $site->printHeader();
+        $site->printNav($this->user->type);
+        $page->printHtml($this->user);
+        $page->printCalendar($empArray);
+        $site->printFooter();
+    }
 }
 
