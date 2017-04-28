@@ -191,6 +191,7 @@ class Controller
         $page->printHtml($this->user);
         $page->printCalendar($empArray);
         $site->printFooter();
+        // $site->printSpecialFooter("calendarByType.js");
 
     }
 
@@ -794,7 +795,7 @@ class Controller
     /**
      * Confirms that a user would like to book an appointment with employee and time
      */
-    public function bookingConfirm($empId, $dt)
+    public function bookingConfirm($empId, $dt, $typeId='')
     {
         require_once('models/Calendar.class.php');
         require_once('models/Customer.class.php');
@@ -809,6 +810,10 @@ class Controller
         // This wont be different regardless of owner/customer
         if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
             throw new Exception("Employee $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
+
+        $apptypes = $cal->fetchAvailableTypes($empId, $dt, $this->db);
+        if ( count($apptypes) == 0 )
+            throw new Exception("Appointment types with employee with ID $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
     
         try{ // Print out booking to be booked/view booking
             $site->printHeader();
@@ -816,7 +821,7 @@ class Controller
             $cw = new CanWork($empId, $dt, $this->db); // not a booking yet!!
             
             $site->printNav($_SESSION['type']);
-            $bkv->printConfirm($cw, $empdata);
+            $bkv->printConfirm($cw, $empdata, $apptypes,$typeId);
             
             $site->printFooter();   
                 
@@ -867,10 +872,11 @@ class Controller
      * If a customer email is supplied, we are booking the appointment as an
      * owner and should take the customer email as an argument
      */
-    public function bookingCreate($empID, $dt, $custEmail = '')
+    public function bookingCreate($empID, $dt, $custEmail = '', $typeId='')
     {
         require_once('models/Calendar.class.php');
         require_once('models/CanWork.class.php');
+        require_once('models/AppType.class.php');
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
@@ -883,20 +889,36 @@ class Controller
         
         // Grab the canwork from the databse
         $cw = new CanWork($empID, $dt, $this->db); // Still not a booking!!
+        $appType = new AppType($typeId, $this->db);
         
         // Grab the employee from the database
         if (! ($empdata = $this->fetchEmployeeFromDb($empID)) )
             throw new Exception("Employee $empID could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
+
+        // check that it hasnt already been taken
+        try {
+            $b_meta = $cal->bookingCheckAndReturnMeta($empID, $dt, $appType);
+        } catch (Exception $e) {
+            $site->printHeader();
+            $site->printNav("cust");
+            $bkv->printError($e->getMessage());
+            $site->printFooter();
+            return; // Its not possible to create this booking
+        }
         
-        // Here we want to insert the booking, possibly check that it hasnt already been
-        // taken, but not doing now TODO
-        $sql = "INSERT INTO Bookings (empID, email, datetime) VALUES (?,?,?);";
+        // Here we want to insert the booking
+        $sql = "INSERT INTO Bookings (empID, email, datetime, startTime, endTime, appType) VALUES (?,?,?,?,?,?);";
         $stmt = $this->db->prepare($sql);
+
         // Insert our given username into the statement safely
-        
-        $dts = $dt->format('Y-m-d H:i:s');
-        
-        $stmt->bind_param('sss', $empID, $custEmail, $dts);
+        $stmt->bind_param('sssssi',
+            $empID,
+            $custEmail,
+            $b_meta['dateTime'],
+            $b_meta['startTime'],
+            $b_meta['endTime'],
+            $b_meta['typeid']
+        );
         
         
         $site->printHeader();
@@ -905,7 +927,7 @@ class Controller
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
             $bkv->printSuccess($cw, $empdata);
         else
-            $bkv->printError();
+            $bkv->printError($stmt->error);
 
         $site->printFooter();   
         
