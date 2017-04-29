@@ -10,7 +10,9 @@ $ctrl = new Controller();
 if ($ctrl->ownerLoggedIn())    {
     
     if (isset($_POST['fname']))    {
-        if ($ctrl->addEmpOwner($_POST['fname'], $_POST['lname'])) {
+        
+        if ($ctrl->addEmpOwner($_POST['fname'], $_POST['lname'], $_POST['skills'])) 
+        {
             $ctrl->addEmpFormOwner(true);
         }
     }
