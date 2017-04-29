@@ -14,6 +14,8 @@ class Booking
     
     private $empId;
     private $dateTime;
+    private $startTime;
+    private $endTime;
     private $email;
     private $emp_fname;
     private $emp_lname;
@@ -43,6 +45,9 @@ class Booking
         $this->empId = $result['empID'];
         $this->email = $result['email'];
         $this->dateTime = new DateTime($result['dateTime']);
+        $this->startTime = new DateTime($result['dateTime']);
+        $tempdatetime = $result['dateTime'];
+        $tempendtime = $result['endTime'];
         
         $type_key = $result['appType'];
         $q = $db->prepare("SELECT * FROM AppType WHERE id = ?;");
@@ -52,11 +57,17 @@ class Booking
         $result = mysqli_fetch_array($result);
         
         if ($result != null)
+        {
             $this->type = $result['appDesc'];
-        else 
+            $this->duration = $result['appDuration'] * SLOT_LEN;
+            $this->endTime = new DateTime($tempendtime);
+        }else 
+        {
             $this->type = "Unspecified";
-        
-        
+            $this->duration = SLOT_LEN;
+            $this->endTime = new DateTime($tempdatetime);
+            $this->endTime->modify('+' . SLOT_LEN . ' minutes');
+        }
         
         $q = $db->prepare("SELECT fName, lName FROM Employees WHERE empID = ?;");
         $q->bind_param('s', $empID);
@@ -71,6 +82,9 @@ class Booking
     
     public function get_empId() { return $this->empId; }
     public function get_dateTime() { return $this->dateTime; }
+    public function get_startTime() { return $this->startTime; }
+    public function get_endTime() { return $this->endTime; }
+    public function get_duration() { return $this->duration; }
     public function get_email() { return $this->email; }
     public function get_fname() { return $this->emp_fname; }
     public function get_lname() { return $this->emp_lname; }

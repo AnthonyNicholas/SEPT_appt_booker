@@ -937,6 +937,7 @@ class Controller
         $site = new SiteContainer();
         $bkv = new BookingView();
         $cal = new Calendar($this->db);
+        $cust = null; // Needed in order to not print a customer dropdown if logged in as customer
         
         // If no email supplied, we are booking for the current customer
         if ($this->custLoggedIn() && empty($custEmail))
@@ -950,7 +951,7 @@ class Controller
         } else if ($this->ownerLoggedIn()) // email not empty
         {
             try{
-                new Customer($custEmail, $this->db);
+                $cust = new Customer($custEmail, $this->db);
             } catch(Exception $e){
                 // Was unable to find customer with this email
                 $errors = "Email must be of an existing valid customer";
@@ -973,7 +974,7 @@ class Controller
             $b_meta = $cal->bookingCheckAndReturnMeta($empID, $dt, $appType);
         } catch (Exception $e) {
             $site->printHeader();
-            $site->printNav("cust");
+            $site->printNav($_SESSION['type']);
             $bkv->printError($e->getMessage());
             $site->printFooter();
             return; // Its not possible to create this booking
@@ -998,9 +999,13 @@ class Controller
         $site->printNav($_SESSION['type']);
         
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
-            $bkv->printSuccess($cw, $empdata);
-        else
+        {
+            $bk = new Booking($empID, $cw->get_dateTime(), $this->db);
+            $bkv->printSuccess($bk, $empdata, $cust);
+        } else
+        {
             $bkv->printError($stmt->error);
+        }
 
         $site->printFooter();   
         

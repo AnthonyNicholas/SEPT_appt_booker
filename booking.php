@@ -30,7 +30,7 @@
         if (empty($_POST))
         {
             $ctrl->bookingConfirm($empid, $dt, $apptypeid);
-        } elseif ($_POST['a'] == 'create')
+        } else
         {
             $custEmail = $_SESSION['email'];
             $ctrl->bookingCreate($empid, $dt, $custEmail, $apptypeid);

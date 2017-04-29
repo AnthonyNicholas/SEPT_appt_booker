@@ -354,7 +354,11 @@ class Calendar
         }
         // If we are at the last element of the array
         if ( ++$i == $slots )
-            $booking['endTime'] = strtotime("+$applen minutes", strtotime($b['dateTime']));
+        {
+            $endtime = new DateTime($b['dateTime']);
+            $endtime->modify("+" . SLOT_LEN . " minutes");
+            $booking['endTime'] = $endtime->format('Y-m-d H:i:s');
+        }
       }
       return $booking;
 
