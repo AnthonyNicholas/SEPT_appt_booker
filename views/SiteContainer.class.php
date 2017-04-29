@@ -151,12 +151,13 @@ public function printNav($type = "none")
             
             <?php if ($type == "owner"){ ?>
                 <ul class="nav navbar-nav">
-                    <li><a href="mainPageOwner.php">View Bookings</a></li>
-                    <li><a href="empOwnerAdd.php">Add Employee</a></li>
-                    <li><a href="WorkerAvailability.php">Employee Times</a></li>
+                    <li><a href="mainPageOwner.php">Bookings</a></li>
+                    <li><a href="empOwnerAdd.php">New Employee</a></li>
+                    <li><a href="WorkerAvailability.php">Roster</a></li>
                     <li><a href="addActivityOwner.php">Add Appointment Type</a></li>
-                    <li><a href="ownerCombinedCal.php">Combined calendar view</a></li>
+                    <li><a href="ownerCombinedCal.php">Combined calendar</a></li>
                     <li><a href="bookAsCustomer.php">Book for Customer</a></li>
+                    <li><a href="AddSkills.php">Employee Skills</a></li>
                     <li><a href="helpPage.php">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

@@ -33,7 +33,7 @@ class CustMainPageView    {
 
             <div class="row">
               <!--<div class="form-group">-->
-                <label class="control-label col-sm-4" for="selectAppType">Select appointment type (Not yet functional):</label>
+                <label class="control-label col-sm-4" for="selectAppType">Select appointment type:</label>
                   <div class="col-sm-8">
                     <input id="selectAppType" type="text" list="types" class="form-control" oninput="set_type(<?php echo htmlspecialchars(json_encode($types));?>)"/>
                       <datalist id="types">
@@ -54,7 +54,7 @@ class CustMainPageView    {
                   
                   <div class="row">
               <!--<div class="form-group">-->
-                <label class="control-label col-sm-4" for="selectAppType">Select employee (Not yet functional):</label>
+                <label class="control-label col-sm-4" for="selectAppType">Select employee:</label>
                   <div class="col-sm-8">
                     <input id="emp_search" type="text" list="emps" class="form-control" oninput="toggle_emp(<?php echo htmlspecialchars(json_encode($employees));?>)"/>
                       <datalist id="emps">

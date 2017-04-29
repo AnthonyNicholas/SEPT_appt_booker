@@ -1089,19 +1089,6 @@ class Controller
         $site->printFooter(); 
     }
     
-    
-    
-    
-    public function add_employee_skills()
-    {
-        
-        
-        
-        
-    }
-    
-    
-    
     /**
      * Employee doesnt have an object, so fetching it here
      */
@@ -1216,5 +1203,107 @@ class Controller
         // $site->printFooter();
         $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));
     }
+    
+    public function add_employee_skills($skills, $employee)
+    {
+        
+        
+        foreach ($skills as $key => $value)
+        {
+            if ($value == 1)
+                {   
+                    $q = $this->db->prepare("select * from haveSkill where empID = ? and typeId = ?");
+                    $q->bind_param('ss', $employee, $key);
+                    $q->execute();
+                    $result = $q->get_result();
+
+                    if (mysqli_num_rows($result) == 0) 
+                    {   
+                        $q = $this->db->prepare("insert into haveSkill (empID, typeId) values (?, ?)");
+                        $q->bind_param('ss', $employee, $key);
+                        $q->execute();
+                    }
+                }
+        }
+    }
+    
+    public function add_skills_page($success)
+    {
+        if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return false;
+        }
+            
+        require_once('views/AddSkillsView.class.php'); 
+        require_once('models/AppType.class.php');
+        $types = AppType::get_all_types($this->db);
+
+
+        $query = "SELECT * from Employees;";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $empArray = $res->fetch_all(MYSQLI_ASSOC);
+
+        $site = new SiteContainer();
+        $page = new AddSkillsView();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        
+        if ($success)
+            $page->printSuccess();
+            
+        $page->printHtml($empArray, $types);
+        $site->printFooter(); 
+    }
+    
+    public function kill_time($times)
+    {
+        $times = $_POST['kill'];
+        
+        foreach ($times as $key => $value)
+        {
+            $q = $this->db->prepare("delete from CanWork where empID = ? and dateTime = ?");
+            $q->bind_param('ss', $value, $key);
+            $q->execute();
+            
+            $next_time = $key;
+            
+            while (true)
+            {
+                $dt = new DateTime($next_time);
+                $dt->modify('+'.MINIMUM_INTERVAL.' minutes');
+                $next_time = $dt->format("Y-m-d H:i:s");
+                $q = $this->db->prepare("select * from CanWork where empID = ? and dateTime = ?");
+                $q->bind_param('ss', $value, $next_time);
+                $q->execute();
+                $result = $q->get_result();
+
+                if (mysqli_num_rows($result) > 0) 
+                {
+                    $q = $this->db->prepare("delete from CanWork where empID = ? and dateTime = ?");
+                    $q->bind_param('ss', $value, $next_time);
+                    $q->execute();
+                }
+                else
+                    break;
+            }
+            
+            
+            
+            
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
