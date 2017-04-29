@@ -165,4 +165,24 @@ function set_type(types)
   }, 1000);
 }
 
+function add_skill(types)
+{
+  for (var key in types) 
+  {
+    var selector = document.getElementById("select_skills");
+    if (selector.value == types[key].appType)
+    {
+     document.getElementById("skill_" + types[key].id).style.display = 'block';
+     document.getElementById("post_skill_" + types[key].id).value = 1;
+     selector.value = "";
+    }
+  } 
+}
+
+function remove_skill(type_id)
+{
+     document.getElementById("skill_" + type_id).style.display = 'none';
+     document.getElementById("post_skill_" + type_id).value = 0;
+}
+
 

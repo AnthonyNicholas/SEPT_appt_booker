@@ -369,6 +369,8 @@ class Controller
 
         require_once('views/AddEmpOwner.class.php');
         require_once('views/FormError.class.php');
+        require_once('models/AppType.class.php');
+        
         $site = new SiteContainer();
         $page = new AddEmpOwner();
         $error_page = new FormError();
@@ -380,14 +382,14 @@ class Controller
             $page->printSuccessHtml();
         }
         else    {
-            $page->printHtml();
+            $page->printHtml(AppType::get_all_types($this->db));
         }
         $site->printFooter();   
 
     }
 
     // processes and adds entered employee into the database
-    public function addEmpOwner($fname,$lname)
+    public function addEmpOwner($fname,$lname, $skills)
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
             $error = 'fname';
@@ -407,6 +409,25 @@ class Controller
             $q->bind_param('sss', $empID, $fname, $lname);
             $q->execute();
             //Insert new employee
+            
+            //get employees id
+            $q = $this->db->prepare("select empID from Employees where fName = ? and empID >= all(select empID from Employees)");
+            $q->bind_param('s', $fname);
+            $q->execute();
+            $empID = $q->get_result();
+            $row = mysqli_fetch_assoc($empID);
+            
+            // add skills
+            foreach ($skills as $key => $value)
+            {
+                if ($value == 1)
+                {   
+                    $q = $this->db->prepare("insert into haveSkill (empID, typeId) values (?, ?)");
+                    $q->bind_param('ss', $row['empID'], $key);
+                    $q->execute();
+                }
+            }
+            
              return true;
         }
         
@@ -1067,6 +1088,18 @@ class Controller
         $bs->printHtml($customer);
         $site->printFooter(); 
     }
+    
+    
+    
+    
+    public function add_employee_skills()
+    {
+        
+        
+        
+        
+    }
+    
     
     
     /**
