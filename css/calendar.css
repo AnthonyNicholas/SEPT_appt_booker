@@ -47,6 +47,24 @@
     border: 1px solid #BCBCBC;
 }
 
+.panel-sept-appointment{
+    padding: 0px;
+    text-align: left;
+    border: 1px solid #BCBCBC;
+}
+.panel-sept-appointment .table.sept-borders tr{
+    border-bottom: 1px solid #BCBCBC;
+}
+.panel-sept-appointment .table th{
+    text-align: right;
+}
+.panel-sept-appointment .panel-heading{
+    padding-top:5px;
+}
+.panel-sept-appointment .sept-confirm{
+    text-align: right;
+}
+
 /* panel layout */
 .panel-address .company-tag{
     font-size: 12px;

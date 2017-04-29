@@ -24,6 +24,10 @@ $(document).ready(function(){
   };
   $(".horizontal-calendar-big-wrapper").bootstrapBigCalendar(bigCalendarOptions);  
   
+  $(document).ajaxStop(function(){
+    set_type(types);
+  });
+  
   //when you use the carousel do not display overflow 
   $('.horizontal-calendar-big-wrapper').on("click", ".carousel-control", function() {
       $(".carousel-inner").css("overflow","hidden");

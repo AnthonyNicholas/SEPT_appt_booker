@@ -65,6 +65,27 @@ class AppType
         return $types;  
     }
     
+    public static function get_types_for_employee($empNo, $db)
+    {
+        $q = $db->prepare("SELECT * FROM AppType WHERE id IN (
+                                SELECT typeId FROM haveSkill WHERE empID = ?
+                           );");
+        $q->bind_param('s', $empNo);
+        $q->execute();
+        
+        $result = $q->get_result();
+
+        $types = array();
+        
+        $i = 0;
+        
+        while ($row = mysqli_fetch_assoc($result))
+        {
+            $types[$row['id']] = new AppType($row['id'], null, $row);  
+        }
+
+        return $types;  
+    }
     
     public function get_id() { return $this->id; }
     public function get_appType() { return $this->appType; }
