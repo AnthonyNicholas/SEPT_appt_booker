@@ -1,8 +1,9 @@
 <?php
 /**
+ * LoginForm View
  * The login form class will print out the html form specifically for the
- * type of user logging in. Maybe we could have a printHtml method for each
- * owners and customers in the same class?
+ * type of user logging in. 
+ * Authors: Adam
  */
 class LoginForm
 {

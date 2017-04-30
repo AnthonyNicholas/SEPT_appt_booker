@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * CustMainPageView View
+ * Holds all the HTML for the customer main page and calendars
+ * Authors: Adam, Anthony
+ */
 class CustMainPageView    {
     
     public function printHtml($u, $types='', $employees='')    {

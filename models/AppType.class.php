@@ -2,7 +2,7 @@
 
 /**
   * AppType class
-  * Authors: Anthony Nicholas
+  * Authors: Anthony Nicholas, Adam
   * Purpose: A class to load and store appointment Type data from 
   *         the database, based on the appType table,
   *         and provide basic access to such data.

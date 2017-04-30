@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * BookingSummary Frontend
+ * Used as a point of entry to the application Controller
+ */
 // Direct Customer to view a list of their upcoming bookings
 
 require_once('models/Customer.class.php');

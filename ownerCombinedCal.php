@@ -1,5 +1,7 @@
 <?php
 /**
+ * ownerCombinedCal Frontend
+ * Used as a point of entry to the application Controller
  * This is the combined calendar view for owners. 
  */
 

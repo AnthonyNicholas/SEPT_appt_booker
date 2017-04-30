@@ -1,6 +1,10 @@
 <?php
- /**
-  * 
+/**
+ * Calendar Class
+ * Authors: Anthony Nicholas, Adam Young
+ * Purpose: A class to manage returning of employee ajax calendars and
+ *          taking into account skills of employees and timeslots available
+ * 
  * @author Mariocoski
  * @email mariuszrajczakowski@gmail.com 
  * @github https://github.com/mariocoski/Bootstrap-calendar
@@ -11,6 +15,7 @@
  *
  * This has been altered into a class to fit our appointment booker class,
  * Controller calls upon this class to render calendar HTML given a employee number
+ * Authors: Anthony
  */
 class Calendar
 {

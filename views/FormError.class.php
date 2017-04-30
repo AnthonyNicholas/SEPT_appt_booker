@@ -1,8 +1,10 @@
 <?php
-
-/** Handles the printing of errors
+/**
+ * FormError View
+ *  Handles the printing of errors
  *  Usually the error is printed above a form
  *  if it was submitted with invalid data
+ * Authors: Jake Williams
  */
   
 class FormError

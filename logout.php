@@ -1,6 +1,7 @@
 <?php
 /**
- * This file checks who is logged in, if anyone, and redirects them to the appropriate page
+ * logout Frontend
+ * Used as a point of entry to the application Controller
  */
 require_once('Controller.class.php');
 

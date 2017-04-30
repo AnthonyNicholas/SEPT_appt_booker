@@ -1,7 +1,7 @@
 <?php
 /**
  * Customer class
- *
+ * Authors: Adam Young
  * Shell for the customer class. Should, given an email, then pull the requested
  * data into class variables
  * 

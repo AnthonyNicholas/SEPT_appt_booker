@@ -1,10 +1,10 @@
 <?php
 /**
+ * mainPageCust Frontend
  * This is the mainpage for customers. Even though this is the file 
  * that users will navigate to in their browser, this should act more as a portal to the
  * methods in the main Controller.class.php file.
  *
- * No logic to be put in these files!
  */
 
 require_once('Controller.class.php');

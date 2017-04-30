@@ -1,7 +1,9 @@
 <?php
-
-// Shows the customer a simple list of any bookings they have upcoming
-
+ /**
+  * AddActivityOwner View
+  * Authors: Jake Williams
+  * Shows the customer a simple list of any bookings they have upcoming
+  */
 class BookingSummary
 {
     public function printHtml($customer)

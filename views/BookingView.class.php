@@ -1,4 +1,9 @@
 <?php
+/**
+ * BookingView View
+ * Holds all the HTML for handling individual bookings
+ * Authors: Adam
+ */
 class BookingView
 {
     public function printConfirm($cw, $emp, $apptypes, $apptype) // CanWork, Employee

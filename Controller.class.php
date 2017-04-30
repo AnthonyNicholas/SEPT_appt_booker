@@ -59,6 +59,7 @@ class Controller
 
     /**
      * handles requests for index.php
+     * Authors: Adam Young
      */
     public function index()
     {
@@ -75,6 +76,10 @@ class Controller
 
     }
 
+    /**
+     * Provides a login form for both users and owner
+     * Authors: Adam Young
+     */
     public function loginForm()
     {
         // If already logged in, redirect appropriately
@@ -108,6 +113,10 @@ class Controller
         
     }
 
+    /**
+     * Processes login for both users and owner
+     * Authors: Adam Young
+     */
     public function login($email, $password)
     {
         // here login data will be validated and processed, and user data
@@ -154,6 +163,7 @@ class Controller
     }
 
     // Handles the display of the main page for customers
+    // Authors: Adam, Anthony
     public function mainPageCust()
     {
         // Restricted access
@@ -206,6 +216,7 @@ class Controller
     }
 
     // Handles the display of the main page for owners
+    // Authors: Adam, Anthony
     public function mainPageOwner()
     {
         // Restricted access
@@ -237,6 +248,7 @@ class Controller
     }
 
     // Handles the display of the combined calendar page for owners
+    // Authors: Anthony
     public function ownerCombinedCal()
     {
         // Restricted access
@@ -260,6 +272,7 @@ class Controller
 
 
     // displays the register form for customers
+    // Authors: Dan
     public function registerFormCust()
     {
         $error = array();
@@ -283,7 +296,9 @@ class Controller
     }
 
     // validate and enter the register information into the database
-    // will need to check for duplicate users/email already in use
+    // checks for duplicate users/email already in use
+    // also checks for password complexity
+    // Authors: Dan, Adam
     public function registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2)
     {
         $errors = array(); // list of errors
@@ -361,7 +376,6 @@ class Controller
     }
 
     // displays the form for adding employees
-    // possibly lists all current employees too?
     public function addEmpFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
@@ -511,6 +525,8 @@ class Controller
         
     }
     
+    // Handles requests for the help page
+    // Authors: Dan
     public function helpPage()
     {
         $site = new SiteContainer();
@@ -533,6 +549,7 @@ class Controller
     }
 
     // Very basic if logged in function
+    // Authors: Adam
     public function custLoggedIn()
     {
         // check session for an email and customer type
@@ -786,6 +803,7 @@ class Controller
      * If a customer is logged in, we want to show them available appointments always
      * If an owner, we only want to show them available appointments in the case of them
      * making an appointment on behalf of an owner
+     * Authors: Adam, Anthony
      */
     public function getCustCal($empNo, $weeks, $caltype = '', $displaySlotType = '')
     {
@@ -867,6 +885,7 @@ class Controller
     
     /**
      * Confirms that a user would like to book an appointment with employee and time
+     * Authors: Adam, Anthony
      */
     public function bookingConfirm($empId, $dt, $typeId='', $errors='')
     {
@@ -906,6 +925,8 @@ class Controller
         }
     }
     
+    // View bookings handler
+    // Author: Adam
     public function bookingView($empId, $dt)
     {
         require_once('models/Calendar.class.php');
@@ -955,6 +976,7 @@ class Controller
      * books an appointment with employee and time
      * If a customer email is supplied, we are booking the appointment as an
      * owner and should take the customer email as an argument
+     * Authors: Adam
      */
     public function bookingCreate($empID, $dt, $custEmail = '', $typeId='')
     {
@@ -1105,6 +1127,7 @@ class Controller
     
     /**
      * Employee doesnt have an object, so fetching it here
+     * Authors: Adam
      */
      private function fetchEmployeeFromDb($empId)
      {
@@ -1123,6 +1146,7 @@ class Controller
      /**
       * Quick and dirty remove employees function
       * Remove an employee from database, cleaning up all foreign keys
+      * Authors: adam
       */
     public function deleteEmployee($empId)
     {
@@ -1156,6 +1180,9 @@ class Controller
     }
      
     //BOOK AS OWNER FUNCTIONS
+    // AUTHORS: Dan
+    
+    // prints an input for a customer
     // Possibly can be unsed in a modular way at a later date to search 
     // for customers
     public function searchCustomerBox($errors = '')
@@ -1262,6 +1289,8 @@ class Controller
         // $site->printFooter();
         $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));
     }
+    
+    // END BOOK AS OWNER FUNCTIONS
     
     public function add_employee_skills($skills, $employee)
     {

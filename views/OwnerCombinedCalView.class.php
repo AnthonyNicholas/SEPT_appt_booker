@@ -1,4 +1,9 @@
 <?php
+/**
+ * OwnerCombinedCalView View
+ * Holds all the HTML for the all cookings combined in one calendar view
+ * Authors: Anthony
+ */
 
 class OwnerCombinedCalView    {
     

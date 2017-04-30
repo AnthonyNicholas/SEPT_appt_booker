@@ -1,7 +1,7 @@
 <?php
 /**
  * CanWork Class
- *
+ * Authors: Jake Williams
  * Should, given an empId and timestamp, pull the requested CanWork from the database
  * booking data into class variables
  * 

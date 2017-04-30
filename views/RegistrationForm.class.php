@@ -1,8 +1,9 @@
 <?php
 /**
- * The registration form class will print out the html form specifically for the
- * type of user being registered. Maybe we could have a printHtml method for each
- * owners and customers in the same class?
+ * RegistrationForm View
+ * The registration form class prints out the html form specifically for the
+ * type of user being registered.
+ * Authors: Jake
  */
 class RegistrationForm
 {

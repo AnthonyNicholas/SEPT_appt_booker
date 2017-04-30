@@ -1,7 +1,9 @@
 <?php
 /**
+ * SiteContainer View
  * This class includes headers, footers, navigation and any other
  * styling/backend content that is required
+ * Authors: Adam, Anthony, Jake
  */
 
 class SiteContainer
