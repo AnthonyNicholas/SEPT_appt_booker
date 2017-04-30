@@ -1,0 +1,6 @@
+
+[Sun, 30 Apr 2017 18:12:49 +1000]: Booking for a type d successfully created at 2017-05-05 11:00:00 with employee Albert Albee for customer a a
+[Sun, 30 Apr 2017 21:05:12 +1000]: Login failed, email ddsadfa@ee.com was denied access.
+[Sun, 30 Apr 2017 21:10:14 +1000]: Customer with email a@a.a successfully logged in.
+[Sun, 30 Apr 2017 21:12:27 +1000]: Creation of booking failed: Booking of type type_A can not be made at time 2017-05-05 09:30:00 with employee 2 because only 0 slots out of the required 1 are available
+[Sun, 30 Apr 2017 21:12:52 +1000]: Booking for a type_A successfully created at 2017-05-05 13:00:00 with employee Albert Albee for customer with email a@a.a

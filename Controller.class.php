@@ -156,6 +156,7 @@ class Controller
             // Login successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'customer';
+            $this->writeLog("Customer with email " . $user['email'] . " successfully logged in.");
             $this->redirect("index.php");
 
         } elseif ($user = $res_own->fetch_assoc())
@@ -163,11 +164,13 @@ class Controller
             // Login of owner successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'owner';
+            $this->writeLog("Owner with email " . $user['email'] . " successfully logged in.");
             $this->redirect("index.php");
 
         } else
         {
             $error = "err_login_failed";
+            $this->writeLog("Login failed, email " . $email . " was denied access.");
             $this->redirect("login.php?error=$error");
             echo $error;
         }
@@ -362,6 +365,7 @@ class Controller
             $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
             $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
             $q->execute();
+            $this->writeLog("Customer Registration successful with email: " . $email);
             $this->login($email, $pword); // login after account is created, commented until login is fully implemented   
         } 
     }
@@ -1048,6 +1052,7 @@ class Controller
             $site->printNav($_SESSION['type']);
             $bkv->printError($e->getMessage());
             $site->printFooter();
+            $this->writeLog("Creation of booking failed: " . $e->getMessage());
             return; // Its not possible to create this booking
         }
         
@@ -1074,10 +1079,11 @@ class Controller
             $bk = new Booking($empID, $cw->get_dateTime(), $this->db);
             $this->writeLog("Booking for a " . $bk->get_type() . " successfully created at " . $dt->format('Y-m-d H:i:s')
                         . " with employee " . $empdata->fullName
-                        . " for customer " . $cust->get_fullName());
+                        . " for customer with email " . $custEmail);
             $bkv->printSuccess($bk, $empdata, $cust);
         } else
         {
+            $this->writeLog("Creation of a booking failed: " . $stmt->error);
             $bkv->printError($stmt->error);
         }
 
