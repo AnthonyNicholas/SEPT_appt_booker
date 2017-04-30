@@ -1,7 +1,7 @@
 <?php
  /**
   * AddEmpOwner View
-  * Authors: Jake Williams
+  * Authors: Jake, Dan
   * 
   */
 class AddEmpOwner

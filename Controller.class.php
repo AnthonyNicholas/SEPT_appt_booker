@@ -20,6 +20,7 @@ class Controller
     private $db;
     public $user;
     
+    // database object accessor
     public function get_db()
     {
         return $this->db;
@@ -283,7 +284,7 @@ class Controller
 
 
     // displays the register form for customers
-    // Authors: Dan
+    // Authors: Dan, Jake
     public function registerFormCust()
     {
         $error = array();
@@ -309,7 +310,7 @@ class Controller
     // validate and enter the register information into the database
     // checks for duplicate users/email already in use
     // also checks for password complexity
-    // Authors: Dan, Adam
+    // Authors: Dan, Adam, Jake
     public function registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2)
     {
         $errors = array(); // list of errors
@@ -365,28 +366,8 @@ class Controller
         } 
     }
 
-    // displays the register form for owners
-    public function registerFormOwner()
-    {
-
-
-    }
-
-    // validates and enter register information into database
-    public function registerOwner()
-    {
-
-
-    }
-
-    // Main management page for managers
-    public function managementPageOwner()
-    {
-
-
-    }
-
     // displays the form for adding employees
+    // Authors: Dan, Jake
     public function addEmpFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
@@ -424,6 +405,7 @@ class Controller
     }
 
     // processes and adds entered employee into the database
+    // Authors: Dan, Jake
     public function addEmpOwner($fname,$lname, $skills)
     {
         if (!preg_match("/^[a-zA-Z'-]+$/", $fname))    {
@@ -468,8 +450,8 @@ class Controller
         
     }
 
-   // displays the form for adding new Appointment Types
-    // possibly lists all current app types too?
+    // displays the form for adding new Appointment Types
+    // Author: Anthony
     public function addActivityFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
@@ -504,8 +486,8 @@ class Controller
 
     }
 
-
     // processes and adds new activity type into the database
+    // Author: Anthony
     public function addActivityOwner($appType,$appDesc,$appDuration)
     {
         if (!preg_match("/^[a-zA-Z0-9'-. ]+$/", $appType))    { // need to check regex
@@ -577,7 +559,9 @@ class Controller
         //     return false;
         // }
     }
+    
     // Owner logged in function
+    // Authors: Adam
     public function ownerLoggedIn()
     {
         // For now just check session for an email and owner type
@@ -588,6 +572,8 @@ class Controller
 
     }
 
+    // redirect page for when users try to access content without logging in
+    // Authors: Adam
     public function restricted()
     {
         $site = new SiteContainer();
@@ -599,6 +585,9 @@ class Controller
         $site->printFooter();
 
     }
+    
+    // logout function
+    // Author: Adam
     public function logout()
     {
         session_unset();
@@ -611,6 +600,9 @@ class Controller
         $site->printFooter();
 
     }
+    
+    // error page
+    // Author: Adam
     public function err_page()
     {
         $site = new SiteContainer();
@@ -620,7 +612,9 @@ class Controller
         echo "An Error has occured and your request could not be completed. Return <a href=\"index.php\">Home</a>";
         $site->printFooter();
     }
+    
     // Handles PHP redirects
+    // Authors: Adam
     public function redirect($page = '')
     {
         // If not running under apache (ie test case), dont attempt to redirect
@@ -633,7 +627,9 @@ class Controller
         }
     }
     
-    public function add_working_times($times) // process an employee working times to add one by one to the database
+    // process an employee working times to add one by one to the database
+    // Authors: Jake
+    public function add_working_times($times) 
     {
         if (!isset($times['date']))
             return false;
@@ -656,9 +652,12 @@ class Controller
         return true;
     }
     
-    public function workers_availability() // essentially load employees from database, return associative array including shifts
-    {                                      // ready for use in html document
-        $q = $this->db->prepare("SELECT empID, fName, lName FROM Employees;");
+    // essentially load employees from database, return associative array including shifts
+    // ready for use in html document
+    // Authors: Jake
+    public function workers_availability() 
+    {                                      
+        $q = $this->db->prepare("SELECT empID, fName, lName FROM Employees");
         
         if (!$q->execute())
             return false;
@@ -684,7 +683,9 @@ class Controller
         return $employees;
     }
     
-    public function get_worker_hours($empID) // return array of all stored shifts for given employee
+    // return array of all stored shifts for given employee
+    // Authors: Jake
+    public function get_worker_hours($empID) 
     {
         require_once('models/Timeslot.class.php');
         
@@ -721,7 +722,9 @@ class Controller
         return $timeslots;
     }
     
-    public function add_working_time($empID, $start, $end) // associate employee to all appointments between $start and $end
+    // associate employee to all appointments between $start and $end
+    // Authors: Jake
+    public function add_working_time($empID, $start, $end) 
     {
         if ($end <= $start)
             return false;
@@ -773,12 +776,15 @@ class Controller
         
         return true;
     }
-                                            
-    public function concatenate($ts) // takes a list of timeslots,
-    {                                // convert them into the minimum
-        $n = count($ts);             // number of timeslots which capture
-                                     // the same periods. 
-        for ($k = 0; $k < $n; $k++)  // aka appointments -> shifts
+              
+    // takes a list of timeslots, convert them into the minimum
+    // number of timeslots which capture the same periods. aka appointments -> shifts
+    // Authors: Jake
+    public function concatenate($ts) 
+    {                                 
+        $n = count($ts);             
+                                       
+        for ($k = 0; $k < $n; $k++)  
         {     
             for ($i = 0; $i < count($ts) - 1; $i++)
             {
@@ -797,7 +803,9 @@ class Controller
         return $ts;
     }
     
-    public function time_sort($timeslots) // sort timeslots into acending order
+    // sort timeslots into acending order
+    // Authors: Jake
+    public function time_sort($timeslots) 
     {
         usort($timeslots, function ($t1,$t2) 
         {
@@ -1078,6 +1086,7 @@ class Controller
     }
     
     // handles fetching the view for an owner to view employees' working times
+    // Author: Jake
     public function show_worker_availability()
     {
         if ( !$this->ownerLoggedIn() )
@@ -1118,6 +1127,7 @@ class Controller
     }
 
     // handles fetching the view for a customer to view their bookings
+    // Author: Jake
     public function view_booking_summary()
     {
         // check logged in
@@ -1193,12 +1203,11 @@ class Controller
         
     }
      
-    //BOOK AS OWNER FUNCTIONS
-    // AUTHORS: Dan
     
-    // prints an input for a customer
+    // Prints an input for searching a customer
     // Possibly can be unsed in a modular way at a later date to search 
     // for customers
+    // Author: Dan
     public function searchCustomerBox($errors = '')
     {
         
@@ -1218,7 +1227,8 @@ class Controller
         $page->printHtml();
         
     }
-    
+    //Validates email and checks if customer exists
+    // Author: Dan
     public function bookAsCustomer($custEmail)
     {
         if ( !$this->ownerLoggedIn() )
@@ -1246,6 +1256,9 @@ class Controller
         
     }
     
+    //Prints out the calendar view for selecting times
+    //for a customer
+    // Author: Dan
     public function bookAsCustomerView($cust = '')
     {
         if ( !$this->ownerLoggedIn() )
@@ -1304,12 +1317,10 @@ class Controller
         $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));
     }
     
-    // END BOOK AS OWNER FUNCTIONS
-    
+    // associate skill types to an employee
+    // Author: Jake
     public function add_employee_skills($skills, $employee)
     {
-        
-        
         foreach ($skills as $key => $value)
         {
             if ($value == 1)
@@ -1329,6 +1340,8 @@ class Controller
         }
     }
     
+    // Handles displaying the page for an owner to add skills to an employee
+    // Author: Jake
     public function add_skills_page($success)
     {
         if ( !$this->ownerLoggedIn() )
@@ -1361,6 +1374,8 @@ class Controller
         $site->printFooter(); 
     }
     
+    // delete an employees shift from the database
+    // Author: No one
     public function kill_time($times)
     {
         $times = $_POST['kill'];
@@ -1392,20 +1407,7 @@ class Controller
                 else
                     break;
             }
-            
-            
-            
-            
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
 

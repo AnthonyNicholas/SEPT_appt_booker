@@ -1,7 +1,7 @@
 <?php
  /**
   * AddActivityOwner View
-  * Authors: Jake Williams
+  * Authors: Anthony
   * 
   */
 

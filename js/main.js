@@ -35,7 +35,7 @@ function add_hrs(empID)
     
   var date = document.createElement("input"); 
   date.setAttribute('type',"date");
-  date.setAttribute('placeholder',"yyyy-mm-dd");
+  date.setAttribute('placeholder',"dd-mm-yyyy");
   date.setAttribute('name',"date[]");
   date.setAttribute('class', "form-control");
   date.required = true;
