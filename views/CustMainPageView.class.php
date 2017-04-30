@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * CustMainPageView View
+ * Holds all the HTML for the customer main page and calendars
+ * Authors: Adam, Anthony
+ */
 class CustMainPageView    {
     
     public function printHtml($u, $types='', $employees='')    {
@@ -73,7 +77,7 @@ class CustMainPageView    {
     <?php
     }
 
-    public function printCalendar($empArray)
+    public function printCalendar($empArray, $types = array())
     {     
     ?>
         <div class="container">
@@ -86,6 +90,9 @@ class CustMainPageView    {
                   <div class='panel-body'>
                     <h4> <?php echo $e['fName'].' '.$e['lName']; ?> </h4> 
                     <img src="img/blank-profile.png" height="250" width="250">
+                    <?php if (isset($types[$e['empID']]) && count($types[$e['empID']]) != 0):?>
+                      <p>Services: <?php echo implode(', ', $types[$e['empID']]);?> </p>
+                    <?php endif; ?>
                   </div><!--end of panel-body-->        
                 </div><!--end of panel-->
               </div><!--end of col-sm-4-->

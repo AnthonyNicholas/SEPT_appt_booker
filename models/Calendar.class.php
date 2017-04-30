@@ -1,6 +1,10 @@
 <?php
- /**
-  * 
+/**
+ * Calendar Class
+ * Authors: Anthony Nicholas, Adam Young
+ * Purpose: A class to manage returning of employee ajax calendars and
+ *          taking into account skills of employees and timeslots available
+ * 
  * @author Mariocoski
  * @email mariuszrajczakowski@gmail.com 
  * @github https://github.com/mariocoski/Bootstrap-calendar
@@ -11,6 +15,7 @@
  *
  * This has been altered into a class to fit our appointment booker class,
  * Controller calls upon this class to render calendar HTML given a employee number
+ * Authors: Anthony
  */
 class Calendar
 {
@@ -267,28 +272,6 @@ class Calendar
       return $output;
 
   }
-
-   /**
-    * Fetches the available appointment types for a given employee and datetime
-    * Basic Implementation just returns all appointment types atm
-    * Authors: Adam Young
-    */
-    public function fetchAvailableTypes($empId, $dt, $db)
-    {
-      $types = array();
-      $query = "
-            SELECT id, appType
-            FROM AppType;";
-      $res = $this->db->query($query);
-
-      while ($row = $res->fetch_assoc()) {
-        $types[$row['id']] = $row['appType'];
-      }
-      /* free result set */
-      $res->free();
-
-      return $types;
-    }
 
    /**
     * Checks if the booking is available to book, based on the type, employee

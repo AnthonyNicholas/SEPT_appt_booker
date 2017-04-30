@@ -1,4 +1,9 @@
 <?php
+/**
+ * WorkerAvailability View
+ * Holds all the HTML for the worker availability entry and viewing pages
+ * Authors: Jake
+ */
 
 class WorkerAvailability
 {

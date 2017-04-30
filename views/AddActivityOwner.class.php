@@ -1,4 +1,9 @@
 <?php
+ /**
+  * AddActivityOwner View
+  * Authors: Jake Williams
+  * 
+  */
 
 class AddActivityOwner
 {

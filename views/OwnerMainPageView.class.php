@@ -1,4 +1,9 @@
 <?php
+/**
+ * OwnerMainPageView View
+ * Holds all the HTML for the owner main page and calendars of booked appointments
+ * Authors: Adam, Anthony
+ */
 
 class OwnerMainPageView    {
     

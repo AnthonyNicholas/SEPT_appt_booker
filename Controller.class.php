@@ -59,6 +59,7 @@ class Controller
 
     /**
      * handles requests for index.php
+     * Authors: Adam Young
      */
     public function index()
     {
@@ -75,6 +76,10 @@ class Controller
 
     }
 
+    /**
+     * Provides a login form for both users and owner
+     * Authors: Adam Young
+     */
     public function loginForm()
     {
         // If already logged in, redirect appropriately
@@ -108,6 +113,10 @@ class Controller
         
     }
 
+    /**
+     * Processes login for both users and owner
+     * Authors: Adam Young
+     */
     public function login($email, $password)
     {
         // here login data will be validated and processed, and user data
@@ -154,6 +163,7 @@ class Controller
     }
 
     // Handles the display of the main page for customers
+    // Authors: Adam, Anthony
     public function mainPageCust()
     {
         // Restricted access
@@ -185,17 +195,28 @@ class Controller
         $stmt->execute();
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
-        require_once('models/AppType.class.php');
+        // Fetch each employees associated types 
+        $empTypes = array();
+        foreach ($empArray as $e)
+        {
+            $tarr = array();
+            $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
+            foreach ($etypes as $t)
+                array_push($tarr, $t->get_appType());
+            $empTypes[$e['empID']] = $tarr;
+        }
+        
         $types = AppType::get_all_types($this->db);
         $site->printHeader();
         $site->printNav($this->user->type);
         $page->printHtml($this->user, $types, $empArray);
-        $page->printCalendar($empArray);
+        $page->printCalendar($empArray, $empTypes);
         $site->printSpecialFooter('calendar.js','calendarByType.js');
 
     }
 
     // Handles the display of the main page for owners
+    // Authors: Adam, Anthony
     public function mainPageOwner()
     {
         // Restricted access
@@ -227,6 +248,7 @@ class Controller
     }
 
     // Handles the display of the combined calendar page for owners
+    // Authors: Anthony
     public function ownerCombinedCal()
     {
         // Restricted access
@@ -250,6 +272,7 @@ class Controller
 
 
     // displays the register form for customers
+    // Authors: Dan
     public function registerFormCust()
     {
         $error = array();
@@ -273,7 +296,9 @@ class Controller
     }
 
     // validate and enter the register information into the database
-    // will need to check for duplicate users/email already in use
+    // checks for duplicate users/email already in use
+    // also checks for password complexity
+    // Authors: Dan, Adam
     public function registerCust($email, $fname, $lname, $address, $phone, $pword, $pword2)
     {
         $errors = array(); // list of errors
@@ -351,7 +376,6 @@ class Controller
     }
 
     // displays the form for adding employees
-    // possibly lists all current employees too?
     public function addEmpFormOwner($added)
     {
         if ( !$this->ownerLoggedIn() )
@@ -501,6 +525,8 @@ class Controller
         
     }
     
+    // Handles requests for the help page
+    // Authors: Dan
     public function helpPage()
     {
         $site = new SiteContainer();
@@ -523,6 +549,7 @@ class Controller
     }
 
     // Very basic if logged in function
+    // Authors: Adam
     public function custLoggedIn()
     {
         // check session for an email and customer type
@@ -557,7 +584,7 @@ class Controller
         $site->printHeader();
         if (isset($_SESSION['type']))
             $site->printNav($_SESSION['type']);
-        echo "You are not allowed to access this resource. Return <a href=\"/\">Home</a>";
+        echo "You are not allowed to access this resource. Return <a href=\"\">Home</a>";
         $site->printFooter();
 
     }
@@ -776,6 +803,7 @@ class Controller
      * If a customer is logged in, we want to show them available appointments always
      * If an owner, we only want to show them available appointments in the case of them
      * making an appointment on behalf of an owner
+     * Authors: Adam, Anthony
      */
     public function getCustCal($empNo, $weeks, $caltype = '', $displaySlotType = '')
     {
@@ -857,24 +885,24 @@ class Controller
     
     /**
      * Confirms that a user would like to book an appointment with employee and time
+     * Authors: Adam, Anthony
      */
     public function bookingConfirm($empId, $dt, $typeId='', $errors='')
     {
-        require_once('models/Calendar.class.php');
+        require_once('models/AppType.class.php');
         require_once('models/Customer.class.php');
         require_once('models/Booking.class.php');
         require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
-        $cal = new Calendar($this->db);
         $bkv = new BookingView();
 
         // This wont be different regardless of owner/customer
         if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
             throw new Exception("Employee $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
 
-        $apptypes = $cal->fetchAvailableTypes($empId, $dt, $this->db);
+        $apptypes = AppType::get_types_for_employee($empId, $this->db);
         if ( count($apptypes) == 0 )
             throw new Exception("Appointment types with employee with ID $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
     
@@ -897,6 +925,8 @@ class Controller
         }
     }
     
+    // View bookings handler
+    // Author: Adam
     public function bookingView($empId, $dt)
     {
         require_once('models/Calendar.class.php');
@@ -946,6 +976,7 @@ class Controller
      * books an appointment with employee and time
      * If a customer email is supplied, we are booking the appointment as an
      * owner and should take the customer email as an argument
+     * Authors: Adam
      */
     public function bookingCreate($empID, $dt, $custEmail = '', $typeId='')
     {
@@ -1096,6 +1127,7 @@ class Controller
     
     /**
      * Employee doesnt have an object, so fetching it here
+     * Authors: Adam
      */
      private function fetchEmployeeFromDb($empId)
      {
@@ -1111,7 +1143,46 @@ class Controller
         return $res->fetch_object();
      }
      
+     /**
+      * Quick and dirty remove employees function
+      * Remove an employee from database, cleaning up all foreign keys
+      * Authors: adam
+      */
+    public function deleteEmployee($empId)
+    {
+        if (empty($empId) || !is_numeric($empId))
+            return false;
+        
+        $sql = "DELETE FROM Bookings
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM CanWork
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM haveSkill
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM Employees
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+    }
+     
     //BOOK AS OWNER FUNCTIONS
+    // AUTHORS: Dan
+    
+    // prints an input for a customer
     // Possibly can be unsed in a modular way at a later date to search 
     // for customers
     public function searchCustomerBox($errors = '')
@@ -1194,6 +1265,16 @@ class Controller
         require_once('models/AppType.class.php');
         $types = AppType::get_all_types($this->db);
         
+        // Get types associated with each employee
+        $empTypes = array();
+        foreach ($empArray as $e)
+        {
+            $tarr = array();
+            $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
+            foreach ($etypes as $t)
+                array_push($tarr, $t->get_appType());
+            $empTypes[$e['empID']] = $tarr;
+        }
         
         // Handle errors for searchbox
         $serr = isset($_GET['errors']) ? $_GET['errors'] : '';
@@ -1208,6 +1289,8 @@ class Controller
         // $site->printFooter();
         $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));
     }
+    
+    // END BOOK AS OWNER FUNCTIONS
     
     public function add_employee_skills($skills, $employee)
     {

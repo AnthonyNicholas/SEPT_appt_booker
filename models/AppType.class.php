@@ -2,7 +2,7 @@
 
 /**
   * AppType class
-  * Authors: Anthony Nicholas
+  * Authors: Anthony Nicholas, Adam
   * Purpose: A class to load and store appointment Type data from 
   *         the database, based on the appType table,
   *         and provide basic access to such data.
@@ -65,6 +65,10 @@ class AppType
         return $types;  
     }
     
+   /**
+    * Fetches the available appointment types for a given employee and datetime
+    * Authors: Adam Young
+    */
     public static function get_types_for_employee($empNo, $db)
     {
         $q = $db->prepare("SELECT * FROM AppType WHERE id IN (

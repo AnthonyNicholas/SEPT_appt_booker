@@ -1,7 +1,7 @@
 <?php
 /**
  * Business Owner Class
- *
+ * Authors: Jake Williams
  * Shell for the Busiess Owner class. Should, given an email, then pull the requested
  * data into class variables
  * 

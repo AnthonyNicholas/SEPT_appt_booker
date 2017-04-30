@@ -1,4 +1,9 @@
 <?php
+/**
+ * OwnerHelpPage View
+ * Holds all the HTML for the owner help pages
+ * Authors: Dan
+ */
 /*TODO
 View Bookings text + images
 Adding employees images

@@ -1,4 +1,9 @@
 <?php
+ /**
+  * AddSkillsView View
+  * Authors: Jake Williams
+  * 
+  */
 
 class AddSkillsView
 {

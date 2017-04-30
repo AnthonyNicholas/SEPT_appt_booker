@@ -1,6 +1,7 @@
 <?php
 /**
-
+ * bookAsCustomer Frontend
+ * Used as a point of entry to the application Controller
  */
 
 require_once('Controller.class.php');

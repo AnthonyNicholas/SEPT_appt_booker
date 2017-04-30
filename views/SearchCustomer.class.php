@@ -1,4 +1,9 @@
 <?php
+/**
+ * SearchCustomer View
+ * Holds HTML for an employee email form
+ * Authors: Dan
+ */
 
 class SearchCustomer
 {

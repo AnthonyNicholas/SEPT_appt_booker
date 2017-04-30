@@ -1,4 +1,8 @@
 <?php
+/**
+ * register Frontend
+ * Used as a point of entry to the application Controller
+ */
 // Registration form which submits to itself
 // handles both before and after the form is submitted
 // If registration fails, the errors are being sent back with the form via GET variables

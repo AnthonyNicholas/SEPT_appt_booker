@@ -1,6 +1,7 @@
 <?php
 
 /** Timeslot class
+ * Authors: Jake
  * This class can manage shifts, empty appointments, 
  * and anything else defined by a start and end time
 */
