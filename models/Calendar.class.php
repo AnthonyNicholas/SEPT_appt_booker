@@ -56,6 +56,7 @@ class Calendar
                   FROM Bookings
               )
               AND w.empID = ?
+              AND w.empID IN (SELECT empID FROM haveSkill)
               ORDER BY t.dateTime ASC;";
       $stmt = $this->db->prepare($query);
       $stmt->bind_param('s', $empNo);

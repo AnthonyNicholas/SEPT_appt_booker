@@ -620,7 +620,7 @@ class Controller
     
     public function workers_availability() // essentially load employees from database, return associative array including shifts
     {                                      // ready for use in html document
-        $q = $this->db->prepare("SELECT empID, fName, lName FROM Employees;");
+        $q = $this->db->prepare("SELECT empID, fName, lName FROM Employees WHERE empID IN (SELECT empID FROM haveSkill);");
         
         if (!$q->execute())
             return false;
