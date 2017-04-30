@@ -223,7 +223,7 @@ class Controller
         $site->printNav($this->user->type);
         $page->printHtml($this->user, $types, $empArray);
         $page->printCalendar($empArray, $empTypes);
-        $site->printSpecialFooter('calendar.js','calendarByType.js');
+        $site->printSpecialFooter(array('calendar.js','calendarByType.js'));
 
     }
 
