@@ -207,9 +207,10 @@ function remove_skill(type_id, emps, types)
      
       for (var key in types) 
     {
-      var selector = document.getElementById("select_skills");
-      if (selector.value == types[key].appType)
+      if (document.getElementById("skill_" + types[key].id).style.display == 'block')
+      {
         t = true;
+      }
       
     }
     
@@ -219,6 +220,7 @@ function remove_skill(type_id, emps, types)
       {
        e = true; 
       }
+      
    }
    
       if (e && t)
@@ -244,9 +246,10 @@ function choose_emp(emps, types)
     
     for (var key in types) 
     {
-      var selector = document.getElementById("select_skills");
-      if (selector.value == types[key].appType)
+      if (document.getElementById("skill_" + types[key].id).style.display == 'block')
+      {
         t = true;
+      }
       
     }
     if (e && t)
