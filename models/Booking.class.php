@@ -58,7 +58,7 @@ class Booking
         
         if ($result != null)
         {
-            $this->type = $result['appDesc'];
+            $this->type = $result['appType'];
             $this->duration = $result['appDuration'] * SLOT_LEN;
             $this->endTime = new DateTime($tempendtime);
         }else 

@@ -24,6 +24,17 @@ class Controller
     {
         return $this->db;
     }
+    
+    /**
+     * Log to file method
+     * Used to record the time and effect of user and admin events on the site
+     * Authors: Adam
+     */
+    public function writeLog($msg)
+    {
+        $logline = PHP_EOL . "[" . date('r') . "]: " . $msg;
+        file_put_contents($this->config['log_file'], $logline, FILE_APPEND);
+    }
 
     public function __construct()
     {
@@ -1053,6 +1064,9 @@ class Controller
         if( $stmt->execute() ) // Our appointment was successfully booked, now it is a booking
         {
             $bk = new Booking($empID, $cw->get_dateTime(), $this->db);
+            $this->writeLog("Booking for a " . $bk->get_type() . " successfully created at " . $dt->format('Y-m-d H:i:s')
+                        . " with employee " . $empdata->fullName
+                        . " for customer " . $cust->get_fullName());
             $bkv->printSuccess($bk, $empdata, $cust);
         } else
         {
@@ -1284,7 +1298,7 @@ class Controller
         //{
         //    $page->printHtml($cust, $types, $empArray);  //pass in details for the customer
             $page->printHtml(null, $types, $empArray);
-            $page->printCalendar($empArray);
+            $page->printCalendar($empArray, $empTypes);
         //}
         // $site->printFooter();
         $site->printSpecialFooter(array('calendarByType.js','calendarOwnerBookForCust.js'));

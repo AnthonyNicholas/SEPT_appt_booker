@@ -11,6 +11,7 @@ $config = array(
     'db_user' => 'antfellow',
     'db_pass' => '',
     'db_name' => 'appt_booker',
+    'log_file' => 'appointments.log',
     'debug' => true
 );
 
