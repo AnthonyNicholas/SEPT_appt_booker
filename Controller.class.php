@@ -584,7 +584,7 @@ class Controller
         $site->printHeader();
         if (isset($_SESSION['type']))
             $site->printNav($_SESSION['type']);
-        echo "You are not allowed to access this resource. Return <a href=\"\">Home</a>";
+        echo "You are not allowed to access this resource. Return <a href=\"index.php\">Home</a>";
         $site->printFooter();
 
     }
