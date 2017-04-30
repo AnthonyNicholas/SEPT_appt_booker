@@ -13,8 +13,7 @@ Tute/lab day/time: Tuesday 9.30am
 ## Installation ##
 This PHP application will run on PHP 7.0.16-4 and MySQL Server.
 
-1. Unzip all files into the root directory of public_html. This application will
-not work under a subfolder due to the nature of some redirect implementations.
+1. Unzip all files into any directory under public_html.
 
 2. Edit config.php with the database username, password and name. Ensure
 the database has been created and appt_booker.sql tables and data imported into
