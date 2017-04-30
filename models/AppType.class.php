@@ -65,6 +65,10 @@ class AppType
         return $types;  
     }
     
+   /**
+    * Fetches the available appointment types for a given employee and datetime
+    * Authors: Adam Young
+    */
     public static function get_types_for_employee($empNo, $db)
     {
         $q = $db->prepare("SELECT * FROM AppType WHERE id IN (

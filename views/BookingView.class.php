@@ -18,7 +18,7 @@ class BookingView
                     <select name="apptype">
                   <?php foreach($apptypes as $id => $type) {
                     $state = (!empty($apptype) && $apptype == $id) ? " selected":"";
-                    echo "<option value=\"$id\"$state>$type</option>";
+                    echo "<option value=\"$id\"$state>".$type->get_appType()." (".SLOT_LEN*$type->get_appDuration()." mins)</option>";
                   } ?>
                     </select>
                   </td>
@@ -54,7 +54,7 @@ class BookingView
                     <select name="apptype">
                   <?php foreach($apptypes as $id => $type) {
                     $state = (!empty($apptype) && $apptype == $id) ? " selected":"";
-                    echo "<option value=\"$id\"$state>$type</option>";
+                    echo "<option value=\"$id\"$state>".$type->get_appType()." (".SLOT_LEN*$type->get_appDuration()." mins)</option>";
                   } ?>
                     </select>
                   </td>

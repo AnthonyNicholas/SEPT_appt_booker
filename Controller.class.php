@@ -185,12 +185,22 @@ class Controller
         $stmt->execute();
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
-        require_once('models/AppType.class.php');
+        // Fetch each employees associated types 
+        $empTypes = array();
+        foreach ($empArray as $e)
+        {
+            $tarr = array();
+            $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
+            foreach ($etypes as $t)
+                array_push($tarr, $t->get_appType());
+            $empTypes[$e['empID']] = $tarr;
+        }
+        
         $types = AppType::get_all_types($this->db);
         $site->printHeader();
         $site->printNav($this->user->type);
         $page->printHtml($this->user, $types, $empArray);
-        $page->printCalendar($empArray);
+        $page->printCalendar($empArray, $empTypes);
         $site->printSpecialFooter('calendarByType.js');
 
     }
@@ -860,21 +870,20 @@ class Controller
      */
     public function bookingConfirm($empId, $dt, $typeId='', $errors='')
     {
-        require_once('models/Calendar.class.php');
+        require_once('models/AppType.class.php');
         require_once('models/Customer.class.php');
         require_once('models/Booking.class.php');
         require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
         $site = new SiteContainer();
-        $cal = new Calendar($this->db);
         $bkv = new BookingView();
 
         // This wont be different regardless of owner/customer
         if (! ($empdata = $this->fetchEmployeeFromDb($empId)) )
             throw new Exception("Employee $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
 
-        $apptypes = $cal->fetchAvailableTypes($empId, $dt, $this->db);
+        $apptypes = AppType::get_types_for_employee($empId, $this->db);
         if ( count($apptypes) == 0 )
             throw new Exception("Appointment types with employee with ID $empId could not be found for booking at time: ".$dt->format('Y-m-d H:i:s'));
     
@@ -1124,6 +1133,41 @@ class Controller
         return $res->fetch_object();
      }
      
+     /**
+      * Quick and dirty remove employees function
+      * Remove an employee from database, cleaning up all foreign keys
+      */
+    public function deleteEmployee($empId)
+    {
+        if (empty($empId) || !is_numeric($empId))
+            return false;
+        
+        $sql = "DELETE FROM Bookings
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM CanWork
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM haveSkill
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+        $sql = "DELETE FROM Employees
+                WHERE empID = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bind_param('s', $empId);
+        $stmt->execute();
+        
+    }
+     
     //BOOK AS OWNER FUNCTIONS
     // Possibly can be unsed in a modular way at a later date to search 
     // for customers
@@ -1207,6 +1251,16 @@ class Controller
         require_once('models/AppType.class.php');
         $types = AppType::get_all_types($this->db);
         
+        // Get types associated with each employee
+        $empTypes = array();
+        foreach ($empArray as $e)
+        {
+            $tarr = array();
+            $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
+            foreach ($etypes as $t)
+                array_push($tarr, $t->get_appType());
+            $empTypes[$e['empID']] = $tarr;
+        }
         
         // Handle errors for searchbox
         $serr = isset($_GET['errors']) ? $_GET['errors'] : '';

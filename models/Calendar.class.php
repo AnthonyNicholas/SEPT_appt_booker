@@ -268,28 +268,6 @@ class Calendar
   }
 
    /**
-    * Fetches the available appointment types for a given employee and datetime
-    * Basic Implementation just returns all appointment types atm
-    * Authors: Adam Young
-    */
-    public function fetchAvailableTypes($empId, $dt, $db)
-    {
-      $types = array();
-      $query = "
-            SELECT id, appType
-            FROM AppType;";
-      $res = $this->db->query($query);
-
-      while ($row = $res->fetch_assoc()) {
-        $types[$row['id']] = $row['appType'];
-      }
-      /* free result set */
-      $res->free();
-
-      return $types;
-    }
-
-   /**
     * Checks if the booking is available to book, based on the type, employee
     * and duration
     * Authors: Adam Young
