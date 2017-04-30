@@ -78,7 +78,7 @@ class CustMainPageView    {
     ?>
         <div class="container">
         <?php foreach ($empArray as $e) {  ?>
-          <div hidden class="row marg-top " id="row_<?php echo $e['empID']?>"> 
+          <div class="row marg-top " id="row_<?php echo $e['empID']?>"> 
             <!-- left column with employee details-->
             <div class="col-sm-4 hidden-xs">
               <div class="panel panel-default panel-address panel-calendar-height">
