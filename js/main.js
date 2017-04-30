@@ -165,8 +165,11 @@ function set_type(types)
   }, 1000);
 }
 
-function add_skill(types)
+function add_skill(types, emps)
 {
+  var t = false;
+  var e = false;
+  
   for (var key in types) 
   {
     var selector = document.getElementById("select_skills");
@@ -175,14 +178,85 @@ function add_skill(types)
      document.getElementById("skill_" + types[key].id).style.display = 'block';
      document.getElementById("post_skill_" + types[key].id).value = 1;
      selector.value = "";
+     t = true;
     }
   } 
+  
+   for (var i = 0; i < emps.length; i++)
+   {
+      if (document.getElementById("emp_search").value == emps[i].fName + " " + emps[i].lName)
+      {
+       e = true; 
+      }
+   }
+   
+   if (e && t)
+     document.getElementById("submit_skills").disabled = false;
+   else
+      document.getElementById("submit_skills").disabled = true;
+    
 }
 
-function remove_skill(type_id)
+function remove_skill(type_id, emps, types)
 {
      document.getElementById("skill_" + type_id).style.display = 'none';
      document.getElementById("post_skill_" + type_id).value = 0;
+     
+     var t = false;
+     var e = false;
+     
+      for (var key in types) 
+    {
+      if (document.getElementById("skill_" + types[key].id).style.display == 'block')
+      {
+        t = true;
+      }
+      
+    }
+    
+      for (var i = 0; i < emps.length; i++)
+   {
+      if (document.getElementById("emp_search").value == emps[i].fName + " " + emps[i].lName)
+      {
+       e = true; 
+      }
+      
+   }
+   
+      if (e && t)
+      document.getElementById("submit_skills").disabled = false;
+    else
+      document.getElementById("submit_skills").disabled = true;
+}
+
+function choose_emp(emps, types)
+{
+  var e = false;
+  var t = false;
+  
+   for (var i = 0; i < emps.length; i++)
+    {
+      if (document.getElementById("emp_search").value == emps[i].fName + " " + emps[i].lName)
+      {
+        document.getElementById("emp_chosen").value = emps[i].empID;
+        
+        e = true;
+      }
+    }
+    
+    for (var key in types) 
+    {
+      if (document.getElementById("skill_" + types[key].id).style.display == 'block')
+      {
+        t = true;
+      }
+      
+    }
+    if (e && t)
+      document.getElementById("submit_skills").disabled = false;
+    else
+      document.getElementById("submit_skills").disabled = true;
+      
 }
 
 

@@ -38,8 +38,12 @@ class WorkerAvailability
                 $start_time = $st->format("H:i:s");
                 $end_time = $en->format("H:i:s");
                 echo "<div id = \"hrs_list\" class = \"list-group-item\">".$date_only."&nbsp;&nbsp;&nbsp;".$start_time." - ".$end_time.
-                        
-                    "</div>";   
+                      "<span class=\"pull-right\">
+                            <button type=\"submit\" value = \"".$employees[$i]['empID']."\" name=\"kill[".$st->format("Y-m-d H:i:s")."]\" class=\"btn btn-default btn-xs btn-circle\">
+                                <i class=\"glyphicon glyphicon-minus\"></i>
+                            </button>
+                        </span>  
+                    </div>";   
                  
             }   
             
@@ -52,13 +56,7 @@ class WorkerAvailability
                     </div>"; 
             
             
-            /*
-            "<span class=\"pull-right\">
-                            <button type=\"button\" class=\"btn btn-default btn-xs btn-circle\">
-                                <i class=\"glyphicon glyphicon-minus\"></i>
-                            </button>
-                        </span>
-            */
+
             
  
             echo "</form>";

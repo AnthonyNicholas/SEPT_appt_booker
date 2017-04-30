@@ -21,7 +21,7 @@ class BookingSummary
             $date = $date_time->format("d-m-Y");
             $time = $date_time->format("H:i:s");
                 
-            echo "<div class = \"list-group-item\">".$date."&nbsp;&nbsp;&nbsp;".$time."&nbsp;&nbsp;&nbsp; with ".$fname." ".$lname."&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;".$type."</div>";  
+            echo "<div class = \"list-group-item\">".$date."&nbsp;&nbsp;&nbsp;".$time."&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;".$fname." ".$lname."&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;".$type."</div>";  
         }
     }
 }
