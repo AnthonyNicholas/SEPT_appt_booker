@@ -4,11 +4,6 @@
  * Holds all the HTML for the owner help pages
  * Authors: Dan
  */
-/*TODO
-View Bookings text + images
-Adding employees images
-Adjust worker times text + images
-*/
 
 class OwnerHelpPage    {
     public function printHtml()    {
@@ -32,7 +27,7 @@ class OwnerHelpPage    {
         </div>
         <div>
             <p>You must add employees before you can set and view
-            their times. Employees may have specialisations that customers
+            their times. Employees must have specialisations that customers
             can select when they select an employee and appointment type.</p>
         </div>
         <div>
@@ -41,7 +36,7 @@ class OwnerHelpPage    {
             <img src="help-imgs/add-emp22.PNG" style="width:900px;height:250px;">
             <p>Enter the first, last name of the employee and select an employee 
             skill. Note that both first and last name fields are required.
-            An employee may have any number of skills.</p>
+            An employee must have at least one skill.</p>
             <img src="help-imgs/add-emp33.PNG" style="width:900px;height:250px;">
             <p>Click 'Add Employee'. When an employee is added, a confirmation message
             will appear.</p>

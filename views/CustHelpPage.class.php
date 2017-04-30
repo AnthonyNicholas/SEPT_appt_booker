@@ -4,10 +4,7 @@
  * Holds all the HTML for the customer help page
  * Authors: Dan
  */
-/*TODO
-Make booking images
-View created bookings*/
-
+ 
 class CustHelpPage    {
     public function printHtml()    {
         ?>
