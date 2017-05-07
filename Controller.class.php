@@ -1412,7 +1412,7 @@ class Controller
         }
     }
     
-    
+    // display form for setting up new instance of the business
     public function setupForm()
     {
         // CHECK LOGGED IN
@@ -1432,8 +1432,15 @@ class Controller
     // creates a new database specified in the $name parameter
     // including all tables and empty timeslots required for 
     // using the site from scratch
-    public function setup($name)
+    public function setup($form)
     {
+        $name = $form['name'];
+        $desc = $form['desc']; 
+        
+        // plan: check if owner details in config match database
+        // if not - redirect owner to setup business page
+        
+
         $newdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass']);
         
         $q = "drop database if exists ".$name.";";
@@ -1452,6 +1459,16 @@ class Controller
         
         // create blank timeslots (could define default times)
         $this->create_times("2017-05-05 12:00:00", "2017-05-07 12:00:00");
+        
+        $q = $this->db->prepare("INSERT INTO Business (businessName, businessDesc) VALUES (?, ?)");
+        $q->bind_param('ss', $name, $desc);
+                    
+        $q->execute();
+        
+        
+        // insert into business owner new credentials, from config?
+        
+        
 
     }
     
@@ -1518,7 +1535,7 @@ class Controller
         $this->db->query($EMPLOYEES);
         $this->db->query($TIMESLOTS);
         $this->db->query($HAVESKILL);
-  
+        $this->db->query($BUSINESS);
     }
     
 
