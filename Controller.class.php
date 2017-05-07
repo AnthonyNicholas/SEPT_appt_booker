@@ -156,7 +156,6 @@ class Controller
             // Login successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'customer';
-            $this->writeLog("Customer with email " . $user['email'] . " successfully logged in.");
             $this->redirect("index.php");
 
         } elseif ($user = $res_own->fetch_assoc())
@@ -164,13 +163,11 @@ class Controller
             // Login of owner successful
             $_SESSION['email'] = $user['email'];
             $_SESSION['type'] = 'owner';
-            $this->writeLog("Owner with email " . $user['email'] . " successfully logged in.");
             $this->redirect("index.php");
 
         } else
         {
             $error = "err_login_failed";
-            $this->writeLog("Login failed, email " . $email . " was denied access.");
             $this->redirect("login.php?error=$error");
             echo $error;
         }
@@ -365,7 +362,6 @@ class Controller
             $q = $this->db->prepare("INSERT INTO Customers (email, fName, lName, address, phoneNo, password) VALUES  (?, ?, ?, ?, ?, ?);");
             $q->bind_param('ssssss', $email, $fname, $lname, $address, $phone, $pword);
             $q->execute();
-            $this->writeLog("Customer Registration successful with email: " . $email);
             $this->login($email, $pword); // login after account is created, commented until login is fully implemented   
         } 
     }
@@ -1415,5 +1411,116 @@ class Controller
             }
         }
     }
+    
+    
+    public function setupForm()
+    {
+        // CHECK LOGGED IN
+
+        require_once('views/SetupView.class.php'); 
+        
+        $site = new SiteContainer();
+        
+        $sv = new SetupView();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        $sv->printHtml();
+        $site->printFooter(); 
+    }
+    
+    // creates a new database specified in the $name parameter
+    // including all tables and empty timeslots required for 
+    // using the site from scratch
+    public function setup($name)
+    {
+        $newdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass']);
+        
+        $q = "drop database if exists ".$name.";";
+        $newdb->query($q);
+        
+        $q = "create database ".$name.";"; 
+        $newdb->query($q);
+        
+        $newdb->close();
+        
+        // overwrite config
+        $this->change_database($name);
+  
+        // create new tables
+        $this->fill_db();
+        
+        // create blank timeslots (could define default times)
+        $this->create_times("2017-05-05 12:00:00", "2017-05-07 12:00:00");
+
+    }
+    
+    // add new database name to config
+    public function change_database($db_name)
+    {
+        $file_name = "config.php";
+        $file = fopen($file_name,"r");
+        $content = fread($file,filesize($file_name));
+        $content = str_replace($this->config['db_name'], $db_name, $content);
+        $file = fopen($file_name,"w");
+        fwrite($file,$content);
+        fclose($file);
+        $this->config['db_name'] = $db_name;
+        $this->db = new mysqli(
+            $this->config['db_addr'],
+            $this->config['db_user'],
+            $this->config['db_pass'],
+            $this->config['db_name']
+        );
+    }
+    
+    // create blank timeslots
+    public function create_times($from, $to)
+    {
+        $start = new DateTime($from);
+        $end = new DateTime($to);
+        $interval = MINIMUM_INTERVAL;
+
+        while ($start <= $end)
+        {
+            $sd = $start->format("Y-m-d H:i:s");
+            $q = $this->db->prepare("SELECT * FROM TimeSlot WHERE dateTime = ?;");
+            $q->bind_param('s', $sd);
+            
+            if (!$q->execute())
+                die();
+                
+            $result = $q->get_result();
+
+            if (mysqli_num_rows($result) == 0) // check appointment doesn't already exist
+            {
+                $q = $this->db->prepare("INSERT INTO TimeSlot (dateTime) VALUES ('$sd')");
+                
+                if (!$q->execute())
+                    die();
+            }
+            
+            $start->modify('+'.$interval.' minutes');
+        }
+    }  
+    
+    // create all tables
+    public function fill_db()
+    {
+        include('create_tables.php');
+
+        $this->db->query($CLEAN);
+        $this->db->query($APPTYPE);
+        $this->db->query($BOOKINGS);
+        $this->db->query($BUSINESSOWNER);
+        $this->db->query($CANWORK);
+        $this->db->query($CUSTOMERS);
+        $this->db->query($EMPLOYEES);
+        $this->db->query($TIMESLOTS);
+        $this->db->query($HAVESKILL);
+  
+    }
+    
+
 }
 
