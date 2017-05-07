@@ -1,6 +1,6 @@
 <?php
 
-$CLEAN = "DROP TABLE IF EXISTS `AppType`, `Bookings`, `BusinessOwner`, `CanWork`, `Customers`, `Employees`, `TimeSlot`, `haveSkill`, `Business`;";
+$CLEAN = "DROP TABLE IF EXISTS `AppType`, `Bookings`, `BusinessOwner`, `CanWork`, `Customers`, `Employees`, `TimeSlot`, `haveSkill`, `Business`, `hours`;";
 
 $APPTYPE = "CREATE TABLE `AppType` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -72,4 +72,11 @@ $BUSINESS = "CREATE TABLE `Business` (
   `businessName` varchar(40) NOT NULL,
   `businessDesc` varchar(200) NOT NULL,
   PRIMARY KEY (`businessName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+
+$HOURS = "CREATE TABLE `Hours` (
+  `day` int(11) NOT NULL,
+  `open` time NOT NULL,
+  `close` time NOT NULL,
+  PRIMARY KEY (`day`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";

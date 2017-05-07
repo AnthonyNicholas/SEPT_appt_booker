@@ -160,6 +160,7 @@ public function printNav($type = "none")
                     <li><a href="ownerCombinedCal.php">Combined calendar</a></li>
                     <li><a href="bookAsCustomer.php">Book for Customer</a></li>
                     <li><a href="AddSkills.php">Employee Skills</a></li>
+                    <li><a href="hours.php">Hours</a></li>
                     <li><a href="helpPage.php">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

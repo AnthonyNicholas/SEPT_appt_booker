@@ -1415,7 +1415,11 @@ class Controller
     // display form for setting up new instance of the business
     public function setupForm()
     {
-        // CHECK LOGGED IN
+         if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
 
         require_once('views/SetupView.class.php'); 
         
@@ -1536,6 +1540,58 @@ class Controller
         $this->db->query($TIMESLOTS);
         $this->db->query($HAVESKILL);
         $this->db->query($BUSINESS);
+        $this->db->query($HOURS);
+    }
+    
+    public function hoursForm($result)
+    {
+         if ( !$this->ownerLoggedIn() )
+        {
+            $this->restricted();
+            return;
+        }
+
+        require_once('views/HoursView.class.php'); 
+        require_once('views/FormError.class.php');
+        
+        $site = new SiteContainer();
+        $message = new FormError();
+        
+        $hv = new HoursView();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        
+        if ($result == "bad_time")
+            $message->printHtml(array("bad_time"));
+        
+        $hv->printHtml($result);
+        $site->printFooter();    
+    }
+    
+    public function set_hours($opens, $closes)
+    {
+        // check times are valid
+        for ($i = 0; $i < 7; $i++)
+        {
+            $startd = new DateTime("0000-00-00 ".$opens[$i]);
+            $endd = new DateTime("0000-00-00 ".$closes[$i]);
+            
+            if ($endd <= $startd)
+                return false;
+        }
+        
+        $this->db->query("truncate table Hours;");
+        
+         for ($i = 0; $i < 7; $i++)
+         {
+            $q = $this->db->prepare("INSERT INTO Hours (day, open, close) VALUES (?, ?, ?);"); 
+            $q->bind_param('sss', $i, $opens[$i], $closes[$i]);
+            $q->execute();
+         }
+
+        return true;
+
     }
     
 
