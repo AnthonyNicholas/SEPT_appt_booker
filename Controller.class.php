@@ -5,7 +5,7 @@
  * Shell for the main controller class, this could be static and used
  * as a library of utilities for our web application or it could be
  * used as an object for keeping information about the current session
- * 
+ * demo
  */
 
 define('MINIMUM_INTERVAL', 30); // smallest timeslot duration
