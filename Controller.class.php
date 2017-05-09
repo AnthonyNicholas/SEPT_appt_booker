@@ -726,8 +726,20 @@ class Controller
     // Authors: Jake
     public function add_working_time($empID, $start, $end) 
     {
+        
+        require_once('models/Hours.class.php');
+        
         if ($end <= $start)
             return false;
+            
+        //Check new hours are within the businesses opening hours
+        $hours = new Hours($this->db);
+        
+        if (!$hours->checkWithinHours($start) || !$hours->checkWithinHours($end)){
+            
+            $this->redirect("WorkerAvailability.php?error=outside_opening_hours");
+            return false;
+        }
         
         while ($start < $end)
         {
@@ -1097,18 +1109,12 @@ class Controller
             return;
         }
         
-        
-        
-        
         $error = array();
         if (!empty($_GET['error']))
         {
             $error_string = urldecode($_GET['error']);
             $error = explode(',', $error_string);
         }
-        
-
-
         
         // add error form
         

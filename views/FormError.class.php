@@ -22,7 +22,8 @@ class FormError
                            "appType" => "Please re-enter name of new appointment. Name must consist of alphanumeric characters only.",
                            "bad_apptype" => "Please select appointment type",
                            "appDesc" => "Please enter valid times only",
-                           "custNotFound" => "Could not find customer in System"
+                           "custNotFound" => "Could not find customer in System",
+                           "outside_opening_hours" => "Hours are outside Business Opening Hours" 
                            );
 
 
