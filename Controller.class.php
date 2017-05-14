@@ -9,6 +9,7 @@
  */
 
 define('MINIMUM_INTERVAL', 30); // smallest timeslot duration
+define('NO_DATABASE', 'NO_DATABASE');
 
 require_once('views/SiteContainer.class.php');
 require_once('libs/Helper.php');
@@ -54,19 +55,24 @@ class Controller
         session_start();
 
         // Set up our database object for use within the controller
-        $this->db = new mysqli(
-            $config['db_addr'],
-            $config['db_user'],
-            $config['db_pass'],
-            $config['db_name']
-        );
 
-        if ($this->db->connect_errno)
+        if ($config['db_name'] != NO_DATABASE)
         {
-            $errmsg = $config['debug'] ? ": " . $this->db->connect_error : ", errors may follow.";
-            echo "Failed to connect to MySQL" . $errmsg . "<br/>\n";
-        }
+            $this->db = new mysqli(
+                $config['db_addr'],
+                $config['db_user'],
+                $config['db_pass'],
+                $config['db_name']
+                );
+        
 
+        
+            if ($this->db->connect_errno)
+            {
+                $errmsg = $config['debug'] ? ": " . $this->db->connect_error : ", errors may follow.";
+                echo "Failed to connect to MySQL" . $errmsg . "<br/>\n";
+            }
+        }
     }
 
     /**
@@ -75,7 +81,13 @@ class Controller
      */
     public function index()
     {
-        if ($this->custLoggedIn())
+    
+        if ($this->config['db_name'] == NO_DATABASE)
+        {
+            $this->redirect("setup.php");
+        }
+    
+        else if ($this->custLoggedIn())
         {
             $this->redirect("mainPageCust.php");
         } elseif ($this->ownerLoggedIn())
@@ -691,6 +703,9 @@ class Controller
         
         $q = $this->db->prepare("SELECT A.dateTime FROM TimeSlot A, CanWork C WHERE A.dateTime = C.dateTime AND C.empID = '$empID'"); // grab all timeslots
        
+        if (!$q)
+            return false;
+       
         if (!$q->execute())
             return false;
         
@@ -758,14 +773,23 @@ class Controller
                 $row = mysqli_fetch_array($result); 
                 
                 $q = $this->db->prepare("SELECT dateTime, empID FROM CanWork WHERE empID = ? AND dateTime = ?;"); // check CanWork not already updated
-                $q->bind_param('ss', $empID, $row['dateTime']);
                 
-                if (!$q->execute())
-                    return false;
-                    
-                $result = $q->get_result();
+                $rows = 0;
                 
-                if (mysqli_num_rows($result) == 0) 
+                if ($q)
+                {
+                    $q->bind_param('ss', $empID, $row['dateTime']);
+                
+                    if (!$q->execute())
+                        return false;
+                        
+                    $result = $q->get_result();
+                    $rows = mysqli_num_rows($result);
+                }   
+                
+                
+                
+                if ($rows == 0) 
                 {
                     $q = $this->db->prepare("INSERT INTO CanWork (empID, dateTime) VALUES (?, ?)");
                     $q->bind_param('ss', $empID, $row['dateTime']);
@@ -1421,12 +1445,17 @@ class Controller
     // display form for setting up new instance of the business
     public function setupForm()
     {
-         if ( !$this->ownerLoggedIn() )
+
+if ($this->config['db_name'] != NO_DATABASE)
+            $this->redirect("login.php");
+        // login here?
+        
+/*         if ( !$this->ownerLoggedIn() )
         {
             $this->restricted();
             return;
         }
-
+*/
         require_once('views/SetupView.class.php'); 
         
         $site = new SiteContainer();
@@ -1444,12 +1473,12 @@ class Controller
     // using the site from scratch
     public function setup($form)
     {
+        session_unset();
+        
+        
+        
         $name = $form['name'];
         $desc = $form['desc']; 
-        
-        // plan: check if owner details in config match database
-        // if not - redirect owner to setup business page
-        
 
         $newdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass']);
         
@@ -1468,18 +1497,22 @@ class Controller
         $this->fill_db();
         
         // create blank timeslots (could define default times)
-        $this->create_times("2017-05-05 12:00:00", "2017-05-07 12:00:00");
+        $this->create_times("2017-05-15 12:00:00", "2017-06-15 12:00:00");
         
         $q = $this->db->prepare("INSERT INTO Business (businessName, businessDesc) VALUES (?, ?)");
         $q->bind_param('ss', $name, $desc);
-                    
         $q->execute();
         
+        $dummy_ph = "0";
+        $dummy_addr = "nowhere";
         
-        // insert into business owner new credentials, from config?
-        
-        
+        $q = $this->db->prepare("INSERT INTO BusinessOwner (fName, lName, email, password, address, phoneNo) VALUES (?, ?, ?, ?, ?, ?)");
+        $q->bind_param('ssssss', $form['fname'], $form['lname'], $this->config['admin'], $this->config['pass'], $dummy_addr, $dummy_ph);
+        $q->execute();
 
+        unset($_POST);
+
+        $this->redirect("login.php");
     }
     
     // add new database name to config
@@ -1540,10 +1573,10 @@ class Controller
         $this->db->query($APPTYPE);
         $this->db->query($BOOKINGS);
         $this->db->query($BUSINESSOWNER);
-        $this->db->query($CANWORK);
         $this->db->query($CUSTOMERS);
         $this->db->query($EMPLOYEES);
         $this->db->query($TIMESLOTS);
+        $this->db->query($CANWORK);
         $this->db->query($HAVESKILL);
         $this->db->query($BUSINESS);
         $this->db->query($HOURS);

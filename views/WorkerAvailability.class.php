@@ -35,6 +35,8 @@ class WorkerAvailability
             echo "<form id=\"form\" method=\"POST\" action = \"send_hrs.php\">";
             echo "<h4 class = \"list-group-item-heading\">".$fname." ".$lname."</h4>";
               
+            if (is_array($employees[$i]['shifts']))
+            {
             foreach($employees[$i]['shifts'] as $value)
             {
                 $st = $value->get_start();
@@ -50,7 +52,7 @@ class WorkerAvailability
                         </span>  
                     </div>";   
                  
-            }   
+            }   }
             
             echo "<div id = \"".$employees[$i]['empID']."\" class = \"list-group-item\"> Add more times...
                          <span class=\"pull-right\">
