@@ -10,11 +10,13 @@ $config = array(
     'db_addr' => 'localhost',
     'db_user' => 'antfellow',
     'db_pass' => '',
-    'db_name' => 'appt_booker',
+    'db_name' => 'NO_DATABASE',
     'log_file' => 'appointments.log',
-    'debug' => true
+    'debug' => true,
+    'admin' => 'admin@email.com',
+    'pass' => 'abc'
 );
-
+ 
 define("CSS","css/");
 define("JS","js/");
 define("SLOT_LEN", 30);
