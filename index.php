@@ -8,4 +8,6 @@ require_once('Controller.class.php');
 
 $ctrl = new Controller();
 
+// check first time user
+
 $ctrl->index();
