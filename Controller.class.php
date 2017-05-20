@@ -73,6 +73,8 @@ class Controller
                 echo "Failed to connect to MySQL" . $errmsg . "<br/>\n";
             }
         }
+        elseif (empty($GLOBALS['setup']))
+            $this->redirect("index.php");
     }
 
     /**
@@ -143,6 +145,9 @@ class Controller
      */
     public function login($email, $password)
     {
+      //  if (strcmp($this->config['db_name'], 'NO_DATABASE'))    
+        //    $this->redirect("index.php");
+        
         // here login data will be validated and processed, and user data
         // saved into the PHP session
         // grab results from customer database
@@ -1446,8 +1451,8 @@ class Controller
     public function setupForm()
     {
 
-if ($this->config['db_name'] != NO_DATABASE)
-            $this->redirect("login.php");
+    if ($this->config['db_name'] != NO_DATABASE)
+        $this->redirect("login.php");
         // login here?
         
 /*         if ( !$this->ownerLoggedIn() )
@@ -1479,25 +1484,27 @@ if ($this->config['db_name'] != NO_DATABASE)
         
         $name = $form['name'];
         $desc = $form['desc']; 
+        
+        $dbname = str_replace(' ', '', $name);
 
         $newdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass']);
         
-        $q = "drop database if exists ".$name.";";
+        $q = "drop database if exists ".$dbname.";";
         $newdb->query($q);
         
-        $q = "create database ".$name.";"; 
+        $q = "create database ".$dbname.";"; 
         $newdb->query($q);
         
         $newdb->close();
         
         // overwrite config
-        $this->change_database($name);
+        $this->change_database($dbname);
   
         // create new tables
         $this->fill_db();
         
         // create blank timeslots (could define default times)
-        $this->create_times("2017-05-15 12:00:00", "2017-06-15 12:00:00");
+        $this->create_times("2017-05-15 12:00:00", "2017-08-15 12:00:00");
         
         $q = $this->db->prepare("INSERT INTO Business (businessName, businessDesc) VALUES (?, ?)");
         $q->bind_param('ss', $name, $desc);
