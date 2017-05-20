@@ -140,7 +140,7 @@ function toggle_emp(emps)
   }
 }
 
-function set_type(types)
+function set_type(types, emps)
 {
   setTimeout(function(){
   var a = document.getElementsByClassName('horizontal-calendar-big-link');
@@ -155,12 +155,25 @@ function set_type(types)
   {
     if (document.getElementById("selectAppType").value == types[key].appType)
     {
+      var typeid=types[key].id;
       for(var i=0; i< length; i++)
       {
         a[i].href += '&apptype='+types[key].id;
       }
     }
   } 
+  
+  if (!emps)
+    return;
+
+  // otherwise Show only employees with this skill
+  for (var i = 0; i < emps.length; i++)
+  {
+    if ( document.getElementById("row_" + emps[i].empID).classList.contains("type-"+typeid))
+      document.getElementById("row_" + emps[i].empID).style.display = 'inline';
+    else
+      document.getElementById("row_" + emps[i].empID).style.display = 'none';
+  }
   
   }, 1000);
 }

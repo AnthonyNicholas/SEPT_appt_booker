@@ -214,7 +214,7 @@ class Controller
             $tarr = array();
             $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
             foreach ($etypes as $t)
-                array_push($tarr, $t->get_appType());
+                $tarr[$t->get_id()] = $t->get_appType();
             $empTypes[$e['empID']] = $tarr;
         }
         
@@ -1307,7 +1307,7 @@ class Controller
             $tarr = array();
             $etypes = AppType::get_types_for_employee($e['empID'], $this->db);
             foreach ($etypes as $t)
-                array_push($tarr, $t->get_appType());
+                $tarr[$t->get_id()] = $t->get_appType();
             $empTypes[$e['empID']] = $tarr;
         }
         

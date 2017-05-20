@@ -14,6 +14,12 @@ class CustMainPageView    {
         echo "types=".json_encode($types).";";
         echo "</script>\n";
       }
+      if (!empty($employees))
+      {
+        echo "\n<script type=\"text/javascript\">";
+        echo "employees=".json_encode($employees).";";
+        echo "</script>\n";
+      }
     ?>
     <div class="container">
       <div class = "jumbotron jumbotron-fluid">
@@ -39,7 +45,7 @@ class CustMainPageView    {
               <!--<div class="form-group">-->
                 <label class="control-label col-sm-4" for="selectAppType">Select appointment type:</label>
                   <div class="col-sm-8">
-                    <input id="selectAppType" type="text" list="types" class="form-control" oninput="set_type(<?php echo htmlspecialchars(json_encode($types));?>)"/>
+                    <input id="selectAppType" type="text" list="types" class="form-control" oninput="set_type(types,employees)"/>
                       <datalist id="types">
                         
                         <?php //echo '<pre>'; print_r($types); echo '</pre>';
@@ -60,7 +66,7 @@ class CustMainPageView    {
               <!--<div class="form-group">-->
                 <label class="control-label col-sm-4" for="selectAppType">Select employee:</label>
                   <div class="col-sm-8">
-                    <input id="emp_search" type="text" list="emps" class="form-control" oninput="toggle_emp(<?php echo htmlspecialchars(json_encode($employees));?>)"/>
+                    <input id="emp_search" type="text" list="emps" class="form-control" oninput="toggle_emp(employees)"/>
                       <datalist id="emps">
                         <?php
                         for ($i=0; $i<count($employees); $i++)
@@ -82,7 +88,7 @@ class CustMainPageView    {
     ?>
         <div class="container">
         <?php foreach ($empArray as $e) {  ?>
-          <div class="row marg-top " id="row_<?php echo $e['empID']?>"> 
+          <div class="row marg-top type-<?php echo isset($types[$e['empID']]) && count($types[$e['empID']]) ? implode(' type-', array_keys($types[$e['empID']])):''; ?>" id="row_<?php echo $e['empID']?>"> 
             <!-- left column with employee details-->
             <div class="col-sm-4 hidden-xs">
               <div class="panel panel-default panel-address panel-calendar-height">
