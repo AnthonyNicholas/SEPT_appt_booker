@@ -126,7 +126,7 @@ class Controller
         // here the login form view class is loaded and method printHtml() is called  
         require_once('views/FormError.class.php');
         require_once('views/LoginForm.class.php');
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $form = new LoginForm();
         $error_page = new FormError();
         $site->printHeader();
@@ -197,7 +197,7 @@ class Controller
         // here the login form view class is loaded and method printHtml() is called    
         require_once('views/CustMainPageView.class.php');
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new CustMainPageView();
 
         // Load the Customer model, because this is a customer page & AppType which is needed to retrieve correct calendar
@@ -254,7 +254,7 @@ class Controller
         $bo = new BusinessOwner($_SESSION['email'], $this->db);
 
         require_once('views/OwnerMainPageView.class.php');
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new OwnerMainPageView();
         
         $query = "SELECT fName, lName, empID
@@ -283,7 +283,7 @@ class Controller
         }
 
         require_once('views/OwnerCombinedCalView.class.php');
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new OwnerCombinedCalView();
         
         $site->printHeader();
@@ -308,7 +308,7 @@ class Controller
 
         require_once('views/FormError.class.php');
         require_once('views/RegistrationForm.class.php');
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $error_page = new FormError();
         $form = new RegistrationForm();
         $site->printHeader();
@@ -399,7 +399,7 @@ class Controller
         require_once('views/FormError.class.php');
         require_once('models/AppType.class.php');
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new AddEmpOwner();
         $error_page = new FormError();
 
@@ -481,7 +481,7 @@ class Controller
 
         require_once('views/AddActivityOwner.class.php');
         require_once('views/FormError.class.php');
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new AddActivityOwner();
         $error_page = new FormError();
 
@@ -534,7 +534,7 @@ class Controller
     // Authors: Dan
     public function helpPage()
     {
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page;
 
         if ($_SESSION['type'] == 'owner'){
@@ -588,7 +588,7 @@ class Controller
     // Authors: Adam
     public function restricted()
     {
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
 
         $site->printHeader();
         if (isset($_SESSION['type']))
@@ -604,7 +604,7 @@ class Controller
     {
         session_unset();
 
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
 
         $site->printHeader();
         $site->printNav();
@@ -617,7 +617,7 @@ class Controller
     // Author: Adam
     public function err_page()
     {
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
 
         $site->printHeader();
         $site->printNav();
@@ -950,7 +950,7 @@ class Controller
         require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $bkv = new BookingView();
 
         // This wont be different regardless of owner/customer
@@ -990,7 +990,7 @@ class Controller
         require_once('models/CanWork.class.php');
         require_once('views/BookingView.class.php');
 
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $cal = new Calendar($this->db);
         $bkv = new BookingView();
         
@@ -1041,7 +1041,7 @@ class Controller
         require_once('models/AppType.class.php');
         require_once('views/BookingView.class.php');
 
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $bkv = new BookingView();
         $cal = new Calendar($this->db);
         $cust = null; // Needed in order to not print a customer dropdown if logged in as customer
@@ -1147,7 +1147,7 @@ class Controller
         require_once('views/FormError.class.php');
         require_once('views/WorkerAvailability.class.php');
         $error_page = new FormError();
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new WorkerAvailability();
 
         $site->printHeader();
@@ -1169,7 +1169,7 @@ class Controller
         require_once('models/Customer.class.php');
         require_once('views/BookingSummary.class.php'); 
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
 
         $customer = new Customer($_SESSION['email'], $this->get_db());
         
@@ -1303,7 +1303,7 @@ class Controller
         require_once('models/BusinessOwner.class.php');
         require_once('models/Customer.class.php');
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new CustMainPageView();
 
         // Load the Customer model, because this is a customer page
@@ -1393,7 +1393,7 @@ class Controller
         $res = $stmt->get_result();
         $empArray = $res->fetch_all(MYSQLI_ASSOC);
 
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $page = new AddSkillsView();
 
         $site->printHeader();
@@ -1458,7 +1458,7 @@ if ($this->config['db_name'] != NO_DATABASE)
 */
         require_once('views/SetupView.class.php'); 
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         
         $sv = new SetupView();
 
@@ -1593,7 +1593,7 @@ if ($this->config['db_name'] != NO_DATABASE)
         require_once('views/HoursView.class.php'); 
         require_once('views/FormError.class.php');
         
-        $site = new SiteContainer();
+        $site = new SiteContainer($this->db);
         $message = new FormError();
         
         $hv = new HoursView();

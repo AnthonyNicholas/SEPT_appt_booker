@@ -10,6 +10,20 @@ class SiteContainer
 {
     
     public $title = "Booking System";
+    
+    public function __construct($db = null)
+    {
+        if (!empty($db))
+        {
+            $sql = "SELECT * FROM Business LIMIT 1;";
+            $q = $db->query($sql);
+            while($row = mysqli_fetch_array($q))
+            {
+                $this->title = $row['businessName'];
+            }
+            
+        }
+    }
 
     public function printHeader()
     {
@@ -147,7 +161,7 @@ public function printNav($type = "none")
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.php"><span class="red">Appointment Booker</span></a>
+                <a class="navbar-brand" href="index.php"><span class="red"><?php echo $this->title;?></span></a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
             
