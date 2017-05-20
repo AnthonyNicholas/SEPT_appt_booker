@@ -3,6 +3,7 @@
 
 require_once('Controller.class.php');
 
+$setup = true;
 $controller = new Controller();
 
 // should be login protected
