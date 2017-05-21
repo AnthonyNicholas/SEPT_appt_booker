@@ -161,19 +161,18 @@ public function printNav($type = "none")
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.php"><span class="red"><?php echo $this->title;?></span></a>
+                <a class="navbar-brand" href="switch.php"><span class="red"><?php echo $this->title;?></span></a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
             
             <?php if ($type == "owner"){ ?>
                 <ul class="nav navbar-nav">
                     <li><a href="mainPageOwner.php">Bookings</a></li>
+                    <li><a href="bookAsCustomer.php">New Booking</a></li>
+                    <li><a href="addActivityOwner.php">New Service</a></li>
                     <li><a href="empOwnerAdd.php">New Employee</a></li>
-                    <li><a href="WorkerAvailability.php">Roster</a></li>
-                    <li><a href="addActivityOwner.php">Add Appointment Type</a></li>
-                    <li><a href="ownerCombinedCal.php">Combined calendar</a></li>
-                    <li><a href="bookAsCustomer.php">Book for Customer</a></li>
                     <li><a href="AddSkills.php">Employee Skills</a></li>
+                    <li><a href="WorkerAvailability.php">Roster</a></li>
                     <li><a href="hours.php">Hours</a></li>
                     <li><a href="helpPage.php">Help</a></li>
                 </ul>

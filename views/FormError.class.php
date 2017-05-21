@@ -14,7 +14,7 @@ class FormError
                            "fname" => "Did not enter a valid first name",
                            "lname" => "Did not enter a valid last name",
                            "password" => "Passwords do not match",
-                           "pstrength" => "Passwords must be at least 6 characters long, and contain at least one of each: uppercase letter, lowercase letter, digit, and special char (e.g. !@#$%)",
+                           "pstrength" => "Passwords must be at least 6 characters long, and contain at least one of each: uppercase letter, lowercase letter, and digit",
                            "duplicate" => "An account with that email address already exists",
                            "err_login_failed" => "Invalid username or password - please try again",
                            "login_required" => "Please log in to access restricted content",
