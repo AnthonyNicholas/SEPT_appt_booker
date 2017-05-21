@@ -1,0 +1,88 @@
+<!-- Build file for Appointment Booking Program - Work in Progress - Test Version Only -->
+<!-- Author: Anthony Nicholas -->
+<!-- Tasks?  Run db sql script?  Prepare Phar file? Prepare documentation? Run unit tests.  Extract latest version from github. 
+Create zip file.  Deploy to user selected folder -->
+
+<!--<?xml version="1.0"?>-->
+<project name="sept_appt_booker" default="main" description="An appointment booking system">
+    
+    <!--<property name="dbname"  value="insertDbName" />-->
+    <!--<property name="dbpass"  value="Empty" />-->
+    <!--<property name="dbhost" value="localhost" />-->
+    <!--<fileset dir="src/lib" id="srclib"/>-->
+
+    <property name="buildFolder" value="./production" />
+    <property name="latestTag" value="" />
+    <property name="gitUserName" value="" />
+    <property name="gitUserPword" value="" />
+
+    <target name="getUserCredentials" description="Gets users Github username and password to download latest release">
+        <propertyprompt propertyName="gitUserName" defaultValue=""
+            promptText="Enter your github User Name: " />
+        <!--<echo>${gitUserName}</echo>-->
+        <!--<propertyprompt propertyName="gitUserPword" defaultValue=""-->
+        <!--    promptText="Enter your github user password" />-->
+        <echo>Enter your github password: </echo>
+        <exec outputProperty="gitUserPword"
+			  command="stty -echo; read -r mypassword; stty echo; echo $mypassword" dir="${buildFolder}"/>
+        <!--<echo> Password is : ${gitUserPword}</echo>-->
+
+	</target>
+
+    <target name="getLatestRelease" depends="getUserCredentials" description="Gets zip file of latest github release">
+        <echo>Getting Latest tag.</echo>
+		<exec outputProperty="latestTag"
+			  command="git describe --tags `git rev-list --tags --max-count=1`" dir="${buildFolder}" />
+		<echo msg="${latestTag}" />
+
+        <echo>Downloading zip of latest version.</echo>
+        <exec outputProperty="result1"
+			  command="curl -sL --user &quot;${gitUserName}:${gitUserPword}&quot; -o ${latestTag}.tar.gz https://github.com/AnthonyNicholas/SEPT_appt_booker/archive/${latestTag}.tar.gz" dir="${buildFolder}" />
+
+		<echo>Testing file downloaded is valid.</echo>
+		<exec outputProperty="result2"
+			  command="tar tzf ${latestTag}.tar.gz" dir="${buildFolder}"/>
+		<echo msg="${result2}" />
+		
+		<echo>Unzipping latest version.</echo>
+		<exec command="tar xzvf ${latestTag}.tar.gz" dir="${buildFolder}"/>
+
+	</target>
+
+    <target name="test" depends="getLatestRelease" description="Runs all unit tests">
+        <echo>Running all Unit Tests.</echo>
+        <property name="bookerFolder" value="${buildFolder}/SEPT_appt_booker-${latestTag}" />
+		<exec outputProperty="result"
+			  command="php phpunit.phar --bootstrap Controller.class.php --testdox tests" dir="${bookerFolder}" />
+		<echo msg="${result}" />
+	</target>
+    
+    <target name="compress" depends="test" description="Zips up all production files for distribution">
+        <echo>Compressing files.</echo>
+		<exec outputProperty="result"
+			  command="zip -r -q ${buildFolder}/bookingSystem-${latestTag}.zip ${bookerFolder}" dir="${project.basedir}" />
+		<!--<echo msg="${result}" />-->
+	</target>
+
+    <target name="main" depends="compress" description="Removes source files leaving only zip file">
+         <echo>Project has been downloaded from github and all files compressed</echo>
+
+		<exec command="rm -R SEPT_appt_booker-${latestTag}" dir="${buildFolder}"/>
+		<exec command="rm  ${latestTag}.tar.gz" dir="${buildFolder}"/>
+
+    </target>
+
+    
+</project>
+
+
+<!--PULL FROM DEV BRANCH-->
+
+ <!--   <target name="pullDev" depends="getLatestVersion" description="Updates production from github">-->
+ <!--       <echo>Updating production files from github repository.</echo>-->
+	<!--	<exec outputProperty="result2"-->
+	<!--		  command="git pull" dir="${buildFolder}"/>-->
+	<!--	<echo msg="${result2}" />-->
+	<!--</target>-->
+
+ <!--command="curl -u ${gitUserName} -L -o ${latestTag}.zip https://github.com/AnthonyNicholas/SEPT_appt_booker/archive/${latestTag}.zip".' < '." ${gitUserPword}" dir="${buildFolder}"/>-->
