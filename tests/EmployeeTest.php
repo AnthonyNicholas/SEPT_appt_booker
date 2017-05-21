@@ -17,7 +17,7 @@ class EmployeeTest extends TestCase
     {
         $controller = new Controller();
         
-        $result = $controller->add_working_time(8, new DateTime('2017-08-29 08:00:00'), new DateTime('2017-08-29 16:00:00'));
+        $result = $controller->add_working_time(2, new DateTime('2017-8-02 08:00:00'), new DateTime('2017-8-02 16:00:00'));
         
         $this->assertEquals($result, true);
         
@@ -134,10 +134,10 @@ class EmployeeTest extends TestCase
     {
         $controller = new Controller();
         
-        $time['date'][0] = "2017-09-30";
+        $time['date'][0] = "2017-8-03";
         $time['start'][0] = "08:00";
         $time['end'][0] = "16:00";
-        $time['empID'] = 8;
+        $time['empID'] = 2;
         
         $result = $controller->add_working_times($time);
         

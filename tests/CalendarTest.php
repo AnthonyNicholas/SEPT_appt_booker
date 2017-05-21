@@ -34,7 +34,7 @@ class CalendarTest extends TestCase
     {
         $controller = new Controller();
 	ob_start();
-        $controller->getCustCal(100, 1);
+        $controller->getCustCal(1000, 1);
         $page = ob_get_contents();
 	ob_end_clean();
         $page = json_decode($page, true);

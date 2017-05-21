@@ -17,7 +17,7 @@ class addEmpTest extends TestCase
     {
         $controller = new Controller();
          
-        $result = $controller->addEmpOwner('abc', '0');
+        $result = $controller->addEmpOwner('abc', '0', null);
         
         $this->assertEquals($result, false);
     }
@@ -29,7 +29,7 @@ class addEmpTest extends TestCase
     {
         $controller = new Controller();
          
-        $result = $controller->addEmpOwner('0', 'abc');
+        $result = $controller->addEmpOwner('0', 'abc', null);
         
         $this->assertEquals($result, false);
     }
@@ -41,7 +41,7 @@ class addEmpTest extends TestCase
     {
          $controller = new Controller();
          
-        $result = $controller->addEmpOwner('abc', 'def');
+        $result = $controller->addEmpOwner('abc', 'def', array());
         
         $this->assertEquals($result, true);
     }

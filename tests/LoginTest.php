@@ -14,9 +14,9 @@ class LoginTest extends TestCase
     public function testLoginSuccessfulFunctionality()
     {
 	unset($_SESSION);
-        $email = 'test@example.com';
+        $email = 'd@d.d';
         $ctrl = new Controller();
-        $ctrl->login($email,'testPwor');
+        $ctrl->login($email,'ooo');
 
         $this->assertEquals($_SESSION['email'], $email);
 

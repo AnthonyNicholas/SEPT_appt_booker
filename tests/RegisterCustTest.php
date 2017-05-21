@@ -23,8 +23,8 @@ class registerCustTest extends TestCase
         $this->lname = 'Aardvark';
         $this->address = '21 Aardvark Court, Melbourne, Vic 3000';
         $this->phone = '99999999';
-        $this->pword = 'aardvark';
-        $this->pword2 = 'aardvark';
+        $this->pword = 'aArdv4rk';
+        $this->pword2 = 'aArdv4rk';
     }
 
     //  Test that when the customer registers with valid details, the customer is logged in. 
@@ -55,6 +55,12 @@ class registerCustTest extends TestCase
     public function testRegisterSuccessRecordedByDBFunctionality()
     {
         $ctrl = new Controller();
+        
+        // Delete test record from DB        
+        $q = $ctrl->get_db()->prepare("DELETE FROM Customers WHERE email = ?;");
+        $q->bind_param('s', $this->email);
+        $q->execute();
+        
         $ctrl->registerCust($this->email, $this->fname, $this->lname, $this->address, $this->phone, $this->pword, $this->pword2);
 
         $q = $ctrl->get_db()->prepare("SELECT * FROM Customers WHERE email = ?;");
