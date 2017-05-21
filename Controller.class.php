@@ -20,6 +20,7 @@ class Controller
     public $config;
     private $db;
     public $user;
+    private $businesses;
     
     // database object accessor
     public function get_db()
@@ -51,6 +52,10 @@ class Controller
             error_reporting(-1);
         }
 
+        $masterdb = new mysqli($config['db_addr'], $config['db_user'], $config['db_pass'], "master");
+        
+        $this->businesses = $masterdb->query("select * from business");
+        
         // Start the session
         session_start();
 
@@ -339,9 +344,9 @@ class Controller
         $containsLowerLetter  = preg_match('/[a-z]/',    $pword);
         $containsUpperLetter  = preg_match('/[A-Z]/',    $pword);
         $containsDigit   = preg_match('/\d/',          $pword);
-        $containsSpecial = preg_match('/[^a-zA-Z\d]/', $pword);
+     //   $containsSpecial = preg_match('/[^a-zA-Z\d]/', $pword);
 
-        $goodPassword = $containsLowerLetter && $containsUpperLetter && $containsDigit && $containsSpecial && strlen($pword) >=6;
+        $goodPassword = $containsLowerLetter && $containsUpperLetter && $containsDigit && strlen($pword) >=6;
 
         // Only enforce password strength if this file doesnt exist
         if (!file_exists('IGNORE_PASSWORD_STRENGTH') && ! $goodPassword)
@@ -1451,8 +1456,8 @@ class Controller
     public function setupForm()
     {
 
-    if ($this->config['db_name'] != NO_DATABASE)
-        $this->redirect("login.php");
+//    if ($this->config['db_name'] != NO_DATABASE)
+ //       $this->redirect("login.php");
         // login here?
         
 /*         if ( !$this->ownerLoggedIn() )
@@ -1479,9 +1484,7 @@ class Controller
     public function setup($form)
     {
         session_unset();
-        
-        
-        
+    
         $name = $form['name'];
         $desc = $form['desc']; 
         
@@ -1518,6 +1521,12 @@ class Controller
         $q->execute();
 
         unset($_POST);
+                
+        $masterdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass'], "master");
+
+        $q = $masterdb->prepare("INSERT INTO business (dbname, name) VALUES (?, ?)");
+        $q->bind_param('ss', $dbname, $name);
+        $q->execute();
 
         $this->redirect("login.php");
     }
@@ -1639,6 +1648,47 @@ class Controller
         return true;
 
     }
+    
+    public function switchView()
+    {
+          if ( !$this->ownerLoggedIn() )
+        {
+            $this->redirect("index.php");
+
+        }
+        
+        require_once('views/SwitchView.class.php'); 
+        
+        $site = new SiteContainer($this->db);
+        
+        $sv = new SwitchView();
+
+        $site->printHeader();
+        $site->printNav("owner");
+        $sv->printHtml($this->businesses);
+        $site->printFooter(); 
+        
+        
+    }
+
+    public function do_switch($switch)
+    {
+         foreach ($switch as $key => $value)
+            $new = $key;
+        
+        unset($_POST);
+        
+        if ($new == "new")
+            $this->redirect("setup.php");
+        
+        else
+        {
+            $this->change_database($new);
+            $this->redirect("logout.php");
+    
+        }
+    }
+        
     
 
 }

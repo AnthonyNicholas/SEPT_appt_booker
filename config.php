@@ -10,11 +10,11 @@ $config = array(
     'db_addr' => 'localhost',
     'db_user' => 'antfellow',
     'db_pass' => '',
-    'db_name' => 'NO_DATABASE',
+    'db_name' => 'SpareSystem', // <-- choose which instance of the site to use, 'NO_dATABASE' will result in new business setup
     'log_file' => 'appointments.log',
-    'debug' => true,
-    'admin' => 'admin@email.com',
-    'pass' => 'abc'
+    'debug' => false,
+    'admin' => 'owner@email.com',
+    'pass' => 'pw'
 );
  
 define("CSS","css/");
