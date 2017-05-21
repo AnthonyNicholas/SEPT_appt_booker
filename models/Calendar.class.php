@@ -46,25 +46,6 @@ class Calendar
       }
       
       // Query should select available times from given employee
-      // $query = "SELECT w.empID as calendar_id, t.dateTime as timestamp,
-      //         '' as firstname,
-      //         '' as lastname,
-      //         '' as email,
-      //         '' as phone,
-      //         0 as booked,
-      //         0 as noticed,
-      //         '' as deleted
-      //         FROM CanWork w, TimeSlot t,
-      //         WHERE w.dateTime = t.dateTime
-      //         AND w.dateTime NOT IN (
-      //             SELECT dateTime
-      //             FROM Booking
-      //         )
-      //         AND w.empID = ?
-      //         AND w.empID IN (SELECT empID FROM haveSkill)
-      //         ORDER BY t.dateTime ASC;";
-      
-      // Query should select available times from given employee
       $query = "SELECT w.empID as calendar_id, t.dateTime as timestamp,
               '' as firstname,
               '' as lastname,
