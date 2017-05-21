@@ -1,7 +1,7 @@
 <?php
 
 // author: Jake Williams s3448342
-// purpose: test functionality for adding an employee to the system
+// purpose: test functionality for modifying business hours to the system
 
 use PHPUnit\Framework\TestCase;
 

@@ -10,6 +10,7 @@
 
 define('MINIMUM_INTERVAL', 30); // smallest timeslot duration
 define('NO_DATABASE', 'NO_DATABASE');
+define('DEFAULT_MASTER', 'master');
 
 require_once('views/SiteContainer.class.php');
 require_once('libs/Helper.php');
@@ -51,6 +52,8 @@ class Controller
             ini_set('display_errors', 1);
             error_reporting(-1);
         }
+
+        $this->master_database();
 
         $masterdb = new mysqli($config['db_addr'], $config['db_user'], $config['db_pass'], "master");
         
@@ -1452,7 +1455,31 @@ class Controller
         }
     }
     
+    public function master_database()
+    {
+        $masterdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass']);
+    
+        $dbname = "master";
+    
+        $q = "create database if not exists ".$dbname.";"; 
+        $masterdb->query($q);
+        
+        $masterdb = new mysqli($this->config['db_addr'], $this->config['db_user'], $this->config['db_pass'], "master");
+        
+        $q = "CREATE TABLE IF NOT EXISTS `business` (
+        `dbname` varchar(20) NOT NULL,
+        `name` varchar(40) NOT NULL,
+        PRIMARY KEY (`dbname`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+        
+        $masterdb->query($q);
+    }
+    
+    
+    
+    
     // display form for setting up new instance of the business
+    // author: Jake
     public function setupForm()
     {
 
@@ -1481,6 +1508,7 @@ class Controller
     // creates a new database specified in the $name parameter
     // including all tables and empty timeslots required for 
     // using the site from scratch
+    // author: Jake
     public function setup($form)
     {
         session_unset();
@@ -1532,6 +1560,7 @@ class Controller
     }
     
     // add new database name to config
+    // Author: Jake
     public function change_database($db_name)
     {
         $file_name = "config.php";
@@ -1551,6 +1580,7 @@ class Controller
     }
     
     // create blank timeslots
+    // Author: Jake
     public function create_times($from, $to)
     {
         $start = new DateTime($from);
@@ -1581,6 +1611,7 @@ class Controller
     }  
     
     // create all tables
+    // Author: Jake
     public function fill_db()
     {
         include('create_tables.php');
@@ -1598,6 +1629,8 @@ class Controller
         $this->db->query($HOURS);
     }
     
+    // display page for the owner to change business hours
+    // Author: Jake
     public function hoursForm($result)
     {
          if ( !$this->ownerLoggedIn() )
@@ -1624,6 +1657,8 @@ class Controller
         $site->printFooter();    
     }
     
+    // set business hours according to $opens, $closes parameters
+    // Author: Jake
     public function set_hours($opens, $closes)
     {
         // check times are valid
@@ -1649,6 +1684,8 @@ class Controller
 
     }
     
+    // display page enabling owner to switch between instances of the business
+    // Author: Jake
     public function switchView()
     {
           if ( !$this->ownerLoggedIn() )
@@ -1671,6 +1708,8 @@ class Controller
         
     }
 
+    // handle switching from one instance of the business to another
+    // Author: Jake
     public function do_switch($switch)
     {
          foreach ($switch as $key => $value)
