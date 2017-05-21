@@ -766,7 +766,7 @@ class Controller
         if (!$hours->checkWithinHours($start) || !$hours->checkWithinHours($end)){
             
             $this->redirect("WorkerAvailability.php?error=outside_opening_hours");
-            return false;
+            die();
         }
         
         while ($start < $end)

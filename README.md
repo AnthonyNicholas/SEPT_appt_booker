@@ -13,13 +13,16 @@ Tute/lab day/time: Tuesday 9.30am
 ## Installation ##
 This PHP application will run on PHP 7.0.16-4 and MySQL Server.
 
+0. Ensure your server has adequate file writing permissions (ie 644). Files must be owned by the same user as the web server.
 1. Unzip all files into any directory under public_html.
-
-2. Edit config.php with the database username, password and name. Ensure
-the database has been created and appt_booker.sql tables and data imported into
-the new database.
-
-3. Login to the default owner account with the provided credentials.
+2. Edit config.php with the database username and password, and your preferred admin account email and password. 
+3. Ensure the database name is 'NO_DATABASE'.
+4. Load the site url and enter basic business details as prompted.
+5. Setup your business hours by clicking on the 'hours' tab.
+6. Add your business' services by clicking on the 'Add Appointment type' tab.
+7. Add your employees by clicking on the 'New Employee' tab.
+8. Add your employees' working times by clicking on the 'roster' tab.
+9. Now you can begin using your website inluding creating new bookings.
 
 Default Owner login: owner@email.com 
            Password: pw
